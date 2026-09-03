@@ -486,43 +486,37 @@
 
             try {
                 const r2Base = R2_DOMAIN || window.location.origin;
-const response = await fetch(`${r2Base}/posts/${postId}.md?_t=` + Date.now());
+            const response = await fetch(`${r2Base}/posts/${postId}.md?_t=` + Date.now());
 
-if (!response.ok) throw new Error();
-let text = await response.text();
+            if (!response.ok) throw new Error();
+            let text = await response.text();
 
-// === 【自定义语法解析开始】===
-// 1. 解析 [card:https://xxx] 语法
-text = text.replace(/\[card:\s*(https?:\/\/[^\s\]]+)\s*\]/gi, (match, url) => {
-    let domain = "";
-    try {
-        domain = new URL(url).hostname;
-    } catch(e) {
-        domain = url;
-    }
-    return `
-    <div class="my-5 not-prose">
-        <a href="${url}" target="_blank" rel="noopener noreferrer" class="group flex items-center justify-between p-4 bg-zinc-50/80 hover:bg-amber-500/5 border border-zinc-200/80 hover:border-amber-500/30 rounded-2xl transition-all duration-300 shadow-sm hover:shadow">
-            <div class="flex items-center space-x-3.5 min-w-0 pr-3">
-                <div class="w-10 h-10 rounded-xl bg-white border border-zinc-200/60 shadow-xs flex items-center justify-center shrink-0 text-lg group-hover:scale-105 transition-transform">
-                    🔗
-                </div>
-                <div class="min-w-0">
-                    <div class="text-sm font-semibold text-zinc-800 group-hover:text-amber-600 transition-colors truncate">
-                        ${url}
-                    </div>
-                    <div class="text-xs text-zinc-400 mt-0.5 truncate">
-                        来源: ${domain}
-                    </div>
-                </div>
-            </div>
-            <span class="text-xs text-zinc-400 group-hover:text-amber-600 shrink-0 font-bold transition-transform group-hover:translate-x-0.5">
-                访问 ↗
-            </span>
-        </a>
-    </div>
-    `;
-});
+    // === 【自定义语法解析开始】===
+    // 1. 解析 [card:https://xxx] 语法
+    text = text.replace(/\[card:\s*(https?:\/\/[^\s\]]+)\s*\]/gi, (match, url) => {
+        let domain = "";
+        try {
+            domain = new URL(url).hostname;
+        } catch(e) {
+            domain = url;
+        }
+        // 关键修复：去除所有行首缩进空格，避免被 marked 误认为代码块
+        return `<div class="my-5 not-prose"><a href="${url}" target="_blank" rel="noopener noreferrer" class="group flex items-center justify-between p-4 bg-zinc-50/80 hover:bg-amber-500/5 border border-zinc-200/80 hover:border-amber-500/30 rounded-2xl transition-all duration-300 shadow-sm hover:shadow"><div class="flex items-center space-x-3.5 min-w-0 pr-3"><div class="w-10 h-10 rounded-xl bg-white border border-zinc-200/60 shadow-xs flex items-center justify-center shrink-0 text-lg group-hover:scale-105 transition-transform">🔗</div><div class="min-w-0"><div class="text-sm font-semibold text-zinc-800 group-hover:text-amber-600 transition-colors truncate">${url}</div><div class="text-xs text-zinc-400 mt-0.5 truncate">来源: ${domain}</div></div></div><span class="text-xs text-zinc-400 group-hover:text-amber-600 shrink-0 font-bold transition-transform group-hover:translate-x-0.5">访问 ↗</span></a></div>`;
+    });
+
+    // 2. 解析 [youtube:xxxxxx] 语法
+    text = text.replace(/\[youtube:\s*([^\]]+)\s*\]/gi, (match, rawVal) => {
+        let videoId = rawVal.trim();
+        if (videoId.includes("youtube.com/watch?v=")) {
+            videoId = videoId.split("v=")[1].split("&")[0];
+        } else if (videoId.includes("youtu.be/")) {
+            videoId = videoId.split("youtu.be/")[1].split("?")[0];
+        }
+        
+        // 关键修复：去除所有行首缩进空格
+        return `<div class="my-6 not-prose"><div class="relative w-full aspect-video rounded-2xl overflow-hidden shadow-md border border-zinc-200/70 bg-black"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}" title="YouTube video player" class="absolute inset-0 w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div></div>`;
+    });
+    // === 【自定义语法解析结束】===
 
 // 2. 解析 [youtube:xxxxxx] 语法 (支持填 ID 或包含 ?v=xxx 的完整链接)
 text = text.replace(/\[youtube:\s*([^\]]+)\s*\]/gi, (match, rawVal) => {
