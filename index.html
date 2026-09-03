@@ -491,17 +491,13 @@
             if (!response.ok) throw new Error();
             let text = await response.text();
 
-// === 【自定义语法解析：支持图文自定义高级卡片】===
+// === 【自定义语法解析：无缩进安全版】===
 text = text.replace(/\[card:\s*([\s\S]*?)\s*\]/gi, (match, innerContent) => {
-    // 1. 按竖线 | 拆分参数：链接 | 标题 | 描述 | 图片
     const parts = innerContent.split('|').map(s => s.trim());
-    
-    // 提取有效 URL
     const urlMatch = parts[0].match(/https?:\/\/[^\s"'<>\)]+/i);
     if (!urlMatch) return match;
     const url = urlMatch[0];
 
-    // 解析域名
     let domain = "";
     try {
         domain = new URL(url).hostname;
@@ -509,39 +505,12 @@ text = text.replace(/\[card:\s*([\s\S]*?)\s*\]/gi, (match, innerContent) => {
         domain = url;
     }
 
-    // 2. 提取各项内容（未填则使用缺省占位）
     const customTitle = parts[1] || domain;
     const customDesc = parts[2] || `点击访问 ${domain} 获取更多详情`;
-    // 如果第 4 项未提供图片链接，则自动根据域名调用 Google Favicon 官方图标服务
     const customImg = parts[3] || `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
 
-    // 3. 渲染精致卡片 UI
-    return `<div class="my-5 not-prose">
-        <a href="${url}" target="_blank" rel="noopener noreferrer" class="group flex items-center p-3.5 sm:p-4 bg-white hover:bg-zinc-50/80 border border-zinc-200/80 hover:border-zinc-300 rounded-2xl transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md">
-            <!-- 左侧图片/Logo 区域 -->
-            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-zinc-100 border border-zinc-200/60 overflow-hidden flex items-center justify-center shrink-0 mr-4">
-                <img src="${customImg}" alt="${customTitle}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://www.google.com/s2/favicons?domain=${domain}&sz=128'">
-            </div>
-            
-            <!-- 右侧文字区域 -->
-            <div class="flex-grow min-w-0 pr-2">
-                <div class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-0.5 truncate">
-                    ${domain}
-                </div>
-                <div class="text-sm sm:text-base font-bold text-zinc-900 group-hover:text-blue-600 transition-colors line-clamp-1">
-                    ${customTitle}
-                </div>
-                <div class="text-xs text-zinc-500 mt-1 line-clamp-2 leading-relaxed">
-                    ${customDesc}
-                </div>
-            </div>
-
-            <!-- 右侧箭头图标 -->
-            <div class="hidden sm:flex items-center text-zinc-300 group-hover:text-zinc-500 text-sm pl-2 shrink-0 transition-all group-hover:translate-x-0.5">
-                ↗
-            </div>
-        </a>
-    </div>`;
+    // 关键点：整段 HTML 保持在单行模板字符串内，绝对不要有换行和空格缩进
+    return `<div class="my-5 not-prose"><a href="${url}" target="_blank" rel="noopener noreferrer" class="group flex items-center p-3.5 sm:p-4 bg-white hover:bg-zinc-50/80 border border-zinc-200/80 hover:border-zinc-300 rounded-2xl transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md"><div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-zinc-100 border border-zinc-200/60 overflow-hidden flex items-center justify-center shrink-0 mr-4"><img src="${customImg}" alt="${customTitle}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://www.google.com/s2/favicons?domain=${domain}&sz=128'"></div><div class="flex-grow min-w-0 pr-2"><div class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-0.5 truncate">${domain}</div><div class="text-sm sm:text-base font-bold text-zinc-900 group-hover:text-blue-600 transition-colors line-clamp-1">${customTitle}</div><div class="text-xs text-zinc-500 mt-1 line-clamp-2 leading-relaxed">${customDesc}</div></div><div class="hidden sm:flex items-center text-zinc-300 group-hover:text-zinc-500 text-sm pl-2 shrink-0 transition-all group-hover:translate-x-0.5">↗</div></a></div>`;
 });
 
     // 2. 解析 [youtube:xxxxxx] 语法
