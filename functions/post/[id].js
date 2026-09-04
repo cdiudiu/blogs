@@ -24,7 +24,7 @@ export async function onRequest(context) {
     // 清理掉原有的 <title> 标签，防止冲突
     html = html.replace(/<title>[\s\S]*?<\/title>/i, '');
 
-    // 3. 构建规范的 Meta 标签
+// 将原先的 summary_large_image 替换为 summary
     const metaTags = `
     <title>${title}</title>
     <meta name="description" content="${summary}">
@@ -33,7 +33,7 @@ export async function onRequest(context) {
     <meta property="og:description" content="${summary}">
     <meta property="og:image" content="${cover}">
     <meta property="og:url" content="${currentUrl}">
-    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="${title}">
     <meta name="twitter:description" content="${summary}">
     <meta name="twitter:image" content="${cover}">
