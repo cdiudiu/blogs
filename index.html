@@ -92,19 +92,40 @@
             </div>
         </div>
 
-        <div id="post-view" class="hidden max-w-5xl mx-auto bg-white p-8 rounded-2xl border border-zinc-100 shadow-sm">
-            <a href="#/" class="mb-8 inline-block text-xs font-semibold uppercase tracking-wider text-zinc-400 hover:text-amber-500 flex items-center gap-1.5 transition-colors">
-                ← 返回首页
-            </a>
-            <div class="mb-6 text-xs text-zinc-400 flex gap-4 border-b border-zinc-100 pb-4">
-                <span id="post-date"></span>
-                <span id="post-category" class="font-bold text-amber-500"></span>
-                <span id="post-views-count">阅读量: -</span>
+<!-- 文章详情页：左侧正文，右侧目录导航 -->
+        <div id="post-view" class="hidden max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+                
+                <!-- 左侧：正文主体 (占 3 列) -->
+                <div class="lg:col-span-3 bg-white p-6 sm:p-8 rounded-2xl border border-zinc-100 shadow-sm">
+                    <a href="#/" class="mb-8 inline-block text-xs font-semibold uppercase tracking-wider text-zinc-400 hover:text-amber-500 flex items-center gap-1.5 transition-colors">
+                        ← 返回首页
+                    </a>
+                    <div class="mb-6 text-xs text-zinc-400 flex flex-wrap gap-4 border-b border-zinc-100 pb-4">
+                        <span id="post-date"></span>
+                        <span id="post-category" class="font-bold text-amber-500"></span>
+                        <span id="post-views-count">阅读量: -</span>
+                    </div>
+                    <article id="post-content" class="prose prose-zinc prose-amber max-w-none 
+                        prose-headings:font-bold prose-headings:tracking-tight
+                        prose-img:rounded-xl prose-img:shadow-md prose-img:mx-auto prose-img:border prose-img:border-zinc-100
+                        prose-pre:bg-[#0d1117] prose-pre:border prose-pre:border-zinc-800 prose-pre:rounded-xl prose-pre:p-0"></article>
+                </div>
+
+                <!-- 右侧：目录导航 (占 1 列，吸顶固定) -->
+                <div class="hidden lg:block lg:col-span-1 sticky top-20">
+                    <div class="bg-white p-5 rounded-2xl border border-zinc-100 shadow-sm space-y-3">
+                        <div class="flex items-center space-x-2 border-b border-zinc-100 pb-3">
+                            <span class="text-sm">📑</span>
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-700">目录导航</h3>
+                        </div>
+                        <div id="post-toc-container" class="max-h-[calc(100vh-160px)] overflow-y-auto space-y-1 text-xs text-zinc-500 pr-1">
+                            <p class="text-zinc-400 text-xs py-2">暂无目录</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            <article id="post-content" class="prose prose-zinc prose-amber max-w-none 
-                prose-headings:font-bold prose-headings:tracking-tight
-                prose-img:rounded-xl prose-img:shadow-md prose-img:mx-auto prose-img:border prose-img:border-zinc-100
-                prose-pre:bg-[#0d1117] prose-pre:border prose-pre:border-zinc-800 prose-pre:rounded-xl prose-pre:p-0"></article>
         </div>
 
     </main>
@@ -553,7 +574,89 @@ text = text.replace(/\[youtube:\s*([^\]]+)\s*\]/gi, (match, rawVal) => {
 });
 // === 【自定义语法解析结束】===
 
+
 postContent.innerHTML = marked.parse(text);
+async function loadPost(postId) {
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('post-view').classList.remove('hidden');
+            
+            const postContent = document.getElementById('post-content');
+            postContent.innerHTML = '<p class="text-zinc-400 text-sm">正在加载...</p>';
+
+            try {
+                const r2Base = R2_DOMAIN || window.location.origin;
+                const response = await fetch(`${r2Base}/posts/${postId}.md?_t=` + Date.now());
+                
+                if (!response.ok) throw new Error();
+                let text = await response.text();
+
+                // ... 这里保留你之前添加的 [card:...] 和 [youtube:...] 的 replace 解析规则 ...
+
+                postContent.innerHTML = marked.parse(text);
+
+                // === 【新增：生成右侧目录】===
+                generateTableOfContents();
+
+                fetch(`./api/views?id=${postId}`, { method: 'POST' })
+                    .then(r => r.json())
+                    .then(data => {
+                        document.getElementById('post-views-count').innerText = `阅读量: ${data.views}`;
+                    }).catch(() => {
+                        document.getElementById('post-views-count').innerText = `阅读量: -`;
+                    });
+
+                addCopyButtons();
+                document.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+            } catch (err) {
+                postContent.innerHTML = '<p class="text-red-500 text-sm">无法从 R2 载入文章，请确保跨域策略配置成功。</p>';
+            }
+        }
+
+        function generateTableOfContents() {
+            const container = document.getElementById('post-toc-container');
+            if (!container) return;
+
+            const postContent = document.getElementById('post-content');
+            // 获取正文中所有的 h1, h2, h3 标题
+            const headings = postContent.querySelectorAll('h1, h2, h3');
+
+            if (!headings || headings.length === 0) {
+                container.innerHTML = '<p class="text-zinc-400 text-xs py-1">本文无标题目录</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            headings.forEach((heading, index) => {
+                // 赋予每个标题独立锚点 ID
+                const anchorId = `heading-anchor-${index}`;
+                heading.id = anchorId;
+
+                const tagName = heading.tagName.toLowerCase();
+                const titleText = heading.innerText.trim();
+
+                // 区分层级缩进：h1 不缩进，h2 缩进 1 级，h3 缩进 2 级
+                let indentClass = "pl-0 font-medium text-zinc-700";
+                if (tagName === 'h2') {
+                    indentClass = "pl-2.5 text-zinc-600";
+                } else if (tagName === 'h3') {
+                    indentClass = "pl-5 text-zinc-400";
+                }
+
+                const itemLink = document.createElement('a');
+                itemLink.href = `#${anchorId}`;
+                itemLink.className = `block py-1 leading-snug rounded hover:text-amber-500 hover:bg-zinc-50 transition-colors truncate ${indentClass}`;
+                itemLink.innerText = titleText;
+                itemLink.title = titleText;
+
+                // 点击平滑滚动至对应标题
+                itemLink.onclick = (e) => {
+                    e.preventDefault();
+                    heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                };
+
+                container.appendChild(itemLink);
+            });
+        }
 
                 fetch(`./api/views?id=${postId}`, { method: 'POST' })
                     .then(r => r.json())
