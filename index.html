@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>blogs.nyc.mn - 数字花园</title>
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
@@ -559,7 +560,7 @@
             postContent.innerHTML = '<p class="text-zinc-400 text-sm">正在加载...</p>';
 
             try {
-                const r2Base = R2_DOMAIN || window.location.origin;
+                const r2Base = R2_DOMAIN || "https://images.wsvps.com";
                 const response = await fetch(`${r2Base}/posts/${postId}.md?_t=` + Date.now());
 
                 if (!response.ok) throw new Error("无法连接存储桶");
