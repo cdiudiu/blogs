@@ -172,6 +172,18 @@
 
         function handleRouting() {
             const hash = window.location.hash;
+            const pathname = window.location.pathname;
+
+            // 优先检查是否通过直接链接 /post/xxxx 访问
+            if (pathname.startsWith('/post/')) {
+                const postId = pathname.replace('/post/', '').replace(/\/$/, '');
+                if (postId) {
+                    loadPost(postId);
+                    return;
+                }
+            }
+
+            // 保持原有的 Hash 路由逻辑
             if (hash.startsWith('#/post/')) {
                 const postId = hash.replace('#/post/', '');
                 loadPost(postId);
@@ -372,13 +384,13 @@
                     container.innerHTML += `
                         <div class="group bg-white rounded-2xl border border-zinc-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 overflow-hidden flex flex-col justify-between">
                             <div>
-                                <a href="#/post/${post.id}" class="block aspect-video w-full overflow-hidden relative bg-zinc-50 rounded-t-2xl transform translate-z-0 isolate">
+                                <a href="./post/${post.id}" class="block aspect-video w-full overflow-hidden relative bg-zinc-50 rounded-t-2xl transform translate-z-0 isolate">
                                     ${coverHtml}
                                     <span class="absolute top-3 left-3 bg-zinc-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-sm uppercase z-10">${post.category || '未分类'}</span>
                                 </a>
                                 <div class="p-5 space-y-2">
                                     <h3 class="${titleClass}">
-                                        <a href="#/post/${post.id}" title="${post.title}">${post.title}</a>
+                                        <a href="./post/${post.id}"" title="${post.title}">${post.title}</a>
                                     </h3>
                                     ${summaryHtml}
                                 </div>
@@ -467,7 +479,7 @@
                         : `<div class="w-full h-full bg-gradient-to-tr ${getGradient(index)} rounded-md"></div>`;
 
                     container.innerHTML += `
-                        <a href="#/post/${post.id}" class="flex items-center gap-3 p-1.5 hover:bg-zinc-50 rounded-lg transition-colors group animate-fade-in">
+                        <a href="./post/${post.id}" class="flex items-center gap-3 p-1.5 hover:bg-zinc-50 rounded-lg transition-colors group animate-fade-in">
                             <div class="w-12 h-12 rounded-md overflow-hidden bg-zinc-100 shrink-0">
                                 ${thumbHtml}
                             </div>
