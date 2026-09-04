@@ -560,8 +560,7 @@
             postContent.innerHTML = '<p class="text-zinc-400 text-sm">正在加载...</p>';
 
             try {
-                const r2Base = R2_DOMAIN || "https://images.wsvps.com";
-                const response = await fetch(`${r2Base}/posts/${postId}.md?_t=` + Date.now());
+                const response = await fetch(`/api/post-content?id=${encodeURIComponent(postId)}&_t=` + Date.now());
 
                 if (!response.ok) throw new Error("无法连接存储桶");
                 let text = await response.text();
