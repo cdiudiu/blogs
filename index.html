@@ -589,11 +589,15 @@ async function loadPost(postId) {
                 
                 if (!response.ok) throw new Error();
                 let text = await response.text();
-
+                // === 自动修复 Markdown 标题无空格问题 (如把 "##标题" 自动转为 "## 标题") ===
+                text = text.replace(/^(#{1,6})([^\s#\n])/gm, '$1 $2');
                 // ... 这里保留你之前添加的 [card:...] 和 [youtube:...] 的 replace 解析规则 ...
 
                 postContent.innerHTML = marked.parse(text);
-
+                // 确保 DOM 挂载完成后提取目录
+                setTimeout(() => {
+                    generateTableOfContents();
+                }, 50);
                 // === 【新增：生成右侧目录】===
                 generateTableOfContents();
 
@@ -612,51 +616,60 @@ async function loadPost(postId) {
             }
         }
 
-        function generateTableOfContents() {
-            const container = document.getElementById('post-toc-container');
-            if (!container) return;
+function generateTableOfContents() {
+    const container = document.getElementById('post-toc-container');
+    if (!container) return;
 
-            const postContent = document.getElementById('post-content');
-            // 获取正文中所有的 h1, h2, h3 标题
-            const headings = postContent.querySelectorAll('h1, h2, h3');
+    const postContent = document.getElementById('post-content');
+    // 监听 h1, h2, h3, h4
+    const headings = postContent.querySelectorAll('h1, h2, h3, h4');
 
-            if (!headings || headings.length === 0) {
-                container.innerHTML = '<p class="text-zinc-400 text-xs py-1">本文无标题目录</p>';
-                return;
-            }
+    // 如果未找到任何标准标题标签
+    if (!headings || headings.length === 0) {
+        container.innerHTML = `
+            <div class="text-zinc-400 text-xs py-2 leading-relaxed">
+                暂无目录<br>
+                <span class="text-[10px] text-zinc-400">💡 提示：文章中请使用 <code>## 标题</code> 语法排版</span>
+            </div>
+        `;
+        return;
+    }
 
-            container.innerHTML = '';
-            headings.forEach((heading, index) => {
-                // 赋予每个标题独立锚点 ID
-                const anchorId = `heading-anchor-${index}`;
-                heading.id = anchorId;
+    container.innerHTML = '';
+    
+    headings.forEach((heading, index) => {
+        const anchorId = `heading-anchor-${index}`;
+        heading.id = anchorId;
 
-                const tagName = heading.tagName.toLowerCase();
-                const titleText = heading.innerText.trim();
+        const tagName = heading.tagName.toLowerCase();
+        const titleText = heading.innerText.trim();
 
-                // 区分层级缩进：h1 不缩进，h2 缩进 1 级，h3 缩进 2 级
-                let indentClass = "pl-0 font-medium text-zinc-700";
-                if (tagName === 'h2') {
-                    indentClass = "pl-2.5 text-zinc-600";
-                } else if (tagName === 'h3') {
-                    indentClass = "pl-5 text-zinc-400";
-                }
-
-                const itemLink = document.createElement('a');
-                itemLink.href = `#${anchorId}`;
-                itemLink.className = `block py-1 leading-snug rounded hover:text-amber-500 hover:bg-zinc-50 transition-colors truncate ${indentClass}`;
-                itemLink.innerText = titleText;
-                itemLink.title = titleText;
-
-                // 点击平滑滚动至对应标题
-                itemLink.onclick = (e) => {
-                    e.preventDefault();
-                    heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                };
-
-                container.appendChild(itemLink);
-            });
+        // 阶梯缩进与字体样式
+        let indentClass = "pl-1 font-bold text-zinc-800";
+        if (tagName === 'h2') {
+            indentClass = "pl-2.5 font-semibold text-zinc-700";
+        } else if (tagName === 'h3') {
+            indentClass = "pl-5 text-zinc-500 text-[11px]";
+        } else if (tagName === 'h4') {
+            indentClass = "pl-7 text-zinc-400 text-[11px]";
         }
+
+        const itemLink = document.createElement('a');
+        itemLink.href = `#${anchorId}`;
+        itemLink.className = `group flex items-center py-1.5 leading-snug rounded-lg hover:text-amber-600 hover:bg-zinc-50 transition-colors ${indentClass}`;
+        itemLink.innerHTML = `
+            <span class="truncate" title="${titleText}">${titleText}</span>
+        `;
+
+        // 点击平滑滚动至对应标题
+        itemLink.onclick = (e) => {
+            e.preventDefault();
+            heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+
+        container.appendChild(itemLink);
+    });
+}
 
                 fetch(`./api/views?id=${postId}`, { method: 'POST' })
                     .then(r => r.json())
