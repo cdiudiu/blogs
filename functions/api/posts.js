@@ -1,8 +1,19 @@
+function escapeXml(str) {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+
 async function verifyPassword(password, env) {
   try {
     const row = await env.DB.prepare("SELECT value FROM config WHERE key = 'admin_password'").first();
     if (row && row.value) return password === row.value;
-  } catch (e) {}
+  } catch (e) { }
   return password === env.ADMIN_PASSWORD;
 }
 
@@ -18,17 +29,59 @@ export async function onRequest(context) {
       const series = url.searchParams.get("series");
       const popularLimit = url.searchParams.get("popular");
       const getNavMeta = url.searchParams.get("get_nav_meta");
-      
+
       // 判断是否是管理员后台发起的请求
       const authHeader = request.headers.get("Authorization");
       const isAdmin = await verifyPassword(authHeader, env);
+
+      // 新增：直接生成动态 Sitemap XML
+      const isSitemap = url.searchParams.get("sitemap");
+      if (isSitemap) {
+        const baseUrl = url.origin;
+        const { results } = await env.DB.prepare(
+          "SELECT id, date FROM posts WHERE status = 'publish' ORDER BY date DESC"
+        ).all();
+
+        let xmlItems = `
+  <url>
+    <loc>${escapeXml(baseUrl)}/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>`;
+
+        if (results && results.length > 0) {
+          results.forEach(post => {
+            const postUrl = `${baseUrl}/post/${post.id}`;
+            const lastMod = post.date || new Date().toISOString().split('T')[0];
+            xmlItems += `
+  <url>
+    <loc>${escapeXml(postUrl)}</loc>
+    <lastmod>${lastMod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+          });
+        }
+
+        const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${xmlItems}
+</urlset>`.trim();
+
+        return new Response(sitemapXml, {
+          headers: {
+            "Content-Type": "application/xml; charset=utf-8",
+            "Cache-Control": "public, max-age=3600"
+          }
+        });
+      }
 
       // A. 获取一二级导航元数据
       if (getNavMeta) {
         // 如果是管理员，获取所有文章一二级目关系；游客只获取公开文章的层级
         let query = "SELECT DISTINCT series, category FROM posts";
         if (!isAdmin) query += " WHERE status = 'publish'";
-        
+
         const { results } = await env.DB.prepare(query).all();
         const navMeta = {};
         results.forEach(row => {
@@ -43,10 +96,10 @@ export async function onRequest(context) {
       // B. 获取热门排行 (游客模式下不显示隐藏文章)
       if (popularLimit) {
         const limit = parseInt(popularLimit) || 5;
-        const query = isAdmin 
+        const query = isAdmin
           ? "SELECT id, title, date, views, cover FROM posts ORDER BY views DESC LIMIT ?"
           : "SELECT id, title, date, views, cover FROM posts WHERE status = 'publish' ORDER BY views DESC LIMIT ?";
-        
+
         const { results } = await env.DB.prepare(query).bind(limit).all();
         return new Response(JSON.stringify(results), { headers: { "Content-Type": "application/json" } });
       }
