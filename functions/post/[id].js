@@ -35,7 +35,7 @@ export async function onRequest(context) {
     const currentUrl = escapeHtml(request.url);
 
     // 有图片时使用大图卡片
-    const twitterCard = cover ? 'summary_large_image' : 'summary';
+    const twitterCard = cover ? 'summary' : 'summary';
 
     // 3. 构建需要注入的 Meta 标签
     const metaTags = `

@@ -50,6 +50,39 @@
             background: rgba(255, 255, 255, 0.15);
             color: #fff;
         }
+
+        /* 目录父容器微调 */
+        #post-toc-container {
+            position: relative;
+            scroll-behavior: smooth;
+        }
+
+        /* 顶级（H1/H2）导航项容器 */
+        .toc-group {
+            margin-bottom: 2px;
+        }
+
+        /* 子标题（H3/H4）容器默认收缩隐藏 */
+        .toc-sub-list {
+            display: none;
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* 当大标题或其下属子标题处于激活状态时，展开子目录 */
+        .toc-group.expanded .toc-sub-list {
+            display: block;
+        }
+
+        /* 激活焦点的链接样式 */
+        .toc-link.is-active {
+            color: #f59e0b !important;
+            /* amber-500 */
+            font-weight: 700 !important;
+            background-color: #fef3c7 !important;
+            /* amber-100 */
+            border-left: 3px solid #f59e0b;
+            padding-left: calc(var(--base-pad) - 3px) !important;
+        }
     </style>
 </head>
 
@@ -623,24 +656,36 @@
             }
         }
 
+        let tocObserver = null;
+
         function generateTableOfContents() {
             const container = document.getElementById('post-toc-container');
             if (!container) return;
+
+            // 清理可能存在的旧监听
+            if (tocObserver) {
+                tocObserver.disconnect();
+                tocObserver = null;
+            }
 
             const postContent = document.getElementById('post-content');
             const headings = postContent.querySelectorAll('h1, h2, h3, h4');
 
             if (!headings || headings.length === 0) {
                 container.innerHTML = `
-                    <div class="text-zinc-400 text-xs py-2 leading-relaxed">
-                        暂无目录<br>
-                        <span class="text-[10px] text-zinc-400">💡 提示：文章中请使用 <code>## 标题</code> 语法排版</span>
-                    </div>
-                `;
+            <div class="text-zinc-400 text-xs py-2 leading-relaxed">
+                暂无目录<br>
+                <span class="text-[10px] text-zinc-400">💡 提示：文章中请使用 <code>## 标题</code> 语法排版</span>
+            </div>
+        `;
                 return;
             }
 
             container.innerHTML = '';
+
+            // 1. 构建树状层级并生成 DOM 节点
+            let currentGroupEl = null;
+            let currentSubListEl = null;
 
             headings.forEach((heading, index) => {
                 const anchorId = `heading-anchor-${index}`;
@@ -648,28 +693,97 @@
 
                 const tagName = heading.tagName.toLowerCase();
                 const titleText = heading.innerText.trim();
-
-                let indentClass = "pl-1 font-bold text-zinc-800";
-                if (tagName === 'h2') {
-                    indentClass = "pl-2.5 font-semibold text-zinc-700";
-                } else if (tagName === 'h3') {
-                    indentClass = "pl-5 text-zinc-500 text-[11px]";
-                } else if (tagName === 'h4') {
-                    indentClass = "pl-7 text-zinc-400 text-[11px]";
-                }
+                const isMainHeading = (tagName === 'h1' || tagName === 'h2');
 
                 const itemLink = document.createElement('a');
                 itemLink.href = `#${anchorId}`;
-                itemLink.className = `group flex items-center py-1.5 leading-snug rounded-lg hover:text-amber-600 hover:bg-zinc-50 transition-colors ${indentClass}`;
-                itemLink.innerHTML = `<span class="truncate" title="${titleText}">${titleText}</span>`;
+                itemLink.dataset.targetId = anchorId;
+
+                if (isMainHeading) {
+                    // 创建新的大分组
+                    currentGroupEl = document.createElement('div');
+                    currentGroupEl.className = 'toc-group';
+
+                    currentSubListEl = document.createElement('div');
+                    currentSubListEl.className = 'toc-sub-list space-y-1 mt-1';
+
+                    itemLink.className = 'toc-link group flex items-center py-1.5 px-2.5 rounded-lg leading-snug transition-all text-zinc-700 font-semibold text-xs hover:text-amber-600 hover:bg-zinc-50';
+                    itemLink.style.setProperty('--base-pad', '10px');
+                    itemLink.innerHTML = `<span class="truncate" title="${titleText}">${titleText}</span>`;
+
+                    currentGroupEl.appendChild(itemLink);
+                    currentGroupEl.appendChild(currentSubListEl);
+                    container.appendChild(currentGroupEl);
+                } else {
+                    // 子标题（H3/H4）
+                    const padLeft = tagName === 'h3' ? '20px' : '28px';
+                    itemLink.className = 'toc-link group flex items-center py-1 px-2.5 rounded-lg leading-snug transition-all text-zinc-500 text-[11px] hover:text-amber-600 hover:bg-zinc-50';
+                    itemLink.style.paddingLeft = padLeft;
+                    itemLink.style.setProperty('--base-pad', padLeft);
+                    itemLink.innerHTML = `<span class="truncate" title="${titleText}">${titleText}</span>`;
+
+                    if (currentSubListEl) {
+                        currentSubListEl.appendChild(itemLink);
+                    } else {
+                        // 如果文章首个标题直接是 H3
+                        container.appendChild(itemLink);
+                    }
+                }
 
                 itemLink.onclick = (e) => {
                     e.preventDefault();
                     heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 };
-
-                container.appendChild(itemLink);
             });
+
+            // 2. 注册 IntersectionObserver 实现滚动焦点跟随与目录动态展开
+            const visibleHeadings = new Map();
+
+            tocObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        visibleHeadings.set(entry.target.id, entry.boundingClientRect.top);
+                    } else {
+                        visibleHeadings.delete(entry.target.id);
+                    }
+                });
+
+                // 取距离视口顶部最近的可见标题作为激活目标
+                if (visibleHeadings.size > 0) {
+                    const sorted = Array.from(visibleHeadings.entries()).sort((a, b) => Math.abs(a[1]) - Math.abs(b[1]));
+                    const activeId = sorted[0][0];
+                    updateActiveToc(activeId);
+                }
+            }, {
+                root: null,
+                rootMargin: '0px 0px -60% 0px', // 标题滚动到视口上半部分即触发高亮
+                threshold: 0
+            });
+
+            headings.forEach(heading => tocObserver.observe(heading));
+        }
+
+        function updateActiveToc(targetId) {
+            const allLinks = document.querySelectorAll('#post-toc-container .toc-link');
+            const allGroups = document.querySelectorAll('#post-toc-container .toc-group');
+
+            allLinks.forEach(link => link.classList.remove('is-active'));
+            allGroups.forEach(group => group.classList.remove('expanded'));
+
+            const activeLink = document.querySelector(`#post-toc-container .toc-link[data-target-id="${targetId}"]`);
+            if (!activeLink) return;
+
+            // 赋予高亮样式
+            activeLink.classList.add('is-active');
+
+            // 展开所属的父级分组
+            const parentGroup = activeLink.closest('.toc-group');
+            if (parentGroup) {
+                parentGroup.classList.add('expanded');
+            }
+
+            // 自动将激活节点滚动进目录视口（避免长文章目录溢出视线）
+            activeLink.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         }
 
 
