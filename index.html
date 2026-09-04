@@ -51,7 +51,7 @@
             color: #fff;
         }
 
-        /* 目录父容器微调 */
+        /* 目录父容器 */
         #post-toc-container {
             position: relative;
             scroll-behavior: smooth;
@@ -62,18 +62,12 @@
             margin-bottom: 2px;
         }
 
-        /* 子标题（H3/H4）容器默认收缩隐藏 */
+        /* 次级标题（H3/H4）常驻展示，不再折叠隐藏 */
         .toc-sub-list {
-            display: none;
-            transition: all 0.2s ease-in-out;
+            display: block !important;
         }
 
-        /* 当大标题或其下属子标题处于激活状态时，展开子目录 */
-        .toc-group.expanded .toc-sub-list {
-            display: block;
-        }
-
-        /* 默认状态：字体降噪，统一改为柔和的次级灰色，字重调轻 */
+        /* 默认状态：低饱和度柔和灰色 */
         .toc-link {
             color: #71717a !important;
             /* zinc-500 */
@@ -85,18 +79,15 @@
             color: #27272a !important;
             /* zinc-800 */
             background-color: #f4f4f5 !important;
-            /* 悬浮浅灰微底色 */
         }
 
-        /* 激活焦点状态：去除刺眼的黄底色，仅用柔和琥珀色细线与微加深文字指示 */
+        /* 激活焦点状态：淡雅色系与纤细指示条 */
         .toc-link.is-active {
             color: #b45309 !important;
-            /* amber-700：温和不刺眼的暖咖色 */
+            /* amber-700 柔和暖色 */
             font-weight: 500 !important;
             background-color: rgba(245, 158, 11, 0.05) !important;
-            /* 极淡的 5% 透明度微背景 */
             border-left: 2px solid #f59e0b !important;
-            /* 2px 纤细指示条 */
             padding-left: calc(var(--base-pad) - 2px) !important;
         }
     </style>
