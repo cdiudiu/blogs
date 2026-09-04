@@ -73,15 +73,31 @@
             display: block;
         }
 
-        /* 激活焦点的链接样式 */
+        /* 默认状态：字体降噪，统一改为柔和的次级灰色，字重调轻 */
+        .toc-link {
+            color: #71717a !important;
+            /* zinc-500 */
+            font-weight: 400 !important;
+            border-left: 2px solid transparent;
+        }
+
+        .toc-link:hover {
+            color: #27272a !important;
+            /* zinc-800 */
+            background-color: #f4f4f5 !important;
+            /* 悬浮浅灰微底色 */
+        }
+
+        /* 激活焦点状态：去除刺眼的黄底色，仅用柔和琥珀色细线与微加深文字指示 */
         .toc-link.is-active {
-            color: #f59e0b !important;
-            /* amber-500 */
-            font-weight: 700 !important;
-            background-color: #fef3c7 !important;
-            /* amber-100 */
-            border-left: 3px solid #f59e0b;
-            padding-left: calc(var(--base-pad) - 3px) !important;
+            color: #b45309 !important;
+            /* amber-700：温和不刺眼的暖咖色 */
+            font-weight: 500 !important;
+            background-color: rgba(245, 158, 11, 0.05) !important;
+            /* 极淡的 5% 透明度微背景 */
+            border-left: 2px solid #f59e0b !important;
+            /* 2px 纤细指示条 */
+            padding-left: calc(var(--base-pad) - 2px) !important;
         }
     </style>
 </head>
