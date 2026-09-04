@@ -18,34 +18,26 @@ export async function onRequest(context) {
       "SELECT title, summary, cover FROM posts WHERE id = ?"
     ).bind(postId).first();
 
+    // 找不到文章直接交付原始静态资源
     if (!post) {
       return env.ASSETS.fetch(request);
     }
 
-    // 2. 获取原始 index.html
-    const indexResponse = await env.ASSETS.fetch(new URL("/", request.url));
-    let html = await indexResponse.text();
-
+    // 2. 准备动态字段
     const title = escapeHtml(post.title || '文章详情');
     const summary = escapeHtml(post.summary || '');
     
-    // 确保封面图片为完整 URL
     let cover = post.cover || '';
     if (cover && !cover.startsWith('http://') && !cover.startsWith('https://')) {
       cover = new URL(cover, request.url).href;
     }
     cover = escapeHtml(cover);
-
     const currentUrl = escapeHtml(request.url);
 
-    // 3. 清理已有的同名标签，防止重复冲突
-    html = html
-      .replace(/<title>[\s\S]*?<\/title>/i, '')
-      .replace(/<meta\s+name=["']description["'][^>]*>/gi, '')
-      .replace(/<meta\s+property=["']og:[^"']+["'][^>]*>/gi, '')
-      .replace(/<meta\s+name=["']twitter:[^"']+["'][^>]*>/gi, '');
+    // 有图片时使用大图卡片
+    const twitterCard = cover ? 'summary' : 'summary';
 
-    // 4. 组装新 Meta 标签
+    // 3. 构建需要注入的 Meta 标签
     const metaTags = `
     <title>${title}</title>
     <meta name="description" content="${summary}">
@@ -54,19 +46,37 @@ export async function onRequest(context) {
     <meta property="og:description" content="${summary}">
     ${cover ? `<meta property="og:image" content="${cover}">` : ''}
     <meta property="og:url" content="${currentUrl}">
-    <meta name="twitter:card" content="summary">
+    <meta name="twitter:card" content="${twitterCard}">
     <meta name="twitter:title" content="${title}">
     <meta name="twitter:description" content="${summary}">
     ${cover ? `<meta name="twitter:image" content="${cover}">` : ''}
     `;
 
-    html = html.replace('</head>', `${metaTags}\n</head>`);
+    // 4. 获取 SPA 入口 HTML
+    const assetResponse = await env.ASSETS.fetch(new URL("/", request.url));
 
-    return new Response(html, {
-      headers: {
-        "Content-Type": "text/html; charset=utf-8",
-        "Cache-Control": "public, max-age=60"
-      }
+    // 5. 使用 HTMLRewriter 移除旧标签并追加新标签
+    const rewriter = new HTMLRewriter()
+      .on('title', { element(e) { e.remove(); } })
+      .on('meta[name="description"]', { element(e) { e.remove(); } })
+      .on('meta[property^="og:"]', { element(e) { e.remove(); } })
+      .on('meta[name^="twitter:"]', { element(e) { e.remove(); } })
+      .on('head', {
+        element(e) {
+          e.append(metaTags, { html: true });
+        }
+      });
+
+    const transformedResponse = rewriter.transform(assetResponse);
+
+    // 6. 返回带有适当缓存控制的响应
+    const headers = new Headers(transformedResponse.headers);
+    headers.set("Content-Type", "text/html; charset=utf-8");
+    headers.set("Cache-Control", "public, max-age=60");
+
+    return new Response(transformedResponse.body, {
+      status: transformedResponse.status,
+      headers
     });
 
   } catch (err) {
