@@ -132,9 +132,6 @@
                         </div>
                     </div>
 
-                    <!-- 二级子标签筛选 -->
-                    <div id="category-filter-container" class="flex flex-wrap gap-2"></div>
-
                     <!-- 博客卡片列表 -->
                     <div id="posts-list-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6"></div>
                 </div>
@@ -363,35 +360,11 @@ async function loadSiteConfig() {
         }
 
         function renderCategoryFilters() {
-            const container = document.getElementById('category-filter-container');
-            if (!container) return;
 
-            let allowedCategories = activeCategories;
-
-            if (currentFilterSeries && dbNavMeta[currentFilterSeries] && dbNavMeta[currentFilterSeries].length > 0) {
-                allowedCategories = dbNavMeta[currentFilterSeries];
-            }
-
-            container.innerHTML = `
-                <button onclick="filterByCategory('')" class="px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all ${!currentFilterCategory ? 'bg-zinc-950 text-white shadow-sm' : 'bg-white text-zinc-500 border border-zinc-100 hover:bg-zinc-50'}">
-                    全部
-                </button>
-            `;
-            allowedCategories.forEach(cat => {
-                const isSelected = currentFilterCategory === cat;
-                container.innerHTML += `
-                    <button onclick="filterByCategory('${cat}')" class="px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all ${isSelected ? 'bg-zinc-950 text-white shadow-sm' : 'bg-white text-zinc-500 border border-zinc-100 hover:bg-zinc-50'}">
-                        ${cat}
-                    </button>
-                `;
-            });
         }
 
         async function filterByCategory(cat) {
-            currentFilterCategory = cat;
-            currentPageNum = 1;
-            renderCategoryFilters();
-            await fetchPostsAndRender(1);
+
         }
 
         async function handleSearch(e) {
