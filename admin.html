@@ -533,7 +533,7 @@
                 if (!res.ok) throw new Error();
                 const data = await res.json();
 
-                const title = data.site_title || "Blogs.nyc.mn";
+                const title = data.site_title || "VPS帮帮车 - 成也 BLOG";
                 activeCategories = JSON.parse(data.site_categories || '["技术","教程","随笔","思考"]');
                 activeSeriesList = JSON.parse(data.site_series || '["科学上网","谷歌系列","NAS系列"]');
                 const rawNavLinks = JSON.parse(data.site_nav_links || '[{"name": "订阅转换", "url": "https://sub.blogs.nyc.mn"}]');
