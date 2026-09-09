@@ -6,6 +6,43 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>vpsbbc.com - VPS帮帮车</title>
+
+    <!-- Google 核心 SEO Meta 标签 -->
+    <meta name="description" content="vpsbbc.com（VPS帮帮车）专注于 VPS 选购指南、服务器性能评测、科学上网及 Linux 常用脚本教程分享。">
+    <meta name="keywords" content="VPS选购, VPS评测, DMIT, 搬瓦工, Linux脚本, 建站教程, 服务器运维">
+    <meta name="author" content="vpsbbc.com">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="https://blog.vpsbbc.com/">
+
+    <!-- Open Graph (社交与搜索引擎卡片) -->
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="vpsbbc.com - VPS帮帮车">
+    <meta property="og:description" content="专注 VPS 选购指南、网络优化与服务器极客玩法。">
+    <meta property="og:url" content="https://blog.vpsbbc.com/">
+    <meta property="og:site_name" content="VPS帮帮车">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="vpsbbc.com - VPS帮帮车">
+    <meta name="twitter:description" content="专注 VPS 选购指南、网络优化与服务器极客玩法。">
+
+    <!-- Google 结构化数据 (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "VPS帮帮车",
+      "alternateName": ["vpsbbc.com", "vpsbbc"],
+      "url": "https://blog.vpsbbc.com/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://blog.vpsbbc.com/#/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -51,40 +88,32 @@
             color: #fff;
         }
 
-        /* 目录父容器 */
         #post-toc-container {
             position: relative;
             scroll-behavior: smooth;
         }
 
-        /* 顶级（H1/H2）导航项容器 */
         .toc-group {
             margin-bottom: 2px;
         }
 
-        /* 次级标题（H3/H4）常驻展示，不再折叠隐藏 */
         .toc-sub-list {
             display: block !important;
         }
 
-        /* 默认状态：低饱和度柔和灰色 */
         .toc-link {
             color: #71717a !important;
-            /* zinc-500 */
             font-weight: 400 !important;
             border-left: 2px solid transparent;
         }
 
         .toc-link:hover {
             color: #27272a !important;
-            /* zinc-800 */
             background-color: #f4f4f5 !important;
         }
 
-        /* 激活焦点状态：淡雅色系与纤细指示条 */
         .toc-link.is-active {
             color: #b45309 !important;
-            /* amber-700 柔和暖色 */
             font-weight: 500 !important;
             background-color: rgba(245, 158, 11, 0.05) !important;
             border-left: 2px solid #f59e0b !important;
@@ -95,118 +124,132 @@
 
 <body class="text-zinc-800 min-h-screen flex flex-col antialiased">
 
-    <!-- 主体容器：去除顶部独立 nav 后，整体自然上移，顶部内边距设为 pt-8 或 pt-6 -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-10">
 
-        <!-- 首页/系列视图 -->
+        <!-- 首页 / 系列视图 -->
         <div id="home-view" class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div class="lg:col-span-3 space-y-6 flex flex-col justify-between">
                 <div class="space-y-6">
-                    
-                    <!-- 改造后的复合头部卡片：整合了标题、Slogan、系列导航、右上角工具链及后台入口 -->
-                    <div class="bg-white p-6 sm:p-7 rounded-2xl border border-zinc-100 shadow-sm space-y-5">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-100/80 pb-5">
+
+                    <header class="bg-white p-6 sm:p-7 rounded-2xl border border-zinc-100 shadow-sm space-y-5">
+                        <div
+                            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-100/80 pb-5">
                             <div>
-                                <h1 id="site-title-display" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900">正在加载...</h1>
-                                <p id="site-subtitle-display" class="text-zinc-400 text-xs sm:text-sm mt-1.5 leading-relaxed"></p>
+                                <h1 id="site-title-display"
+                                    class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900">正在加载...
+                                </h1>
+                                <p id="site-subtitle-display"
+                                    class="text-zinc-400 text-xs sm:text-sm mt-1.5 leading-relaxed"></p>
                             </div>
-                            <!-- 右上角工具外链与管理入口 -->
                             <div class="flex items-center gap-4 shrink-0">
-                                <div id="custom-navbar-links" class="flex flex-wrap items-center gap-3 text-xs font-semibold text-zinc-500"></div>
+                                <nav id="custom-navbar-links" aria-label="外部快捷工具"
+                                    class="flex flex-wrap items-center gap-3 text-xs font-semibold text-zinc-500"></nav>
                                 <a href="./admin.html"
                                     class="text-zinc-300 hover:text-amber-500 transition-all p-1.5 rounded-full hover:bg-zinc-50 shrink-0"
-                                    title="管理控制台">
+                                    title="管理控制台" aria-label="后台管理控制台">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                                        </path>
                                     </svg>
                                 </a>
                             </div>
                         </div>
 
-                        <!-- 嵌入卡片内的大系列导航（原顶部大系列栏） -->
-                        <div class="flex items-center gap-2 pt-0.5">
-                            <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 shrink-0">系列 ➔</span>
+                        <nav aria-label="大系列导航" class="flex items-center gap-2 pt-0.5">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 shrink-0">系列
+                                ➔</span>
                             <div id="series-navbar-container" class="flex flex-wrap gap-2 text-xs font-semibold"></div>
-                        </div>
-                    </div>
+                        </nav>
+                    </header>
 
-                    <!-- 博客卡片列表 -->
-                    <div id="posts-list-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6"></div>
+                    <section aria-label="文章列表">
+                        <div id="posts-list-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                        </div>
+                    </section>
                 </div>
 
-                <div id="pagination-container" class="flex justify-center items-center gap-1.5 pt-10"></div>
+                <nav aria-label="文章分页" id="pagination-container" class="flex justify-center items-center gap-1.5 pt-10">
+                </nav>
             </div>
 
-            <!-- 右侧侧边栏 (搜索 + 热门文章) -->
-            <div class="space-y-6">
-                <div class="bg-white p-5 rounded-2xl border border-zinc-100 shadow-sm space-y-3">
-                    <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-400">文章检索</h3>
+            <aside class="space-y-6">
+                <section aria-label="文章搜索" class="bg-white p-5 rounded-2xl border border-zinc-100 shadow-sm space-y-3">
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-zinc-400">文章检索</h2>
                     <div class="relative">
                         <input type="text" id="search-input" onkeydown="handleSearch(event)"
                             class="w-full border border-zinc-200 rounded-xl pl-4 pr-10 py-2.5 text-xs focus:ring-2 focus:ring-amber-500/10 focus:border-amber-500 focus:outline-none transition-all"
-                            placeholder="输入关键字并按回车搜索...">
+                            placeholder="输入关键字并按回车搜索..." aria-label="搜索关键字">
                         <button onclick="triggerSearch()"
-                            class="absolute right-3.5 top-3 text-zinc-400 hover:text-zinc-600 text-xs">🔍</button>
+                            class="absolute right-3.5 top-3 text-zinc-400 hover:text-zinc-600 text-xs"
+                            aria-label="点击搜索">🔍</button>
                     </div>
-                </div>
+                </section>
 
-                <div class="bg-white p-5 rounded-2xl border border-zinc-100 shadow-sm space-y-4">
+                <section aria-label="热门文章推荐"
+                    class="bg-white p-5 rounded-2xl border border-zinc-100 shadow-sm space-y-4">
                     <div class="border-b border-zinc-100 pb-2 flex items-center justify-between">
-                        <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-400">🔥 热门文章</h3>
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-zinc-400">🔥 热门文章</h2>
                         <span id="popular-top-badge"
                             class="text-[10px] bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded font-bold">TOP 5</span>
                     </div>
                     <div id="popular-posts-container" class="space-y-3"></div>
-                </div>
-            </div>
+                </section>
+            </aside>
         </div>
 
-        <!-- 文章详情页：适配无顶栏后的顶部回退与面包屑操作条 -->
+        <!-- 文章详情页 -->
         <div id="post-view" class="hidden max-w-7xl mx-auto">
-            <!-- 详情页专属轻量顶栏 -->
-            <div class="flex items-center justify-between bg-white px-6 py-3.5 rounded-2xl border border-zinc-100 shadow-sm mb-6">
+            <nav aria-label="文章导航条"
+                class="flex items-center justify-between bg-white px-6 py-3.5 rounded-2xl border border-zinc-100 shadow-sm mb-6">
                 <a href="#/"
                     class="text-xs font-semibold uppercase tracking-wider text-zinc-500 hover:text-amber-500 flex items-center gap-1.5 transition-colors">
                     ← 返回首页
                 </a>
                 <div class="flex items-center gap-3">
                     <div id="post-view-tools" class="flex items-center gap-3 text-xs font-semibold text-zinc-500"></div>
-                    <a href="./admin.html" class="text-zinc-300 hover:text-amber-500 p-1 transition-colors" title="管理控制台">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    <a href="./admin.html" class="text-zinc-300 hover:text-amber-500 p-1 transition-colors"
+                        title="管理控制台" aria-label="管理控制台">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
                     </a>
                 </div>
-            </div>
+            </nav>
 
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-                <!-- 左侧：正文主体 -->
-                <div class="lg:col-span-3 bg-white p-6 sm:p-8 rounded-2xl border border-zinc-100 shadow-sm">
-                    <div class="mb-6 text-xs text-zinc-400 flex flex-wrap gap-4 border-b border-zinc-100 pb-4">
-                        <span id="post-date"></span>
-                        <span id="post-category" class="font-bold text-amber-500"></span>
-                        <span id="post-views-count">阅读量: -</span>
-                    </div>
+                <main class="lg:col-span-3 bg-white p-6 sm:p-8 rounded-2xl border border-zinc-100 shadow-sm">
+                    <header class="border-b border-zinc-100 pb-5 mb-6">
+                        <h1 id="detail-post-title"
+                            class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight mb-3">
+                        </h1>
+                        <div class="text-xs text-zinc-400 flex flex-wrap items-center gap-4">
+                            <span id="post-date"></span>
+                            <span id="post-category" class="font-bold text-amber-500"></span>
+                            <span id="post-views-count">阅读量: -</span>
+                        </div>
+                    </header>
                     <article id="post-content"
                         class="prose prose-zinc prose-amber max-w-none 
                         prose-headings:font-bold prose-headings:tracking-tight
                         prose-img:rounded-xl prose-img:shadow-md prose-img:mx-auto prose-img:border prose-img:border-zinc-100
                         prose-pre:bg-[#0d1117] prose-pre:border prose-pre:border-zinc-800 prose-pre:rounded-xl prose-pre:p-0"></article>
-                </div>
+                </main>
 
-                <!-- 右侧：目录导航 (吸顶固定) -->
-                <div class="hidden lg:block lg:col-span-1 sticky top-6">
+                <aside aria-label="正文目录" class="hidden lg:block lg:col-span-1 sticky top-6">
                     <div class="bg-white p-5 rounded-2xl border border-zinc-100 shadow-sm space-y-3">
                         <div class="flex items-center space-x-2 border-b border-zinc-100 pb-3">
                             <span class="text-sm">📑</span>
-                            <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-700">目录导航</h3>
+                            <h2 class="text-xs font-bold uppercase tracking-wider text-zinc-700">目录导航</h2>
                         </div>
-                        <div id="post-toc-container"
+                        <nav id="post-toc-container"
                             class="max-h-[calc(100vh-100px)] overflow-y-auto space-y-1 text-xs text-zinc-500 pr-1">
                             <p class="text-zinc-400 text-xs py-2">暂无目录</p>
-                        </div>
+                        </nav>
                     </div>
-                </div>
+                </aside>
             </div>
         </div>
 
@@ -220,7 +263,7 @@
                 <span>blog.vpsbbc.com • 技术分享</span>
             </div>
             <div class="text-[11px] text-zinc-400">
-                Powered by <a href="https://vpsbbc.com" target="_blank"
+                Powered by <a href="https://vpsbbc.com" target="_blank" rel="noopener"
                     class="hover:underline text-amber-500">vpsbbc.com</a>
             </div>
         </div>
@@ -238,6 +281,7 @@
         let currentPageNum = 1;
         let globalLayoutMode = "standard";
         let globalPopularLimit = 5;
+        let siteBaseTitle = "vpsbbc.com - VPS帮帮车";
 
         marked.setOptions({
             highlight: function (code, lang) {
@@ -258,7 +302,6 @@
             const hash = window.location.hash;
             const pathname = window.location.pathname;
 
-            // 优先检查是否通过直接链接 /post/xxxx 访问
             if (pathname.startsWith('/post/')) {
                 const postId = pathname.replace('/post/', '').replace(/\/$/, '');
                 if (postId) {
@@ -267,7 +310,6 @@
                 }
             }
 
-            // 保持原有的 Hash 路由逻辑
             if (hash.startsWith('#/post/')) {
                 const postId = hash.replace('#/post/', '');
                 loadPost(postId);
@@ -279,14 +321,16 @@
             }
         }
 
-async function loadSiteConfig() {
+        async function loadSiteConfig() {
             try {
                 const res = await fetch('./api/config?_t=' + Date.now());
                 if (!res.ok) throw new Error();
                 const data = await res.json();
 
-                const title = data.site_title || "Blogs.nyc.mn";
+                const title = data.site_title || "vpsbbc.com - VPS帮帮车";
                 const subtitle = data.site_subtitle || "无服务器数字花园";
+                siteBaseTitle = title;
+
                 activeCategories = JSON.parse(data.site_categories || '["技术","教程","随笔","思考"]');
                 activeSeriesList = JSON.parse(data.site_series || '["科学上网","谷歌系列","NAS系列"]');
                 const rawNavLinks = JSON.parse(data.site_nav_links || '[{"name": "订阅转换", "url": "https://sub.blogs.nyc.mn"}]');
@@ -296,7 +340,6 @@ async function loadSiteConfig() {
                 R2_DOMAIN = data.site_r2_domain || "";
 
                 document.title = title;
-                // 去除了原来对 nav-site-title 的赋值，保留页面卡片标题更新
                 document.getElementById('site-title-display').innerText = title;
                 document.getElementById('site-subtitle-display').innerText = subtitle;
 
@@ -304,14 +347,12 @@ async function loadSiteConfig() {
                 if (badge) badge.innerText = `TOP ${globalPopularLimit}`;
 
                 renderCustomNavbarLinks(rawNavLinks);
-                renderCategoryFilters();
 
             } catch (err) {
                 console.error("加载全局配置出错:", err);
                 activeCategories = ["技术", "教程", "随笔", "思考"];
                 activeSeriesList = ["科学上网", "谷歌系列", "NAS系列"];
-                document.title = "blogs.nyc.mn";
-                renderCategoryFilters();
+                document.title = "vpsbbc.com - VPS帮帮车";
             }
         }
 
@@ -325,7 +366,7 @@ async function loadSiteConfig() {
                 container.innerHTML = '';
                 linksArray.forEach(item => {
                     container.innerHTML += `
-                        <a href="${item.url}" target="_blank" class="text-zinc-500 hover:text-amber-500 transition-colors px-2 py-1 rounded-md hover:bg-zinc-50">${item.name}</a>
+                        <a href="${item.url}" target="_blank" rel="noopener" class="text-zinc-500 hover:text-amber-500 transition-colors px-2 py-1 rounded-md hover:bg-zinc-50">${item.name}</a>
                     `;
                 });
             });
@@ -337,12 +378,10 @@ async function loadSiteConfig() {
                 dbNavMeta = await res.json();
 
                 const finalSeriesList = Array.from(new Set([...activeSeriesList, ...Object.keys(dbNavMeta)]));
-
                 const navContainer = document.getElementById('series-navbar-container');
                 if (!navContainer) return;
                 navContainer.innerHTML = '';
 
-                // “全部系列” 按钮
                 const isAllSelected = !currentFilterSeries;
                 navContainer.innerHTML += `
                     <a href="#/" class="px-2.5 py-1 rounded-md transition-all ${isAllSelected ? 'bg-amber-500 text-white font-bold' : 'text-zinc-600 bg-zinc-100/70 hover:bg-zinc-100 hover:text-zinc-900'}">全部</a>
@@ -359,12 +398,12 @@ async function loadSiteConfig() {
             }
         }
 
-        function renderCategoryFilters() {
-
-        }
-
-        async function filterByCategory(cat) {
-
+        function updateMeta(title, description, canonicalUrl) {
+            document.title = title;
+            let descTag = document.querySelector('meta[name="description"]');
+            if (descTag) descTag.setAttribute('content', description || '');
+            let canonTag = document.querySelector('link[rel="canonical"]');
+            if (canonTag) canonTag.setAttribute('href', canonicalUrl || window.location.href);
         }
 
         async function handleSearch(e) {
@@ -386,8 +425,9 @@ async function loadSiteConfig() {
             const sInput = document.getElementById('search-input');
             if (sInput) sInput.value = "";
 
+            updateMeta(siteBaseTitle, "vpsbbc.com（VPS帮帮车）专注于 VPS 选购指南、服务器性能评测、科学上网及 Linux 常用脚本教程分享。", `${window.location.origin}/`);
+
             await fetchNavMeta();
-            renderCategoryFilters();
 
             document.getElementById('home-view').classList.remove('hidden');
             document.getElementById('post-view').classList.add('hidden');
@@ -403,8 +443,9 @@ async function loadSiteConfig() {
             const sInput = document.getElementById('search-input');
             if (sInput) sInput.value = "";
 
+            updateMeta(`${seriesName} - ${siteBaseTitle}`, `浏览关于 ${seriesName} 的所有精选教程和服务器评测指南。`, `${window.location.origin}/#/series/${encodeURIComponent(seriesName)}`);
+
             await fetchNavMeta();
-            renderCategoryFilters();
 
             document.getElementById('home-view').classList.remove('hidden');
             document.getElementById('post-view').classList.add('hidden');
@@ -441,8 +482,15 @@ async function loadSiteConfig() {
                 }
 
                 posts.forEach((post, index) => {
+                    // 补充 loading="lazy" 与 decoding="async" 优化 Google Core Web Vitals
                     const coverHtml = post.cover
-                        ? `<img src="${post.cover}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-t-2xl" alt="${post.title}">`
+                        ? `<img src="${post.cover}" 
+                                loading="lazy" 
+                                decoding="async" 
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-t-2xl" 
+                                alt="${post.title} 封面配图"
+                                onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                           <div class="hidden w-full h-full bg-gradient-to-tr ${getGradient(index)} items-center justify-center text-white/10 font-bold text-3xl select-none rounded-t-2xl">BLOGS</div>`
                         : `<div class="w-full h-full bg-gradient-to-tr ${getGradient(index)} flex items-center justify-center text-white/10 font-bold text-3xl select-none rounded-t-2xl">BLOGS</div>`;
 
                     const summaryHtml = (globalLayoutMode !== 'simple')
@@ -454,24 +502,24 @@ async function loadSiteConfig() {
                         : "text-sm font-bold text-zinc-900 line-clamp-1 group-hover:text-amber-500 transition-colors";
 
                     container.innerHTML += `
-                        <div class="group bg-white rounded-2xl border border-zinc-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 overflow-hidden flex flex-col justify-between">
+                        <article class="group bg-white rounded-2xl border border-zinc-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 overflow-hidden flex flex-col justify-between">
                             <div>
-                                <a href="./post/${post.id}" class="block aspect-video w-full overflow-hidden relative bg-zinc-50 rounded-t-2xl transform translate-z-0 isolate">
+                                <a href="./post/${post.id}" class="block aspect-video w-full overflow-hidden relative bg-zinc-50 rounded-t-2xl transform translate-z-0 isolate" aria-label="查看文章：${post.title}">
                                     ${coverHtml}
                                     <span class="absolute top-3 left-3 bg-zinc-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-sm uppercase z-10">${post.category || '未分类'}</span>
                                 </a>
                                 <div class="p-5 space-y-2">
-                                    <h3 class="${titleClass}">
+                                    <h2 class="${titleClass}">
                                         <a href="./post/${post.id}" title="${post.title}">${post.title}</a>
-                                    </h3>
+                                    </h2>
                                     ${summaryHtml}
                                 </div>
                             </div>
                             <div class="px-5 pb-5 pt-2 border-t border-zinc-50 flex items-center justify-between text-[10px] text-zinc-400">
-                                <span>📅 ${post.date}</span>
+                                <time datetime="${post.date}">📅 ${post.date}</time>
                                 <span>👁️ ${post.views}</span>
                             </div>
-                        </div>
+                        </article>
                     `;
                 });
 
@@ -495,14 +543,14 @@ async function loadSiteConfig() {
             let pageHtml = "";
 
             if (currentPage > 1) {
-                pageHtml += `<button onclick="fetchPostsAndRender(${currentPage - 1})" class="px-3.5 py-1.5 text-xs font-semibold bg-[#343a40] text-gray-200 hover:bg-[#495057] active:scale-95 rounded transition-all">« 上一页</button>`;
+                pageHtml += `<button onclick="fetchPostsAndRender(${currentPage - 1})" aria-label="上一页" class="px-3.5 py-1.5 text-xs font-semibold bg-[#343a40] text-gray-200 hover:bg-[#495057] active:scale-95 rounded transition-all">« 上一页</button>`;
             }
 
             let startPage = Math.max(1, currentPage - 2);
             let endPage = Math.min(totalPages, currentPage + 2);
 
             if (startPage > 1) {
-                pageHtml += `<button onclick="fetchPostsAndRender(1)" class="px-3 py-1.5 text-xs font-semibold bg-[#343a40] text-gray-200 hover:bg-[#495057] rounded transition-all">1</button>`;
+                pageHtml += `<button onclick="fetchPostsAndRender(1)" aria-label="前往第 1 页" class="px-3 py-1.5 text-xs font-semibold bg-[#343a40] text-gray-200 hover:bg-[#495057] rounded transition-all">1</button>`;
                 if (startPage > 2) {
                     pageHtml += `<span class="px-1 text-zinc-400 text-xs">...</span>`;
                 }
@@ -510,9 +558,9 @@ async function loadSiteConfig() {
 
             for (let i = startPage; i <= endPage; i++) {
                 if (i === currentPage) {
-                    pageHtml += `<span class="px-3 py-1.5 text-xs font-bold bg-amber-500 text-white rounded shadow-sm">${i}</span>`;
+                    pageHtml += `<span aria-current="page" class="px-3 py-1.5 text-xs font-bold bg-amber-500 text-white rounded shadow-sm">${i}</span>`;
                 } else {
-                    pageHtml += `<button onclick="fetchPostsAndRender(${i})" class="px-3 py-1.5 text-xs font-semibold bg-[#343a40] text-gray-200 hover:bg-[#495057] rounded transition-all">${i}</button>`;
+                    pageHtml += `<button onclick="fetchPostsAndRender(${i})" aria-label="前往第 ${i} 页" class="px-3 py-1.5 text-xs font-semibold bg-[#343a40] text-gray-200 hover:bg-[#495057] rounded transition-all">${i}</button>`;
                 }
             }
 
@@ -520,11 +568,11 @@ async function loadSiteConfig() {
                 if (endPage < totalPages - 1) {
                     pageHtml += `<span class="px-1 text-zinc-400 text-xs">...</span>`;
                 }
-                pageHtml += `<button onclick="fetchPostsAndRender(${totalPages})" class="px-3 py-1.5 text-xs font-semibold bg-[#343a40] text-gray-200 hover:bg-[#495057] rounded transition-all">${totalPages}</button>`;
+                pageHtml += `<button onclick="fetchPostsAndRender(${totalPages})" aria-label="前往最后一页" class="px-3 py-1.5 text-xs font-semibold bg-[#343a40] text-gray-200 hover:bg-[#495057] rounded transition-all">${totalPages}</button>`;
             }
 
             if (currentPage < totalPages) {
-                pageHtml += `<button onclick="fetchPostsAndRender(${currentPage + 1})" class="px-3.5 py-1.5 text-xs font-semibold bg-[#343a40] text-gray-200 hover:bg-[#495057] active:scale-95 rounded transition-all">下一页 »</button>`;
+                pageHtml += `<button onclick="fetchPostsAndRender(${currentPage + 1})" aria-label="下一页" class="px-3.5 py-1.5 text-xs font-semibold bg-[#343a40] text-gray-200 hover:bg-[#495057] active:scale-95 rounded transition-all">下一页 »</button>`;
             }
 
             container.innerHTML = pageHtml;
@@ -547,18 +595,18 @@ async function loadSiteConfig() {
 
                 posts.forEach((post, index) => {
                     const thumbHtml = post.cover
-                        ? `<img src="${post.cover}" class="w-full h-full object-cover rounded-md animate-fade-in" alt="">`
+                        ? `<img src="${post.cover}" loading="lazy" decoding="async" class="w-full h-full object-cover rounded-md animate-fade-in" alt="${post.title}">`
                         : `<div class="w-full h-full bg-gradient-to-tr ${getGradient(index)} rounded-md"></div>`;
 
                     container.innerHTML += `
-                        <a href="./post/${post.id}" class="flex items-center gap-3 p-1.5 hover:bg-zinc-50 rounded-lg transition-colors group animate-fade-in">
+                        <a href="./post/${post.id}" class="flex items-center gap-3 p-1.5 hover:bg-zinc-50 rounded-lg transition-colors group animate-fade-in" title="${post.title}">
                             <div class="w-12 h-12 rounded-md overflow-hidden bg-zinc-100 shrink-0">
                                 ${thumbHtml}
                             </div>
                             <div class="min-w-0 flex-grow">
-                                <h4 class="text-xs font-bold text-zinc-800 line-clamp-2 leading-snug group-hover:text-amber-500 transition-colors">${post.title}</h4>
+                                <h3 class="text-xs font-bold text-zinc-800 line-clamp-2 leading-snug group-hover:text-amber-500 transition-colors">${post.title}</h3>
                                 <div class="text-[9px] text-zinc-400 mt-1 flex justify-between">
-                                    <span>${post.date}</span>
+                                    <time datetime="${post.date}">${post.date}</time>
                                     <span class="font-bold text-amber-500">👁️ ${post.views}</span>
                                 </div>
                             </div>
@@ -595,14 +643,12 @@ async function loadSiteConfig() {
                 if (!response.ok) throw new Error("无法连接存储桶");
                 let text = await response.text();
 
-                // 防御校验：如果返回的文本以 <!DOCTYPE 或 <html 开头，说明拿到了错误的 index.html
                 if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
                     throw new Error("R2 域名未配置或文章未在 R2 存储桶找到，请检查后台站点全局配置中的【R2 存储桶公网访问域名】！");
                 }
-                // 1. 修复无空格标题 (如 "##标题" 转为 "## 标题")
+
                 text = text.replace(/^(#{1,6})([^\s#\n])/gm, '$1 $2');
 
-                // 2. 自定义卡片 [card: 链接 | 标题 | 描述 | 图片]
                 text = text.replace(/\[card:\s*([\s\S]*?)\s*\]/gi, (match, innerContent) => {
                     const parts = innerContent.split('|').map(s => s.trim());
                     const urlMatch = parts[0].match(/https?:\/\/[^\s"'<>\)]+/i);
@@ -619,7 +665,6 @@ async function loadSiteConfig() {
                     return `<div class="my-5 not-prose"><a href="${url}" target="_blank" rel="noopener noreferrer" class="group flex items-center p-3.5 sm:p-4 bg-white hover:bg-zinc-50/80 border border-zinc-200/80 hover:border-zinc-300 rounded-2xl transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md"><div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-zinc-100 border border-zinc-200/60 overflow-hidden flex items-center justify-center shrink-0 mr-4"><img src="${customImg}" alt="${customTitle}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://www.google.com/s2/favicons?domain=${domain}&sz=128'"></div><div class="flex-grow min-w-0 pr-2"><div class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-0.5 truncate">${domain}</div><div class="text-sm sm:text-base font-bold text-zinc-900 group-hover:text-blue-600 transition-colors line-clamp-1">${customTitle}</div><div class="text-xs text-zinc-500 mt-1 line-clamp-2 leading-relaxed">${customDesc}</div></div><div class="hidden sm:flex items-center text-zinc-300 group-hover:text-zinc-500 text-sm pl-2 shrink-0 transition-all group-hover:translate-x-0.5">↗</div></a></div>`;
                 });
 
-                // 3. 自定义 YouTube 播放器 [youtube: id/链接]
                 text = text.replace(/\[youtube:\s*([^\]]+)\s*\]/gi, (match, rawVal) => {
                     let videoId = rawVal.trim();
                     if (videoId.includes("youtube.com/watch?v=")) {
@@ -627,12 +672,19 @@ async function loadSiteConfig() {
                     } else if (videoId.includes("youtu.be/")) {
                         videoId = videoId.split("youtu.be/")[1].split("?")[0];
                     }
-                    return `<div class="my-6 not-prose"><div class="relative w-full aspect-video rounded-2xl overflow-hidden shadow-md border border-zinc-200/70 bg-black"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}" title="YouTube video player" class="absolute inset-0 w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div></div>`;
+                    return `<div class="my-6 not-prose"><div class="relative w-full aspect-video rounded-2xl overflow-hidden shadow-md border border-zinc-200/70 bg-black"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}" title="YouTube 视频播放" class="absolute inset-0 w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div></div>`;
                 });
 
                 postContent.innerHTML = marked.parse(text);
 
-                // 延迟挂载目录，防止标题节点尚未进入 DOM
+                // 尝试抓取正文首个 H1/H2 作为文章标题填充
+                const detectedTitleEl = postContent.querySelector('h1, h2');
+                const pageTitle = detectedTitleEl ? detectedTitleEl.innerText : postId;
+                document.getElementById('detail-post-title').innerText = pageTitle;
+
+                // 动态更新文章详情页 SEO
+                updateMeta(`${pageTitle} - ${siteBaseTitle}`, pageTitle, `${window.location.origin}/post/${postId}`);
+
                 setTimeout(() => {
                     generateTableOfContents();
                 }, 50);
@@ -659,7 +711,6 @@ async function loadSiteConfig() {
             const container = document.getElementById('post-toc-container');
             if (!container) return;
 
-            // 清理可能存在的旧监听
             if (tocObserver) {
                 tocObserver.disconnect();
                 tocObserver = null;
@@ -670,17 +721,16 @@ async function loadSiteConfig() {
 
             if (!headings || headings.length === 0) {
                 container.innerHTML = `
-            <div class="text-zinc-400 text-xs py-2 leading-relaxed">
-                暂无目录<br>
-                <span class="text-[10px] text-zinc-400">💡 提示：文章中请使用 <code>## 标题</code> 语法排版</span>
-            </div>
-        `;
+                    <div class="text-zinc-400 text-xs py-2 leading-relaxed">
+                        暂无目录<br>
+                        <span class="text-[10px] text-zinc-400">💡 提示：文章中请使用 <code>## 标题</code> 语法排版</span>
+                    </div>
+                `;
                 return;
             }
 
             container.innerHTML = '';
 
-            // 1. 构建树状层级并生成 DOM 节点
             let currentGroupEl = null;
             let currentSubListEl = null;
 
@@ -697,7 +747,6 @@ async function loadSiteConfig() {
                 itemLink.dataset.targetId = anchorId;
 
                 if (isMainHeading) {
-                    // 创建新的大分组
                     currentGroupEl = document.createElement('div');
                     currentGroupEl.className = 'toc-group';
 
@@ -712,7 +761,6 @@ async function loadSiteConfig() {
                     currentGroupEl.appendChild(currentSubListEl);
                     container.appendChild(currentGroupEl);
                 } else {
-                    // 子标题（H3/H4）
                     const padLeft = tagName === 'h3' ? '20px' : '28px';
                     itemLink.className = 'toc-link group flex items-center py-1 px-2.5 rounded-lg leading-snug transition-all text-zinc-500 text-[11px] hover:text-amber-600 hover:bg-zinc-50';
                     itemLink.style.paddingLeft = padLeft;
@@ -722,7 +770,6 @@ async function loadSiteConfig() {
                     if (currentSubListEl) {
                         currentSubListEl.appendChild(itemLink);
                     } else {
-                        // 如果文章首个标题直接是 H3
                         container.appendChild(itemLink);
                     }
                 }
@@ -733,7 +780,6 @@ async function loadSiteConfig() {
                 };
             });
 
-            // 2. 注册 IntersectionObserver 实现滚动焦点跟随与目录动态展开
             const visibleHeadings = new Map();
 
             tocObserver = new IntersectionObserver((entries) => {
@@ -745,7 +791,6 @@ async function loadSiteConfig() {
                     }
                 });
 
-                // 取距离视口顶部最近的可见标题作为激活目标
                 if (visibleHeadings.size > 0) {
                     const sorted = Array.from(visibleHeadings.entries()).sort((a, b) => Math.abs(a[1]) - Math.abs(b[1]));
                     const activeId = sorted[0][0];
@@ -753,7 +798,7 @@ async function loadSiteConfig() {
                 }
             }, {
                 root: null,
-                rootMargin: '0px 0px -60% 0px', // 标题滚动到视口上半部分即触发高亮
+                rootMargin: '0px 0px -60% 0px',
                 threshold: 0
             });
 
@@ -770,19 +815,15 @@ async function loadSiteConfig() {
             const activeLink = document.querySelector(`#post-toc-container .toc-link[data-target-id="${targetId}"]`);
             if (!activeLink) return;
 
-            // 赋予高亮样式
             activeLink.classList.add('is-active');
 
-            // 展开所属的父级分组
             const parentGroup = activeLink.closest('.toc-group');
             if (parentGroup) {
                 parentGroup.classList.add('expanded');
             }
 
-            // 自动将激活节点滚动进目录视口（避免长文章目录溢出视线）
             activeLink.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         }
-
 
         function addCopyButtons() {
             document.querySelectorAll('pre').forEach((preElement) => {
