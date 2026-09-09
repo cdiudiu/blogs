@@ -2,7 +2,7 @@ async function verifyPassword(password, env) {
   try {
     const row = await env.DB.prepare("SELECT value FROM config WHERE key = 'admin_password'").first();
     if (row && row.value) return password === row.value;
-  } catch (e) {}
+  } catch (e) { }
   return password === env.ADMIN_PASSWORD;
 }
 
@@ -17,10 +17,10 @@ export async function onRequest(context) {
         WHERE key IN (
           'site_title', 'site_subtitle', 'site_categories', 
           'site_series', 'site_nav_links', 'site_layout_mode', 
-          'site_popular_limit', 'site_r2_domain'
+          'site_popular_limit', 'site_r2_domain', 'site_favicon'
         )
       `).all();
-      
+
       const configMap = {};
       rows.results.forEach(row => {
         configMap[row.key] = row.value;
@@ -45,15 +45,16 @@ export async function onRequest(context) {
     }
 
     try {
-      const { 
-        site_title, 
-        site_subtitle, 
-        site_categories, 
-        site_series, 
-        site_nav_links, 
-        site_layout_mode, 
+      const {
+        site_title,
+        site_subtitle,
+        site_categories,
+        site_series,
+        site_nav_links,
+        site_layout_mode,
         site_popular_limit,
-        site_r2_domain 
+        site_r2_domain,
+        site_favicon
       } = await request.json();
 
       const stmt = env.DB.prepare("INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)");
@@ -61,11 +62,12 @@ export async function onRequest(context) {
         stmt.bind("site_title", site_title),
         stmt.bind("site_subtitle", site_subtitle),
         stmt.bind("site_categories", JSON.stringify(site_categories)),
-        stmt.bind("site_series", JSON.stringify(site_series)), 
+        stmt.bind("site_series", JSON.stringify(site_series)),
         stmt.bind("site_nav_links", JSON.stringify(site_nav_links)),
         stmt.bind("site_layout_mode", site_layout_mode),
         stmt.bind("site_popular_limit", String(site_popular_limit)),
-        stmt.bind("site_r2_domain", site_r2_domain ? String(site_r2_domain).trim() : "")
+        stmt.bind("site_r2_domain", site_r2_domain ? String(site_r2_domain).trim() : ""),
+        stmt.bind("site_favicon", site_favicon ? String(site_favicon).trim() : "")
       ]);
 
       return new Response(JSON.stringify({ success: true }), { headers: { "Content-Type": "application/json" } });

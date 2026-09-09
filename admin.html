@@ -299,6 +299,22 @@
                     </div>
 
                     <div id="panel-config" class="admin-panel-content space-y-6 hidden">
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400">网站 Favicon 图标
+                                URL</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="config-favicon"
+                                    class="flex-grow border border-zinc-200 rounded-lg px-4 py-2.5 text-[16px] md:text-sm focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 focus:outline-none transition-all"
+                                    placeholder="https://images.wsvps.com/favicon.png">
+                                <button type="button" onclick="triggerFaviconUpload()" id="upload-favicon-btn"
+                                    class="bg-zinc-800 hover:bg-zinc-900 text-white text-xs px-4 rounded-lg font-bold transition-all shrink-0">上传图标</button>
+                            </div>
+                            <input type="file" id="favicon-file-input"
+                                accept="image/png,image/x-icon,image/svg+xml,image/jpeg" class="hidden"
+                                onchange="handleFaviconFileSelected()">
+                            <span class="text-[10px] text-zinc-400 block mt-1">建议上传 48x48 或更高倍数（96x96、192x192）正方形
+                                PNG/ICO 图片，上传后将自动同步至 R2。</span>
+                        </div>
                         <div class="border-b border-zinc-100 pb-3">
                             <h2 class="text-xl font-bold text-zinc-900 tracking-tight">自定义站点全局配置与大系列文案</h2>
                             <p class="text-xs text-zinc-400 mt-1">在线管理您的一二级目导航、网站名、右上角工具外链及全局排版</p>
@@ -539,7 +555,7 @@
                 document.getElementById('config-series').value = activeSeriesList.join(', ');
                 document.getElementById('config-nav-links').value = rawNavLinks.map(item => `${item.name}, ${item.url}`).join('\n');
                 document.getElementById('config-r2-domain').value = R2_DOMAIN;
-
+                document.getElementById('config-favicon').value = data.site_favicon || "";
                 setSelectValue('config-layout-mode', globalLayoutMode);
                 document.getElementById('config-popular-limit').value = sitePopularLimit;
 
@@ -555,6 +571,30 @@
                 fillSeriesSelect();
                 fillAdminFilterSelects();
             }
+        }
+
+        // C. 新增图标文件上传处理函数：
+        function triggerFaviconUpload() {
+            document.getElementById('favicon-file-input').click();
+        }
+
+        async function handleFaviconFileSelected() {
+            const fileInput = document.getElementById('favicon-file-input');
+            if (fileInput.files.length === 0) return;
+            const file = fileInput.files[0];
+            const uploadBtn = document.getElementById('upload-favicon-btn');
+
+            uploadBtn.innerText = '上传中...';
+            uploadBtn.disabled = true;
+
+            const url = await uploadImageViaVditor(file);
+            if (url) {
+                document.getElementById('config-favicon').value = url;
+            }
+
+            uploadBtn.innerText = '上传图标';
+            uploadBtn.disabled = false;
+            fileInput.value = '';
         }
 
         function fillCategorySelect() {
@@ -644,7 +684,7 @@
             const site_popular_limit = safeGetValue('config-popular-limit').trim() || "5";
             const site_r2_domain = safeGetValue('config-r2-domain').trim();
             const btn = document.getElementById('save-config-btn');
-
+            const site_favicon = safeGetValue('config-favicon').trim();
             if (!title) { alert('主标题不可为空'); return; }
             const categoriesArr = categoriesStr.split(',').map(c => c.trim()).filter(c => c.length > 0);
             const seriesArr = seriesStr.split(',').map(c => c.trim()).filter(c => c.length > 0);
@@ -670,7 +710,8 @@
                         site_nav_links: navLinksArr,
                         site_layout_mode,
                         site_popular_limit,
-                        site_r2_domain
+                        site_r2_domain,
+                        site_favicon
                     })
                 });
 

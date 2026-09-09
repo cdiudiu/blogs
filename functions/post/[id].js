@@ -56,6 +56,12 @@ export async function onRequest(context) {
         cover = '';
       }
     }
+
+    let siteFavicon = '';
+    try {
+      const cfgRow = await env.DB.prepare("SELECT value FROM config WHERE key = 'site_favicon'").first();
+      if (cfgRow && cfgRow.value) siteFavicon = cfgRow.value.trim();
+    } catch (_) { }
     const safeCover = escapeAttrUrl(cover);
     const currentUrl = escapeAttrUrl(request.url);
 
@@ -133,6 +139,7 @@ export async function onRequest(context) {
     <meta name="twitter:title" content="${title}">
     <meta name="twitter:description" content="${summary}">
     ${safeCover ? `<meta name="twitter:image" content="${safeCover}">` : ''}
+    ${siteFavicon ? `<link rel="icon" href="${escapeAttrUrl(siteFavicon)}"><link rel="apple-touch-icon" href="${escapeAttrUrl(siteFavicon)}">` : ''}
     ${jsonLdScript}
     `;
 

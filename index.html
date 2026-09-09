@@ -13,7 +13,10 @@
     <meta name="author" content="vpsbbc.com">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" href="https://blog.vpsbbc.com/">
-
+    <!-- 网站 Favicon 图标 -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
     <!-- Open Graph (社交与搜索引擎卡片) -->
     <meta property="og:locale" content="zh_CN">
     <meta property="og:type" content="website">
@@ -345,7 +348,24 @@
 
                 const badge = document.getElementById('popular-top-badge');
                 if (badge) badge.innerText = `TOP ${globalPopularLimit}`;
+                // 在 loadSiteConfig() 解析完 data 后执行：
+                if (data.site_favicon) {
+                    let iconLink = document.querySelector("link[rel~='icon']");
+                    if (!iconLink) {
+                        iconLink = document.createElement('link');
+                        iconLink.rel = 'icon';
+                        document.head.appendChild(iconLink);
+                    }
+                    iconLink.href = data.site_favicon;
 
+                    let appleIcon = document.querySelector("link[rel='apple-touch-icon']");
+                    if (!appleIcon) {
+                        appleIcon = document.createElement('link');
+                        appleIcon.rel = 'apple-touch-icon';
+                        document.head.appendChild(appleIcon);
+                    }
+                    appleIcon.href = data.site_favicon;
+                }
                 renderCustomNavbarLinks(rawNavLinks);
 
             } catch (err) {
