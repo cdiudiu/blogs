@@ -78,61 +78,51 @@ function escapeXml(str) {
 export async function onRequest(context) {
 
   const { request, env } = context;
-  const urlObj = new URL(request.url);
-  const baseUrl = urlObj.origin; // 自动获取当前博客域名，例如 https://blog.vpsbbc.com
+  const url = new URL(request.url);
 
-  try {
-    // 1. 查询 D1 数据库中所有状态为已发布的文章
-    const { results } = await env.DB.prepare(
-      "SELECT id, date FROM posts WHERE status = 'publish' ORDER BY date DESC"
-    ).all();
+  // 严格全等判断：只有路径完全是 /sitemap.xml 时才拦截
+  if (url.pathname === '/sitemap.xml') {
+    try {
+      const baseUrl = url.origin;
+      const { results } = await env.DB.prepare(
+        "SELECT id, date FROM posts WHERE status = 'publish' ORDER BY date DESC"
+      ).all();
 
-    // 2. 拼接首页条目
-    let xmlItems = `
+      let xmlItems = `
   <url>
-    <loc>${escapeXml(baseUrl)}/</loc>
+    <loc>${baseUrl}/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>`;
 
-    // 3. 动态注入文章页条目
-    if (results && results.length > 0) {
-      results.forEach(post => {
-        const postUrl = `${baseUrl}/post/${post.id}`;
-        const lastMod = post.date || new Date().toISOString().split('T')[0];
-
-        xmlItems += `
+      if (results && results.length > 0) {
+        results.forEach(post => {
+          xmlItems += `
   <url>
-    <loc>${escapeXml(postUrl)}</loc>
-    <lastmod>${lastMod}</lastmod>
+    <loc>${baseUrl}/post/${post.id}</loc>
+    <lastmod>${post.date || new Date().toISOString().split('T')[0]}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>`;
-      });
-    }
-
-    // 4. 生成符合 sitemaps.org 规范的 XML
-    const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
-      <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-      ${xmlItems}
-      </urlset>`.trim();
-
-    // 5. 返回 text/xml 格式与边缘缓存头
-    return new Response(sitemapXml, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/xml; charset=utf-8",
-        "Cache-Control": "public, max-age=3600, s-maxage=3600"
+        });
       }
-    });
 
-  } catch (err) {
-    return new Response(`<!-- Sitemap 生成失败: ${escapeXml(err.message)} -->`, {
-      status: 500,
-      headers: { "Content-Type": "application/xml; charset=utf-8" }
-    });
+      const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${xmlItems}
+</urlset>`.trim();
+
+      return new Response(sitemapXml, {
+        status: 200,
+        headers: {
+          "Content-Type": "application/xml; charset=utf-8",
+          "Cache-Control": "public, max-age=3600"
+        }
+      });
+    } catch (err) {
+      return new Response("Sitemap generation error", { status: 500 });
+    }
   }
-
   try {
     const response = await context.next();
 
