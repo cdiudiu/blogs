@@ -170,8 +170,7 @@
                     </header>
 
                     <section aria-label="文章列表">
-                        <div id="posts-list-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                        </div>
+                        <div id="posts-list-container" class="flex flex-col space-y-4"></div>
                     </section>
                 </div>
 
@@ -537,22 +536,31 @@
                         : "text-sm font-bold text-zinc-900 line-clamp-1 group-hover:text-amber-500 transition-colors";
 
                     container.innerHTML += `
-                        <article class="group bg-white rounded-2xl border border-zinc-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 overflow-hidden flex flex-col justify-between">
-                            <div>
-                                <a href="./post/${post.id}" class="block aspect-video w-full overflow-hidden relative bg-zinc-50 rounded-t-2xl transform translate-z-0 isolate" aria-label="查看文章：${post.title}">
-                                    ${coverHtml}
-                                    <span class="absolute top-3 left-3 bg-zinc-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-sm uppercase z-10">${post.category || '未分类'}</span>
-                                </a>
-                                <div class="p-5 space-y-2">
-                                    <h2 class="${titleClass}">
+                        <article class="group bg-white rounded-2xl border border-zinc-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 overflow-hidden flex flex-col sm:flex-row p-4 sm:p-5 gap-4 sm:gap-6 items-center">
+                            <!-- 左侧：封面图（固定比例与圆角） -->
+                            <a href="./post/${post.id}" class="block w-full sm:w-64 h-44 sm:h-36 shrink-0 overflow-hidden relative rounded-xl bg-zinc-50 transform translate-z-0 isolate" aria-label="查看文章：${post.title}">
+                                ${coverHtml}
+                                <span class="absolute top-2.5 left-2.5 bg-zinc-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm uppercase z-10">${post.category || '未分类'}</span>
+                            </a>
+
+                            <!-- 右侧：标题、摘要及底部信息 -->
+                            <div class="flex flex-col justify-between flex-grow min-w-0 w-full h-full space-y-2.5">
+                                <div class="space-y-2">
+                                    <h2 class="text-base sm:text-lg font-bold text-zinc-900 line-clamp-1 group-hover:text-amber-500 transition-colors">
                                         <a href="./post/${post.id}" title="${post.title}">${post.title}</a>
                                     </h2>
-                                    ${summaryHtml}
+                                    <p class="text-zinc-500 text-xs sm:text-sm leading-relaxed line-clamp-2">${post.summary || '暂无详细描述...'}</p>
                                 </div>
-                            </div>
-                            <div class="px-5 pb-5 pt-2 border-t border-zinc-50 flex items-center justify-between text-[10px] text-zinc-400">
-                                <time datetime="${post.date}">📅 ${post.date}</time>
-                                <span>👁️ ${post.views}</span>
+
+                                <!-- 底部 Meta 信息条 -->
+                                <div class="pt-2 flex items-center justify-between text-[11px] text-zinc-400 border-t border-zinc-50">
+                                    <div class="flex items-center gap-3">
+                                        <time datetime="${post.date}">📅 ${post.date}</time>
+                                        <span class="text-zinc-300">|</span>
+                                        <span>📂 ${post.series || '默认系列'}</span>
+                                    </div>
+                                    <span>👁️ ${post.views}</span>
+                                </div>
                             </div>
                         </article>
                     `;
