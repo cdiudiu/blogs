@@ -207,10 +207,9 @@
 
                     <!-- 正中间：头像图标 -->
                     <div
-                        class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-2xl shadow-inner mb-3 overflow-hidden">
-                        <img id="sidebar-avatar-img" src="/favicon.png" alt="Avatar" class="w-full h-full object-cover"
-                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <span class="hidden">👤</span>
+                        class="w-16 h-16 rounded-2xl bg-white border border-zinc-200/80 flex items-center justify-center shadow-sm mb-3 overflow-hidden">
+                        <img id="sidebar-avatar-img" src="/favicon.png" alt="Avatar"
+                            class="w-full h-full object-cover bg-white">
                     </div>
 
                     <!-- 下方：博客名称 -->
@@ -462,13 +461,13 @@
 
                 const isAllSelected = !currentFilterSeries;
                 navContainer.innerHTML += `
-                    <a href="#/" class="px-2.5 py-1 rounded-md transition-all ${isAllSelected ? 'bg-amber-500 text-white font-bold' : 'text-zinc-600 bg-zinc-100/70 hover:bg-zinc-100 hover:text-zinc-900'}">全部</a>
-                `;
+                        <a href="#/" class="px-3 py-1.5 rounded-md text-sm transition-all ${isAllSelected ? 'bg-amber-500 text-white font-bold' : 'text-zinc-600 bg-zinc-100/70 hover:bg-zinc-100 hover:text-zinc-900'}">全部</a>
+                    `;
 
                 finalSeriesList.forEach(series => {
                     const isSelected = currentFilterSeries === series;
                     navContainer.innerHTML += `
-                        <a href="#/series/${encodeURIComponent(series)}" class="px-2.5 py-1 rounded-md transition-all ${isSelected ? 'bg-amber-500 text-white font-bold' : 'text-zinc-600 bg-zinc-100/70 hover:bg-zinc-100 hover:text-zinc-900'}">${series}</a>
+                        <a href="#/series/${encodeURIComponent(series)}" class="px-3 py-1.5 rounded-md text-sm transition-all ${isSelected ? 'bg-amber-500 text-white font-bold' : 'text-zinc-600 bg-zinc-100/70 hover:bg-zinc-100 hover:text-zinc-900'}">${series}</a>
                     `;
                 });
             } catch (e) {
