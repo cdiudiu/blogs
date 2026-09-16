@@ -137,23 +137,47 @@
                 <div class="space-y-6">
 
                     <!-- 左侧顶部：系列导航 + 搜索框同行展示 -->
-                    <header
-                        class="bg-white p-4 sm:p-5 rounded-2xl border border-zinc-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <!-- 系列列表 -->
-                        <nav aria-label="大系列导航" class="flex items-center gap-2 overflow-x-auto py-1">
-                            <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 shrink-0">系列
-                                ➔</span>
-                            <div id="series-navbar-container" class="flex flex-wrap gap-2 text-xs font-semibold"></div>
-                        </nav>
+                    <header class="space-y-4">
+                        <!-- 顶部热门文章轮播图 -->
+                        <div
+                            class="relative w-full h-52 sm:h-64 md:h-72 rounded-2xl overflow-hidden shadow-sm border border-zinc-100 bg-zinc-900 group">
+                            <!-- 轮播幻灯片容器 -->
+                            <div id="carousel-slides"
+                                class="flex w-full h-full transition-transform duration-500 ease-out">
+                                <div
+                                    class="w-full h-full shrink-0 flex items-center justify-center text-zinc-500 text-xs">
+                                    正在加载热门推荐...</div>
+                            </div>
 
-                        <!-- 搜索框 -->
-                        <div class="relative shrink-0 w-full md:w-64">
-                            <input type="text" id="search-input" onkeydown="handleSearch(event)"
-                                class="w-full border border-zinc-200 rounded-xl pl-3 pr-8 py-2 text-xs focus:ring-2 focus:ring-amber-500/10 focus:border-amber-500 focus:outline-none transition-all bg-zinc-50/50"
-                                placeholder="输入关键词搜索..." aria-label="搜索关键字">
-                            <button onclick="triggerSearch()"
-                                class="absolute right-2.5 top-2 text-zinc-400 hover:text-zinc-600 text-xs"
-                                aria-label="点击搜索">🔍</button>
+                            <!-- 左右切换箭头按钮 -->
+                            <button onclick="prevSlide()"
+                                class="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity z-20">‹</button>
+                            <button onclick="nextSlide()"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity z-20">›</button>
+
+                            <!-- 底部药丸指示器 -->
+                            <div id="carousel-indicators"
+                                class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20 bg-black/30 backdrop-blur-md px-2.5 py-1 rounded-full">
+                            </div>
+                        </div>
+
+                        <!-- 下方：系列导航 + 搜索框同行展示 -->
+                        <div
+                            class="bg-white p-4 sm:p-5 rounded-2xl border border-zinc-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <nav aria-label="大系列导航" class="flex items-center gap-2 overflow-x-auto py-1">
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 shrink-0">系列
+                                    ➔</span>
+                                <div id="series-navbar-container" class="flex flex-wrap gap-2 text-xs font-semibold">
+                                </div>
+                            </nav>
+                            <div class="relative shrink-0 w-full md:w-64">
+                                <input type="text" id="search-input" onkeydown="handleSearch(event)"
+                                    class="w-full border border-zinc-200 rounded-xl pl-3 pr-8 py-2 text-xs focus:ring-2 focus:ring-amber-500/10 focus:border-amber-500 focus:outline-none transition-all bg-zinc-50/50"
+                                    placeholder="输入关键词搜索..." aria-label="搜索关键字">
+                                <button onclick="triggerSearch()"
+                                    class="absolute right-2.5 top-2 text-zinc-400 hover:text-zinc-600 text-xs"
+                                    aria-label="点击搜索">🔍</button>
+                            </div>
                         </div>
                     </header>
 
@@ -203,6 +227,16 @@
                     <nav id="custom-navbar-links" aria-label="外部快捷工具"
                         class="flex flex-wrap justify-center items-center gap-2 text-xs font-semibold text-zinc-500 mt-4 pt-4 border-t border-zinc-50 w-full">
                     </nav>
+                </section>
+                <!-- 在正方形个人信息卡片后面补齐热门文章卡片 -->
+                <section aria-label="热门文章推荐"
+                    class="bg-white p-5 rounded-2xl border border-zinc-100 shadow-sm space-y-4">
+                    <div class="border-b border-zinc-100 pb-2 flex items-center justify-between">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-zinc-400">🔥 热门文章</h2>
+                        <span id="popular-top-badge"
+                            class="text-[10px] bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded font-bold">TOP 5</span>
+                    </div>
+                    <div id="popular-posts-container" class="space-y-3"></div>
                 </section>
             </aside>
         </div>
@@ -667,6 +701,73 @@
             } catch (e) {
                 container.innerHTML = '<p class="text-red-500 text-xs">读取排行失败</p>';
             }
+        }
+
+
+        let currentSlideIndex = 0;
+        let slideInterval = null;
+        let popularPostsData = [];
+
+        // 在 fetchPopularPosts() 内的 posts.forEach 循环下方追加：
+        popularPostsData = posts.slice(0, 5);
+        renderCarousel(popularPostsData);
+
+        function renderCarousel(items) {
+            const slidesContainer = document.getElementById('carousel-slides');
+            const dotsContainer = document.getElementById('carousel-indicators');
+            if (!slidesContainer || !dotsContainer || items.length === 0) return;
+
+            slidesContainer.innerHTML = '';
+            dotsContainer.innerHTML = '';
+
+            items.forEach((post, i) => {
+                const cover = post.cover || 'https://images.wsvps.com/default-cover.png';
+                slidesContainer.innerHTML += `
+            <div class="w-full h-full shrink-0 relative">
+                <a href="./post/${post.id}" class="block w-full h-full">
+                    <img src="${cover}" class="w-full h-full object-cover" alt="${post.title}">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
+                        <span class="text-[10px] uppercase font-bold text-amber-400 mb-1">🔥 TOP ${i + 1} 热门推荐</span>
+                        <h3 class="text-white text-base sm:text-lg font-bold line-clamp-1">${post.title}</h3>
+                    </div>
+                </a>
+            </div>
+        `;
+
+                dotsContainer.innerHTML += `
+            <button onclick="goToSlide(${i})" class="carousel-dot h-1.5 rounded-full transition-all duration-300 ${i === 0 ? 'w-5 bg-amber-500' : 'w-1.5 bg-white/50'}"></button>
+        `;
+            });
+
+            goToSlide(0);
+            startCarouselAutoPlay();
+        }
+
+        function updateIndicators() {
+            const dots = document.querySelectorAll('.carousel-dot');
+            dots.forEach((dot, idx) => {
+                if (idx === currentSlideIndex) {
+                    dot.className = "carousel-dot h-1.5 rounded-full transition-all duration-300 w-5 bg-amber-500";
+                } else {
+                    dot.className = "carousel-dot h-1.5 rounded-full transition-all duration-300 w-1.5 bg-white/50";
+                }
+            });
+        }
+
+        function goToSlide(index) {
+            const slides = document.getElementById('carousel-slides');
+            if (!slides || popularPostsData.length === 0) return;
+            currentSlideIndex = (index + popularPostsData.length) % popularPostsData.length;
+            slides.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+            updateIndicators();
+        }
+
+        function nextSlide() { goToSlide(currentSlideIndex + 1); }
+        function prevSlide() { goToSlide(currentSlideIndex - 1); }
+
+        function startCarouselAutoPlay() {
+            if (slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 4000);
         }
 
         const gradients = [
