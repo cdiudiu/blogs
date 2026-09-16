@@ -208,7 +208,7 @@
         <div id="post-view" class="hidden">
             <!-- 1. 全屏吸顶固定顶栏：直接使用 fixed 定死在视口最顶端，带毛玻璃模糊 -->
             <header
-                class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-zinc-200/70 shadow-sm transition-all">
+                class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-zinc-200/70 shadow-sm transform-gpu">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
                     <a href="#/"
                         class="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-700 hover:text-amber-500 transition-colors">
@@ -268,6 +268,7 @@
                     </aside>
                 </div>
             </div>
+        </div>
 
     </main>
 
