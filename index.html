@@ -64,6 +64,7 @@
     <style>
         html {
             scroll-behavior: smooth;
+            font-size: 95%;
         }
 
         body {
@@ -206,7 +207,7 @@
 
                     <!-- 正中间：头像图标 -->
                     <div
-                        class="w-20 h-20 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-3xl shadow-inner mb-4 overflow-hidden">
+                        class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-2xl shadow-inner mb-3 overflow-hidden">
                         <img id="sidebar-avatar-img" src="/favicon.png" alt="Avatar" class="w-full h-full object-cover"
                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                         <span class="hidden">👤</span>
@@ -399,6 +400,7 @@
                 const avatarImg = document.getElementById('sidebar-avatar-img');
                 if (avatarImg && data.site_favicon) {
                     avatarImg.src = data.site_favicon;
+                    avatarImg.style.display = 'block';
                 }
                 document.getElementById('site-subtitle-display').innerText = subtitle;
 
