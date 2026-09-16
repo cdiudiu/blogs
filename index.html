@@ -698,6 +698,10 @@
                         </a>
                     `;
                 });
+
+                // 在 fetchPopularPosts() 内的 posts.forEach 循环下方追加：
+                popularPostsData = posts.slice(0, 5);
+                renderCarousel(popularPostsData);
             } catch (e) {
                 container.innerHTML = '<p class="text-red-500 text-xs">读取排行失败</p>';
             }
@@ -707,10 +711,6 @@
         let currentSlideIndex = 0;
         let slideInterval = null;
         let popularPostsData = [];
-
-        // 在 fetchPopularPosts() 内的 posts.forEach 循环下方追加：
-        popularPostsData = posts.slice(0, 5);
-        renderCarousel(popularPostsData);
 
         function renderCarousel(items) {
             const slidesContainer = document.getElementById('carousel-slides');
