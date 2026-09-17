@@ -521,10 +521,8 @@
             document.getElementById('home-view').classList.remove('hidden');
             document.getElementById('post-view').classList.add('hidden');
 
-            Promise.all([
-                fetchPostsAndRender(1),
+            fetchPostsAndRender(1),
                 fetchPopularPosts()
-            ]);
         }
 
         async function showSeriesView(seriesName) {
@@ -540,11 +538,8 @@
 
             document.getElementById('home-view').classList.remove('hidden');
             document.getElementById('post-view').classList.add('hidden');
-
-            Promise.all([
-                fetchPostsAndRender(1),
+            fetchPostsAndRender(1),
                 fetchPopularPosts()
-            ]);
         }
 
         async function fetchPostsAndRender(page = 1) {
