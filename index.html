@@ -133,7 +133,7 @@
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-10">
 
         <!-- 首页 / 系列视图 -->
-        <div id="home-view" class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div id="home-view" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div class="lg:col-span-3 space-y-6 flex flex-col justify-between">
                 <div class="space-y-6">
 
@@ -352,11 +352,16 @@
             langPrefix: 'hljs language-'
         });
 
+        // 修改为：
         window.addEventListener('hashchange', handleRouting);
-        window.addEventListener('load', async () => {
-            await loadSiteConfig();
-            await fetchNavMeta();
-            handleRouting();
+
+        // 1. 优先执行路由切换：只要读取到是 /post/ 立即切到文章页，彻底消除首屏穿帮
+        handleRouting();
+
+        // 2. 配置与元数据在后台并行异步加载，不卡死界面显示
+        window.addEventListener('load', () => {
+            loadSiteConfig();
+            fetchNavMeta();
         });
 
         function handleRouting() {
