@@ -364,6 +364,7 @@
             fetchNavMeta();
         });
 
+
         function handleRouting() {
             const hash = window.location.hash;
             const pathname = window.location.pathname;
@@ -520,8 +521,10 @@
             document.getElementById('home-view').classList.remove('hidden');
             document.getElementById('post-view').classList.add('hidden');
 
-            await fetchPostsAndRender(1);
-            await fetchPopularPosts();
+            Promise.all([
+                fetchPostsAndRender(1),
+                fetchPopularPosts()
+            ]);
         }
 
         async function showSeriesView(seriesName) {
@@ -538,8 +541,10 @@
             document.getElementById('home-view').classList.remove('hidden');
             document.getElementById('post-view').classList.add('hidden');
 
-            await fetchPostsAndRender(1);
-            await fetchPopularPosts();
+            Promise.all([
+                fetchPostsAndRender(1),
+                fetchPopularPosts()
+            ]);
         }
 
         async function fetchPostsAndRender(page = 1) {
@@ -732,27 +737,35 @@
             slidesContainer.innerHTML = '';
             dotsContainer.innerHTML = '';
 
+            // 在 renderCarousel(items) 内部，找到 items.forEach 循环：
             items.forEach((post, i) => {
                 const cover = post.cover || 'https://images.wsvps.com/default-cover.png';
+                const isFirst = i === 0;
                 slidesContainer.innerHTML += `
-            <div class="w-full h-full shrink-0 relative">
-                <a href="./post/${post.id}" class="block w-full h-full">
-                    <img src="${cover}" class="w-full h-full object-cover" alt="${post.title}">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
-                        <span class="text-[10px] uppercase font-bold text-amber-400 mb-1">🔥 TOP ${i + 1} 热门推荐</span>
-                        <h3 class="text-white text-base sm:text-lg font-bold line-clamp-1">${post.title}</h3>
+                    <div class="w-full h-full shrink-0 relative bg-zinc-800">
+                        <a href="./post/${post.id}" class="block w-full h-full">
+                            <img src="${cover}" 
+                                class="w-full h-full object-cover" 
+                                alt="${post.title}"
+                                ${isFirst ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"'}
+                                decoding="async">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
+                                <span class="text-[10px] uppercase font-bold text-amber-400 mb-1">🔥 TOP ${i + 1} 热门推荐</span>
+                                <h3 class="text-white text-base sm:text-lg font-bold line-clamp-1">${post.title}</h3>
+                            </div>
+                        </a>
                     </div>
-                </a>
-            </div>
-        `;
-
-                dotsContainer.innerHTML += `
-            <button onclick="goToSlide(${i})" class="carousel-dot h-1.5 rounded-full transition-all duration-300 ${i === 0 ? 'w-5 bg-amber-500' : 'w-1.5 bg-white/50'}"></button>
-        `;
+                `;
+                // ... 下方的 dotsContainer 保持不变
             });
 
-            goToSlide(0);
-            startCarouselAutoPlay();
+            dotsContainer.innerHTML += `
+            <button onclick="goToSlide(${i})" class="carousel-dot h-1.5 rounded-full transition-all duration-300 ${i === 0 ? 'w-5 bg-amber-500' : 'w-1.5 bg-white/50'}"></button>
+        `;
+        });
+
+        goToSlide(0);
+        startCarouselAutoPlay();
         }
 
         function updateIndicators() {
