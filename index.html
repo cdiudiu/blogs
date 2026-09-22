@@ -56,7 +56,18 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'] }
+                    fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'] },
+                    colors: {
+                        theme: {
+                            bg: '#F5F6F5',
+                            warm: '#DABE86',
+                            'warm-hover': '#c9ac72',
+                            mist: '#8EA5C0',
+                            ice: '#91B1CD',
+                            deep: '#677390',
+                            'deep-dark': '#485268'
+                        }
+                    }
                 }
             }
         }
@@ -67,8 +78,16 @@
             font-size: 95%;
         }
 
+        /* 替换原先的 body 背景色 */
         body {
-            background-color: #eef7fa;
+            background-color: #F5F6F5;
+            color: #485268;
+        }
+
+        /* 调整选中文本颜色与主题相符 */
+        ::selection {
+            background-color: #DABE86;
+            color: #ffffff;
         }
 
         .code-block-wrapper {
@@ -164,19 +183,19 @@
 
                         <!-- 下方：系列导航 + 搜索框同行展示 -->
                         <div
-                            class="bg-white p-4 sm:p-5 rounded-2xl border border-zinc-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            class="bg-white/90 p-4 sm:p-5 rounded-2xl border border-[#8EA5C0]/30 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <nav aria-label="大系列导航" class="flex items-center gap-2 overflow-x-auto py-1">
-                                <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 shrink-0">系列
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-[#8EA5C0] shrink-0">系列
                                     ➔</span>
                                 <div id="series-navbar-container" class="flex flex-wrap gap-2 text-xs font-semibold">
                                 </div>
                             </nav>
                             <div class="relative shrink-0 w-full md:w-64">
                                 <input type="text" id="search-input" onkeydown="handleSearch(event)"
-                                    class="w-full border border-zinc-200 rounded-xl pl-3 pr-8 py-2 text-xs focus:ring-2 focus:ring-amber-500/10 focus:border-amber-500 focus:outline-none transition-all bg-zinc-50/50"
+                                    class="w-full border border-[#8EA5C0]/40 rounded-xl pl-3 pr-8 py-2 text-xs focus:ring-2 focus:ring-[#DABE86]/30 focus:border-[#DABE86] focus:outline-none transition-all bg-[#F5F6F5]/80 placeholder-[#8EA5C0]"
                                     placeholder="输入关键词搜索..." aria-label="搜索关键字">
                                 <button onclick="triggerSearch()"
-                                    class="absolute right-2.5 top-2 text-zinc-400 hover:text-zinc-600 text-xs"
+                                    class="absolute right-2.5 top-2 text-[#8EA5C0] hover:text-[#677390] text-xs"
                                     aria-label="点击搜索">🔍</button>
                             </div>
                         </div>
@@ -452,12 +471,12 @@
 
             linksArray.forEach(item => {
                 container.innerHTML += `
-                    <a href="${item.url}" target="_blank" rel="noopener" 
-                    class="group flex items-center justify-between px-3 py-2 rounded-xl text-[13px] font-semibold text-zinc-650 hover:text-amber-600 hover:bg-amber-500/10 border border-transparent hover:border-amber-500/20 transition-all duration-200">
-                        <span class="truncate">${item.name}</span>
-                        <span class="text-zinc-400 group-hover:text-amber-500 text-xs transition-transform group-hover:translate-x-0.5">➔</span>
-                    </a>
-                `;
+            <a href="${item.url}" target="_blank" rel="noopener" 
+            class="group flex items-center justify-between px-3 py-2 rounded-xl text-[13px] font-semibold text-[#677390] hover:text-[#485268] hover:bg-[#DABE86]/20 border border-transparent hover:border-[#DABE86]/30 transition-all duration-200">
+                <span class="truncate">${item.name}</span>
+                <span class="text-[#8EA5C0] group-hover:text-[#DABE86] text-xs transition-transform group-hover:translate-x-0.5">➔</span>
+            </a>
+        `;
             });
         }
 
@@ -473,13 +492,13 @@
 
                 const isAllSelected = !currentFilterSeries;
                 navContainer.innerHTML += `
-                        <a href="#/" class="px-3 py-1.5 rounded-md text-sm transition-all ${isAllSelected ? 'bg-amber-500 text-white font-bold' : 'text-zinc-600 bg-zinc-100/70 hover:bg-zinc-100 hover:text-zinc-900'}">全部</a>
+                        <a href="#/" class="px-3 py-1.5 rounded-md text-sm transition-all ${isAllSelected ? 'bg-[#DABE86] text-white font-bold shadow-sm' : 'text-[#677390] bg-[#8EA5C0]/15 hover:bg-[#8EA5C0]/25 hover:text-[#485268]'}">全部</a>
                     `;
 
                 finalSeriesList.forEach(series => {
                     const isSelected = currentFilterSeries === series;
                     navContainer.innerHTML += `
-                        <a href="#/series/${encodeURIComponent(series)}" class="px-3 py-1.5 rounded-md text-sm transition-all ${isSelected ? 'bg-amber-500 text-white font-bold' : 'text-zinc-600 bg-zinc-100/70 hover:bg-zinc-100 hover:text-zinc-900'}">${series}</a>
+                        <a href="#/series/${encodeURIComponent(series)}" class="px-3 py-1.5 rounded-md text-sm transition-all ${isSelected ? 'bg-[#DABE86] text-white font-bold shadow-sm' : 'text-[#677390] bg-[#8EA5C0]/15 hover:bg-[#8EA5C0]/25 hover:text-[#485268]'}">${series}</a>
                     `;
                 });
             } catch (e) {
@@ -594,13 +613,13 @@
                             <!-- 左侧：封面图（固定比例与圆角） -->
                             <a href="./post/${post.id}" class="block w-full sm:w-64 h-44 sm:h-36 shrink-0 overflow-hidden relative rounded-xl bg-zinc-50 transform translate-z-0 isolate" aria-label="查看文章：${post.title}">
                                 ${coverHtml}
-                                <span class="absolute top-2.5 left-2.5 bg-zinc-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm uppercase z-10">${post.category || '未分类'}</span>
+                                <span class="absolute top-2.5 left-2.5 bg-[#677390]/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm uppercase z-10">${post.category || '未分类'}</span>
                             </a>
 
                             <!-- 右侧：标题、摘要及底部信息 -->
                             <div class="flex flex-col justify-between flex-grow min-w-0 w-full h-full space-y-2.5">
                                 <div class="space-y-2">
-                                    <h2 class="text-base sm:text-lg font-bold text-zinc-900 line-clamp-1 group-hover:text-amber-500 transition-colors">
+                                    <h2 class="text-base sm:text-lg font-bold text-[#485268] line-clamp-1 group-hover:text-[#DABE86] transition-colors">
                                         <a href="./post/${post.id}" title="${post.title}">${post.title}</a>
                                     </h2>
                                     <p class="text-zinc-500 text-xs sm:text-sm leading-relaxed line-clamp-2">${post.summary || '暂无详细描述...'}</p>
