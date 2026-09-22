@@ -275,12 +275,38 @@
                     <nav id="custom-navbar-links" aria-label="公告外链导航" class="flex flex-col space-y-1.5 pt-0.5"></nav>
                 </section>
 
-                <!-- 在正方形个人信息卡片后面补齐热门文章卡片 -->
-                <section aria-label="访客IP信息" class="card-texture p-3 sm:p-4 rounded-2xl overflow-hidden shadow-sm">
-                    <iframe src="https://my.ippure.com/v1/card" class="w-full rounded-xl border-0"
-                        style="height: 220px; min-width: 100%; display: block;" scrolling="no" loading="lazy"
-                        title="访客IP信息卡片">
-                    </iframe>
+                <!-- 访客实时 IP 信息卡片（原生质感风格） -->
+                <section aria-label="访客IP信息" class="card-texture p-5 rounded-2xl space-y-3.5">
+                    <div class="flex items-center justify-between border-b border-[#8EA5C0]/20 pb-2.5">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-base">🧭</span>
+                            <h2 class="text-[13px] font-bold uppercase tracking-wider text-[#677390]">访客网络信息</h2>
+                        </div>
+                        <span
+                            class="text-[10px] bg-[#DABE86]/20 text-[#c9ac72] font-bold px-1.5 py-0.5 rounded">实时</span>
+                    </div>
+
+                    <!-- 动态数据展示区 -->
+                    <div class="space-y-2 text-xs text-[#485268]">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[#8EA5C0] flex items-center gap-1.5"><span>📍</span>位置</span>
+                            <span id="visitor-location"
+                                class="font-medium truncate max-w-[160px] text-right">加载中...</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-[#8EA5C0] flex items-center gap-1.5"><span>💻</span>IP 地址</span>
+                            <span id="visitor-ip" class="font-mono font-bold text-[#677390]">检测中...</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-[#8EA5C0] flex items-center gap-1.5"><span>🏢</span>网络运营商</span>
+                            <span id="visitor-asn" class="font-medium truncate max-w-[150px] text-right">检测中...</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-[#8EA5C0] flex items-center gap-1.5"><span>🌐</span>浏览器内核</span>
+                            <span id="visitor-browser"
+                                class="font-medium truncate max-w-[150px] text-right">检测中...</span>
+                        </div>
+                    </div>
                 </section>
             </aside>
         </div>
@@ -400,6 +426,7 @@
         window.addEventListener('load', () => {
             loadSiteConfig();
             fetchNavMeta();
+            fetchVisitorIpInfo();
         });
 
 
@@ -423,6 +450,59 @@
                 showSeriesView(seriesName);
             } else {
                 showHomeView();
+            }
+        }
+
+        async function fetchVisitorIpInfo() {
+            const locEl = document.getElementById('visitor-location');
+            const ipEl = document.getElementById('visitor-ip');
+            const asnEl = document.getElementById('visitor-asn');
+            const browserEl = document.getElementById('visitor-browser');
+
+            // 1. 本地快速提取浏览器类型（完全不走网络）
+            if (browserEl) {
+                const ua = navigator.userAgent;
+                let browserName = "现代浏览器";
+                if (ua.includes("Firefox/")) browserName = "Firefox";
+                else if (ua.includes("Edg/")) browserName = "Edge";
+                else if (ua.includes("Chrome/")) browserName = "Chrome";
+                else if (ua.includes("Safari/")) browserName = "Safari";
+                browserEl.innerText = browserName;
+            }
+
+            // 2. 检查本地会话缓存：如果已经查过，直接填入并退出，不发网络请求
+            const cachedData = sessionStorage.getItem('visitor_net_info');
+            if (cachedData) {
+                try {
+                    const data = JSON.parse(cachedData);
+                    if (ipEl) ipEl.innerText = data.ip || '-';
+                    if (locEl) locEl.innerText = data.location || '未知地区';
+                    if (asnEl) asnEl.innerText = data.asn || '-';
+                    return; // 直接拦截，彻底阻断请求
+                } catch (e) {
+                    sessionStorage.removeItem('visitor_net_info');
+                }
+            }
+
+            // 3. 首次访问未命中缓存，才发起 1 次远程查询
+            try {
+                const res = await fetch('https://ipapi.co/json/');
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+
+                const ip = data.ip || '-';
+                const location = `${data.country_name || ''} ${data.city || ''}`.trim() || '未知地区';
+                const asn = data.org || data.asn || '-';
+
+                if (ipEl) ipEl.innerText = ip;
+                if (locEl) locEl.innerText = location;
+                if (asnEl) asnEl.innerText = asn;
+
+                // 存入 sessionStorage（关闭网页前持续有效）
+                sessionStorage.setItem('visitor_net_info', JSON.stringify({ ip, location, asn }));
+            } catch (e) {
+                if (ipEl) ipEl.innerText = '获取失败';
+                if (locEl) locEl.innerText = '网络异常';
             }
         }
 
