@@ -207,20 +207,19 @@
 
                         <!-- 下方：系列导航 + 搜索框同行展示 -->
                         <div
-                            class="bg-white/90 p-4 sm:p-5 rounded-2xl border border-[#8EA5C0]/30 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <nav aria-label="大系列导航" class="flex items-center gap-2 overflow-x-auto py-1">
+                            class="bg-white/90 px-4 py-2 sm:px-5 sm:py-2.5 rounded-2xl border border-[#8EA5C0]/30 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
+                            <nav aria-label="大系列导航" class="flex items-center gap-2 overflow-x-auto py-0.5">
                                 <span class="text-[11px] font-bold uppercase tracking-wider text-[#8EA5C0] shrink-0">系列
                                     ➔</span>
-                                <div id="series-navbar-container" class="flex flex-wrap gap-2 text-xs font-semibold">
+                                <div id="series-navbar-container" class="flex flex-wrap gap-1.5 text-xs font-semibold">
                                 </div>
                             </nav>
                             <div class="relative shrink-0 w-full md:w-64">
                                 <input type="text" id="search-input" onkeydown="handleSearch(event)"
-                                    class="w-full border border-[#8EA5C0]/40 rounded-xl pl-3 pr-8 py-2 text-xs focus:ring-2 focus:ring-[#DABE86]/30 focus:border-[#DABE86] focus:outline-none transition-all bg-[#F5F6F5]/80 placeholder-[#8EA5C0]"
+                                    class="w-full border border-[#8EA5C0]/40 rounded-xl pl-3 pr-8 py-1.5 text-xs focus:ring-2 focus:ring-[#DABE86]/30 focus:border-[#DABE86] focus:outline-none transition-all bg-[#F5F6F5]/80 placeholder-[#8EA5C0]"
                                     placeholder="输入关键词搜索..." aria-label="搜索关键字">
                                 <button onclick="triggerSearch()"
-                                    class="absolute right-2.5 top-2 text-[#8EA5C0] hover:text-[#677390] text-xs"
-                                    aria-label="点击搜索">🔍</button>
+                                    class="absolute right-2.5 top-1.5 text-[#8EA5C0] hover:text-[#677390] text-xs">🔍</button>
                             </div>
                         </div>
                     </header>
@@ -234,7 +233,7 @@
                 </nav>
             </div>
 
-            <aside class="space-y-6 sticky top-6 sm:top-8 self-start transform-gpu will-change-transform">
+            <aside class="space-y-4 sticky top-6 sm:top-8 self-start transform-gpu will-change-transform">
                 <!-- 右侧顶部：大正方形博主专属卡片 -->
                 <section aria-label="个人信息"
                     class="card-texture p-5 rounded-2xl border border-zinc-100 shadow-sm flex flex-col items-center justify-center text-center h-48 sm:h-52 md:h-56 relative group">
