@@ -184,7 +184,7 @@
                     <header class="space-y-4">
                         <!-- 顶部热门文章轮播图 -->
                         <div
-                            class="relative w-full h-52 sm:h-64 md:h-72 rounded-2xl overflow-hidden shadow-sm border border-zinc-100 bg-zinc-900 group">
+                            class="relative w-full h-48 sm:h-52 md:h-56 rounded-2xl overflow-hidden shadow-sm border border-zinc-100 bg-zinc-900 group">
                             <!-- 轮播幻灯片容器 -->
                             <div id="carousel-slides"
                                 class="flex w-full h-full transition-transform duration-500 ease-out">
@@ -237,8 +237,8 @@
             <aside class="space-y-6 sticky top-6 sm:top-8 self-start transform-gpu will-change-transform">
                 <!-- 右侧顶部：大正方形博主专属卡片 -->
                 <section aria-label="个人信息"
-                    class="card-texture p-6 rounded-2xl flex flex-col items-center justify-center text-center aspect-square relative group">
-                    <!-- 右上角快捷进入控制台入口 -->
+                    class="card-texture p-5 rounded-2xl border border-zinc-100 shadow-sm flex flex-col items-center justify-center text-center h-48 sm:h-52 md:h-56 relative group">
+                    <!-- 右上角快捷进入控制台入口保持不变 -->
                     <a href="./admin.html"
                         class="absolute top-4 right-4 text-zinc-300 hover:text-amber-500 transition-all p-1.5 rounded-full hover:bg-zinc-50"
                         title="管理控制台">
@@ -248,22 +248,22 @@
                         </svg>
                     </a>
 
-                    <!-- 正中间：头像图标 -->
+                    <!-- 正中间：头像图标 (稍微缩小至 w-14 h-14，留白更精致) -->
                     <div
-                        class="w-16 h-16 rounded-2xl bg-white border border-zinc-200/80 flex items-center justify-center shadow-sm mb-3 overflow-hidden">
+                        class="w-14 h-14 rounded-2xl bg-white border border-zinc-200/80 flex items-center justify-center shadow-sm mb-2.5 overflow-hidden shrink-0">
                         <img id="sidebar-avatar-img" src="/favicon.png" alt="Avatar"
                             class="w-full h-full object-cover bg-white">
                     </div>
 
                     <!-- 下方：博客名称 -->
                     <h1 id="site-title-display"
-                        class="text-lg sm:text-xl font-extrabold tracking-tight text-zinc-900 line-clamp-1 mb-1.5">
+                        class="text-base sm:text-lg font-extrabold tracking-tight text-zinc-900 line-clamp-1 mb-1">
                         正在加载...
                     </h1>
 
                     <!-- 紧跟：个性签名 -->
                     <p id="site-subtitle-display"
-                        class="text-zinc-500 text-[14px] font-medium leading-relaxed line-clamp-2 px-2"></p>
+                        class="text-zinc-500 text-xs font-medium leading-relaxed line-clamp-2 px-2"></p>
                 </section>
 
                 <!-- 2. 新增：独立公告卡片（图一公告风格，列表形式展现，悬浮淡橙色） -->
