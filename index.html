@@ -883,21 +883,18 @@
 
                 postContent.innerHTML = marked.parse(text);
 
-                // 尝试抓取正文首个 H1/H2 作为文章标题填充
+                // 提取正文里的第一个大标题作为顶部标题
                 const detectedTitleEl = postContent.querySelector('h1, h2, h3');
                 if (detectedTitleEl) {
-                    const pageTitle = detectedTitleEl.innerText;
+                    const pageTitle = detectedTitleEl.innerText.trim();
                     document.getElementById('detail-post-title').innerText = pageTitle;
                     updateMeta(`${pageTitle} - ${siteBaseTitle}`, pageTitle, `${window.location.origin}/post/${postId}`);
-                    // 将正文内重复排版的第一行大标题移除，保持页面顶栏标题唯一整洁
-                    detectedTitleEl.remove();
+                    // 使用 style.display 隐藏正文内重复的标题，不要用 .remove()，保证目录索引树完整不报错
+                    detectedTitleEl.style.display = 'none';
                 } else {
                     document.getElementById('detail-post-title').innerText = postId;
                     updateMeta(`${postId} - ${siteBaseTitle}`, postId, `${window.location.origin}/post/${postId}`);
                 }
-
-                // 动态更新文章详情页 SEO
-                updateMeta(`${pageTitle} - ${siteBaseTitle}`, pageTitle, `${window.location.origin}/post/${postId}`);
 
                 setTimeout(() => {
                     generateTableOfContents();
