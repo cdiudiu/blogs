@@ -884,9 +884,17 @@
                 postContent.innerHTML = marked.parse(text);
 
                 // 尝试抓取正文首个 H1/H2 作为文章标题填充
-                const detectedTitleEl = postContent.querySelector('h1, h2');
-                const pageTitle = detectedTitleEl ? detectedTitleEl.innerText : postId;
-                document.getElementById('detail-post-title').innerText = pageTitle;
+                const detectedTitleEl = postContent.querySelector('h1, h2, h3');
+                if (detectedTitleEl) {
+                    const pageTitle = detectedTitleEl.innerText;
+                    document.getElementById('detail-post-title').innerText = pageTitle;
+                    updateMeta(`${pageTitle} - ${siteBaseTitle}`, pageTitle, `${window.location.origin}/post/${postId}`);
+                    // 将正文内重复排版的第一行大标题移除，保持页面顶栏标题唯一整洁
+                    detectedTitleEl.remove();
+                } else {
+                    document.getElementById('detail-post-title').innerText = postId;
+                    updateMeta(`${postId} - ${siteBaseTitle}`, postId, `${window.location.origin}/post/${postId}`);
+                }
 
                 // 动态更新文章详情页 SEO
                 updateMeta(`${pageTitle} - ${siteBaseTitle}`, pageTitle, `${window.location.origin}/post/${postId}`);
