@@ -75,7 +75,7 @@
     <style>
         html {
             scroll-behavior: smooth;
-            font-size: 95%;
+            zoom: 0.9;
         }
 
         /* 替换原先的 body 背景色 */
@@ -276,13 +276,11 @@
                 </section>
 
                 <!-- 在正方形个人信息卡片后面补齐热门文章卡片 -->
-                <section aria-label="热门文章推荐" class="card-texture p-5 rounded-2xl space-y-4">
-                    <div class="border-b border-zinc-100 pb-2 flex items-center justify-between">
-                        <h2 class="text-xs font-bold uppercase tracking-widest text-zinc-400">🔥 热门文章</h2>
-                        <span id="popular-top-badge"
-                            class="text-[10px] bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded font-bold">TOP 5</span>
-                    </div>
-                    <div id="popular-posts-container" class="space-y-3"></div>
+                <section aria-label="访客IP信息" class="card-texture p-3 sm:p-4 rounded-2xl overflow-hidden shadow-sm">
+                    <iframe src="https://my.ippure.com/v1/card" class="w-full rounded-xl border-0"
+                        style="height: 220px; min-width: 100%; display: block;" scrolling="no" loading="lazy"
+                        title="访客IP信息卡片">
+                    </iframe>
                 </section>
             </aside>
         </div>
@@ -715,50 +713,20 @@
             container.innerHTML = pageHtml;
         }
 
+        /* 整体精简替换为：仅服务顶部轮播图，干净无废话 */
         async function fetchPopularPosts() {
-            const container = document.getElementById('popular-posts-container');
-            if (!container) return;
-            container.innerHTML = '<p class="text-zinc-400 text-xs">读取中...</p>';
-
             try {
                 const response = await fetch(`./api/posts?popular=${globalPopularLimit}&_t=${Date.now()}`);
                 const posts = await response.json();
-                container.innerHTML = '';
 
-                if (posts.length === 0) {
-                    container.innerHTML = '<p class="text-zinc-400 text-xs">暂无热度统计</p>';
-                    return;
+                if (Array.isArray(posts) && posts.length > 0) {
+                    popularPostsData = posts.slice(0, 5);
+                    renderCarousel(popularPostsData);
                 }
-
-                posts.forEach((post, index) => {
-                    const thumbHtml = post.cover
-                        ? `<img src="${post.cover}" loading="lazy" decoding="async" class="w-full h-full object-cover rounded-md animate-fade-in" alt="${post.title}">`
-                        : `<div class="w-full h-full bg-gradient-to-tr ${getGradient(index)} rounded-md"></div>`;
-
-                    container.innerHTML += `
-                        <a href="./post/${post.id}" class="flex items-center gap-3 p-1.5 hover:bg-zinc-50 rounded-lg transition-colors group animate-fade-in" title="${post.title}">
-                            <div class="w-12 h-12 rounded-md overflow-hidden bg-zinc-100 shrink-0">
-                                ${thumbHtml}
-                            </div>
-                            <div class="min-w-0 flex-grow">
-                                <h3 class="text-xs font-bold text-zinc-800 line-clamp-2 leading-snug group-hover:text-amber-500 transition-colors">${post.title}</h3>
-                                <div class="text-[9px] text-zinc-400 mt-1 flex justify-between">
-                                    <time datetime="${post.date}">${post.date}</time>
-                                    <span class="font-bold text-amber-500">👁️ ${post.views}</span>
-                                </div>
-                            </div>
-                        </a>
-                    `;
-                });
-
-                // 在 fetchPopularPosts() 内的 posts.forEach 循环下方追加：
-                popularPostsData = posts.slice(0, 5);
-                renderCarousel(popularPostsData);
             } catch (e) {
-                container.innerHTML = '<p class="text-red-500 text-xs">读取排行失败</p>';
+                console.error("加载热门轮播数据失败:", e);
             }
         }
-
 
         let currentSlideIndex = 0;
         let slideInterval = null;
