@@ -637,6 +637,12 @@
     </footer>
 
     <script>
+
+        /* 在 <script> 标签下的第一行，把这两个变量提升到最顶端定义： */
+        var calcAccentColor = '#f97316';
+        var calcCycleDays = 30;
+        var popularPostsData = [];
+        var FX_RATES = { USD: 7.20, EUR: 7.80, CNY: 1.0 };
         let R2_DOMAIN = "";
         let currentFilterSeries = "";
         let currentFilterCategory = "";
@@ -1068,7 +1074,6 @@
 
         let currentSlideIndex = 0;
         let slideInterval = null;
-        let popularPostsData = [];
 
         function renderCarousel(items) {
             const slidesContainer = document.getElementById('carousel-slides');
@@ -1390,9 +1395,6 @@
             setGlobalTheme(saved);
         })();
 
-        let calcAccentColor = '#f97316';
-        let calcCycleDays = 30;
-        const FX_RATES = { USD: 7.20, EUR: 7.80, CNY: 1.0 };
 
         function initCalcTool() {
             const today = new Date();
