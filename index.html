@@ -430,8 +430,8 @@
                 class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-zinc-200/70 shadow-sm transform-gpu">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
                     <a href="#/"
-                        class="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-700 hover:text-amber-500 transition-colors">
-                        <span class="text-sm leading-none">←</span> 返回首页
+                        class="inline-flex items-center gap-2 text-sm sm:text-base font-bold text-zinc-800 hover:text-amber-600 transition-colors py-1">
+                        <span class="text-base sm:text-lg leading-none">←</span> 返回首页
                     </a>
                     <div class="flex items-center gap-3">
                         <div id="post-view-tools" class="flex items-center gap-3 text-xs font-semibold text-zinc-500">
@@ -451,8 +451,8 @@
 
             <!-- 2. 正文卡片主体：加上 pt-16 垫出顶栏高度，不遮挡大标题 -->
             <div class="pt-16 pb-12">
-                <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-                    <!-- 左侧：正文卡片 -->
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
+                    <!-- 左侧：正文卡片保持 col-span-3 -->
                     <main class="lg:col-span-3 bg-white p-6 sm:p-8 rounded-2xl border border-zinc-100 shadow-sm">
                         <header class="border-b border-zinc-100 pb-5 mb-6">
                             <!-- 刚才缺失的 detail-post-title，加上后脚本绝不再报错 -->
@@ -472,13 +472,12 @@
                             prose-pre:bg-[#0d1117] prose-pre:border prose-pre:border-zinc-800 prose-pre:rounded-xl prose-pre:p-0"></article>
                     </main>
 
-                    <!-- 右侧：目录导航 (保持吸附) -->
-                    <aside
-                        class="hidden lg:block lg:col-span-1 fixed top-20 right-[max(1rem,calc((100vw-80rem)/2+1rem))] w-[calc((80rem-6rem)/4)]">
+                    <!-- 右侧：紧随正文，间隙精准减半并自然粘性吸附 -->
+                    <aside class="hidden lg:block lg:col-span-1 sticky top-20">
                         <div class="bg-white p-5 rounded-2xl border border-zinc-100 shadow-sm space-y-3">
                             <div class="flex items-center space-x-2 border-b border-zinc-100 pb-3">
-                                <span class="text-sm">📑</span>
-                                <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-700">目录导航</h3>
+                                <span class="text-base">📑</span>
+                                <h3 class="text-sm font-bold uppercase tracking-wider text-zinc-800">目录导航</h3>
                             </div>
                             <nav id="post-toc-container"
                                 class="max-h-[calc(100vh-120px)] overflow-y-auto space-y-1 text-xs text-zinc-500 pr-1">
@@ -1346,8 +1345,7 @@
                     currentSubListEl = document.createElement('div');
                     currentSubListEl.className = 'toc-sub-list space-y-1 mt-1';
 
-                    itemLink.className = 'toc-link group flex items-center py-1.5 px-2.5 rounded-lg leading-snug transition-all text-zinc-700 font-semibold text-xs hover:text-amber-600 hover:bg-zinc-50';
-                    itemLink.style.setProperty('--base-pad', '10px');
+                    itemLink.className = 'toc-link group flex items-center py-2 px-2.5 rounded-lg leading-snug transition-all text-zinc-800 font-semibold text-sm hover:text-amber-600 hover:bg-zinc-50'; itemLink.style.setProperty('--base-pad', '10px');
                     itemLink.innerHTML = `<span class="truncate" title="${titleText}">${titleText}</span>`;
 
                     currentGroupEl.appendChild(itemLink);
@@ -1355,8 +1353,7 @@
                     container.appendChild(currentGroupEl);
                 } else {
                     const padLeft = tagName === 'h3' ? '20px' : '28px';
-                    itemLink.className = 'toc-link group flex items-center py-1 px-2.5 rounded-lg leading-snug transition-all text-zinc-500 text-[11px] hover:text-amber-600 hover:bg-zinc-50';
-                    itemLink.style.paddingLeft = padLeft;
+                    itemLink.className = 'toc-link group flex items-center py-1.5 px-2.5 rounded-lg leading-snug transition-all text-zinc-600 text-xs hover:text-amber-600 hover:bg-zinc-50'; itemLink.style.paddingLeft = padLeft;
                     itemLink.style.setProperty('--base-pad', padLeft);
                     itemLink.innerHTML = `<span class="truncate" title="${titleText}">${titleText}</span>`;
 
