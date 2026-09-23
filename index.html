@@ -168,10 +168,44 @@
                 0 8px 24px -4px rgba(103, 115, 144, 0.12),
                 inset 0 1px 1px 0 rgba(255, 255, 255, 1);
         }
+
+        /* 1. 声明默认主题 CSS 变量（默认使用你当前的暖杏金与莫兰迪色） */
+        :root {
+            --primary-color: #DABE86;
+            --primary-light: rgba(218, 190, 134, 0.25);
+            --primary-hover: #c9ac72;
+        }
+
+        /* 顶部柔和的环境动态光晕 */
+        .theme-ambient-glow {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1000px;
+            height: 380px;
+            background: radial-gradient(ellipse at top, var(--primary-light) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            transition: background 0.5s ease;
+        }
+
+        /* 动态强调类名：按钮与文字随变量自动变色 */
+        .dynamic-theme-bg {
+            background-color: var(--primary-color) !important;
+            transition: background-color 0.3s ease;
+        }
+
+        .dynamic-theme-text {
+            color: var(--primary-color) !important;
+            transition: color 0.3s ease;
+        }
     </style>
 </head>
 
-<body class="text-zinc-800 min-h-screen flex flex-col antialiased">
+<body class="text-zinc-800 min-h-screen flex flex-col antialiased relative">
+    <!-- 动态氛围光晕 -->
+    <div class="theme-ambient-glow"></div>
 
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-10">
 
@@ -209,6 +243,30 @@
                         <div
                             class="bg-white/90 px-4 py-2 sm:px-5 sm:py-2.5 rounded-2xl border border-[#8EA5C0]/30 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
                             <nav aria-label="大系列导航" class="flex items-center gap-2 overflow-x-auto py-0.5">
+                                <!-- 动态主题色卡选择器 -->
+                                <div class="flex items-center gap-2 px-1 py-1" id="theme-color-picker">
+                                    <span class="text-[11px] font-bold text-zinc-400 mr-1">风格:</span>
+                                    <!-- 橙/暖金 -->
+                                    <button onclick="setGlobalTheme('amber')"
+                                        class="w-4 h-4 rounded-full bg-[#DABE86] hover:scale-125 transition-transform shadow-sm focus:outline-none"
+                                        title="暖杏金"></button>
+                                    <!-- 玫紫 -->
+                                    <button onclick="setGlobalTheme('rose')"
+                                        class="w-4 h-4 rounded-full bg-[#db2777] hover:scale-125 transition-transform shadow-sm focus:outline-none"
+                                        title="蔷薇粉"></button>
+                                    <!-- 翠绿 -->
+                                    <button onclick="setGlobalTheme('emerald')"
+                                        class="w-4 h-4 rounded-full bg-[#059669] hover:scale-125 transition-transform shadow-sm focus:outline-none"
+                                        title="薄荷绿"></button>
+                                    <!-- 冰蓝 -->
+                                    <button onclick="setGlobalTheme('blue')"
+                                        class="w-4 h-4 rounded-full bg-[#2563eb] hover:scale-125 transition-transform shadow-sm focus:outline-none"
+                                        title="科技蓝"></button>
+                                    <!-- 纯紫 -->
+                                    <button onclick="setGlobalTheme('purple')"
+                                        class="w-4 h-4 rounded-full bg-[#7c3aed] hover:scale-125 transition-transform shadow-sm focus:outline-none"
+                                        title="星空紫"></button>
+                                </div>
                                 <span class="text-[11px] font-bold uppercase tracking-wider text-[#8EA5C0] shrink-0">系列
                                     ➔</span>
                                 <div id="series-navbar-container" class="flex flex-wrap gap-1.5 text-xs font-semibold">
@@ -1104,6 +1162,33 @@
                 wrapper.appendChild(button);
             });
         }
+
+        // 预设主题配置
+        const THEME_PALETTES = {
+            amber: { primary: '#DABE86', light: 'rgba(218, 190, 134, 0.28)', hover: '#c9ac72' },
+            rose: { primary: '#db2777', light: 'rgba(219, 39, 119, 0.20)', hover: '#be185d' },
+            emerald: { primary: '#059669', light: 'rgba(5, 150, 105, 0.20)', hover: '#047857' },
+            blue: { primary: '#2563eb', light: 'rgba(37, 99, 235, 0.20)', hover: '#1d4ed8' },
+            purple: { primary: '#7c3aed', light: 'rgba(124, 58, 237, 0.20)', hover: '#6d28d9' }
+        };
+
+        // 动态切换主题
+        function setGlobalTheme(themeKey) {
+            const theme = THEME_PALETTES[themeKey] || THEME_PALETTES.amber;
+            const root = document.documentElement;
+            root.style.setProperty('--primary-color', theme.primary);
+            root.style.setProperty('--primary-light', theme.light);
+            root.style.setProperty('--primary-hover', theme.hover);
+
+            // 保存到本地存储
+            localStorage.setItem('user_site_theme', themeKey);
+        }
+
+        // 页面载入时自动还原之前保存的主题
+        (function initUserTheme() {
+            const saved = localStorage.getItem('user_site_theme') || 'amber';
+            setGlobalTheme(saved);
+        })();
     </script>
 </body>
 
