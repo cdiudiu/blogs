@@ -200,6 +200,70 @@
             color: var(--primary-color) !important;
             transition: color 0.3s ease;
         }
+
+        /* 计算器主题样式隔离 */
+        [data-calc-theme="light"] #vps-calc-wrapper {
+            background-color: #EFECE6 !important;
+        }
+
+        [data-calc-theme="light"] #vps-calc-card {
+            background-color: #FFFFFF !important;
+            border-color: rgba(228, 228, 231, 0.8) !important;
+        }
+
+        [data-calc-theme="light"] .title-text {
+            color: #18181b !important;
+        }
+
+        [data-calc-theme="light"] .calc-input,
+        [data-calc-theme="light"] .fx-input,
+        [data-calc-theme="light"] .out-price-box {
+            background-color: #FFFFFF !important;
+            color: #18181b !important;
+            border-color: #E4E4E7 !important;
+        }
+
+        [data-calc-theme="light"] .cycle-btn {
+            background-color: #FFFFFF !important;
+            color: #52525b !important;
+            border-color: #E4E4E7 !important;
+        }
+
+        [data-calc-theme="light"] #res-remain-days {
+            color: #18181b !important;
+        }
+
+        /* 深色模式 */
+        [data-calc-theme="dark"] #vps-calc-wrapper {
+            background-color: #1a1613 !important;
+        }
+
+        [data-calc-theme="dark"] #vps-calc-card {
+            background-color: #181d24 !important;
+            border-color: #27272a !important;
+        }
+
+        [data-calc-theme="dark"] .title-text {
+            color: #FFFFFF !important;
+        }
+
+        [data-calc-theme="dark"] .calc-input,
+        [data-calc-theme="dark"] .fx-input,
+        [data-calc-theme="dark"] .out-price-box {
+            background-color: #12161c !important;
+            color: #FFFFFF !important;
+            border-color: #3f3f46 !important;
+        }
+
+        [data-calc-theme="dark"] .cycle-btn {
+            background-color: #12161c !important;
+            color: #a1a1aa !important;
+            border-color: #3f3f46 !important;
+        }
+
+        [data-calc-theme="dark"] #res-remain-days {
+            color: #FFFFFF !important;
+        }
     </style>
 </head>
 
@@ -438,7 +502,6 @@
 
         <!-- 3. 新增：VPS 剩余价值计算器工具页视图 -->
         <div id="calc-tool-view" class="hidden pt-6 pb-16">
-            <!-- 返回首页 -->
             <div class="max-w-4xl mx-auto mb-4 flex items-center justify-between px-2">
                 <a href="#/"
                     class="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-[#DABE86] transition-colors">
@@ -447,157 +510,158 @@
             </div>
 
             <div class="max-w-4xl mx-auto">
-                <!-- 顶部操作栏：色卡 + 深浅切换 -->
+                <!-- 顶部操作栏 -->
                 <div class="flex items-center justify-between mb-4 px-2">
-                    <!-- 基础色卡 -->
                     <div class="flex items-center gap-2.5">
-                        <button onclick="changeCalcAccent('#f97316')"
-                            class="w-5 h-5 rounded-full bg-orange-500 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-orange-400"></button>
-                        <button onclick="changeCalcAccent('#ec4899')"
-                            class="w-5 h-5 rounded-full bg-pink-500 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-pink-400"></button>
-                        <button onclick="changeCalcAccent('#a855f7')"
-                            class="w-5 h-5 rounded-full bg-purple-500 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-purple-400"></button>
-                        <button onclick="changeCalcAccent('#3b82f6')"
-                            class="w-5 h-5 rounded-full bg-blue-500 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-blue-400"></button>
-                        <button onclick="changeCalcAccent('#06b6d4')"
-                            class="w-5 h-5 rounded-full bg-cyan-500 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-cyan-400"></button>
-                        <button onclick="changeCalcAccent('#10b981')"
-                            class="w-5 h-5 rounded-full bg-emerald-500 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-emerald-400"></button>
+                        <button onclick="changeCalcAccent('#ea580c')"
+                            class="w-5 h-5 rounded-full bg-orange-600 hover:scale-110 transition-transform shadow-sm"></button>
+                        <button onclick="changeCalcAccent('#db2777')"
+                            class="w-5 h-5 rounded-full bg-pink-600 hover:scale-110 transition-transform shadow-sm"></button>
+                        <button onclick="changeCalcAccent('#7c3aed')"
+                            class="w-5 h-5 rounded-full bg-purple-600 hover:scale-110 transition-transform shadow-sm"></button>
+                        <button onclick="changeCalcAccent('#2563eb')"
+                            class="w-5 h-5 rounded-full bg-blue-600 hover:scale-110 transition-transform shadow-sm"></button>
+                        <button onclick="changeCalcAccent('#0891b2')"
+                            class="w-5 h-5 rounded-full bg-cyan-600 hover:scale-110 transition-transform shadow-sm"></button>
+                        <button onclick="changeCalcAccent('#059669')"
+                            class="w-5 h-5 rounded-full bg-emerald-600 hover:scale-110 transition-transform shadow-sm"></button>
                     </div>
 
                     <!-- 深浅色切换按钮 -->
                     <div class="inline-flex rounded-xl p-1 bg-white/80 border border-zinc-200/80 shadow-sm text-xs">
                         <button id="btn-mode-light" onclick="setCalcThemeMode('light')"
-                            class="px-4 py-1.5 rounded-lg transition-all font-semibold text-zinc-600">浅色</button>
+                            class="px-4 py-1.5 rounded-lg transition-all font-semibold">浅色</button>
                         <button id="btn-mode-dark" onclick="setCalcThemeMode('dark')"
-                            class="px-4 py-1.5 rounded-lg transition-all font-semibold text-white dynamic-calc-btn">深色</button>
+                            class="px-4 py-1.5 rounded-lg transition-all font-semibold">深色</button>
                     </div>
                 </div>
 
-                <!-- 外部海报画框包裹容器 -->
-                <div id="vps-calc-wrapper"
-                    class="p-4 sm:p-5 rounded-[28px] bg-[#1e1916] transition-colors duration-300 shadow-2xl">
-                    <!-- 核心卡片容器 -->
-                    <div id="vps-calc-card"
-                        class="rounded-2xl p-6 sm:p-8 bg-[#181d24] text-zinc-200 transition-colors duration-300 border border-zinc-800/80">
+                <!-- 外部海报画框 -->
+                <div id="vps-calc-wrapper" class="p-4 sm:p-5 rounded-[28px] transition-colors duration-300 shadow-xl">
+                    <!-- 核心卡片 -->
+                    <div id="vps-calc-card" class="rounded-2xl p-6 sm:p-8 transition-colors duration-300 border">
                         <!-- 头部 -->
                         <div class="flex items-center justify-between pb-6">
-                            <h3 class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                            <h3 class="text-lg sm:text-xl font-bold tracking-tight title-text flex items-center gap-2">
                                 VPS 剩余价值计算器
                             </h3>
-                            <span id="calc-today-date" class="text-xs text-zinc-500 font-mono"></span>
+                            <span id="calc-today-date" class="text-xs text-zinc-400 font-mono"></span>
                         </div>
 
-                        <!-- 核心双栏（中间带贯穿竖线） -->
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-                            <!-- 左半部：表单输入区 (占 7 列) -->
+                            <!-- 左半部 -->
                             <div class="lg:col-span-7 space-y-4">
                                 <div>
-                                    <div class="flex justify-between text-xs text-zinc-400 mb-1.5">
+                                    <div class="flex justify-between text-xs text-zinc-500 mb-1.5">
                                         <span>续费价格</span>
-                                        <span>货币</span>
+                                        <div class="flex gap-4">
+                                            <span id="cny-approx-display">≈ 0.00 元</span>
+                                            <span>货币</span>
+                                        </div>
                                     </div>
                                     <div class="flex gap-2">
                                         <div class="relative flex-1">
-                                            <span class="absolute left-3 top-2.5 text-zinc-500 text-sm">$</span>
-                                            <input type="number" id="input-price" value="3.5" step="0.1"
+                                            <span class="absolute left-3 top-2.5 text-zinc-400 text-sm">$</span>
+                                            <input type="number" id="input-price" value="3.5" step="0.01"
                                                 oninput="calculateVPS()"
-                                                class="calc-input w-full pl-7 pr-3 py-2 rounded-xl text-sm border border-zinc-700/80 bg-[#12161c] text-white focus:outline-none transition-all">
+                                                class="calc-input w-full pl-7 pr-3 py-2 rounded-xl text-sm border focus:outline-none transition-all font-mono">
                                         </div>
-                                        <select id="input-currency" onchange="calculateVPS()"
-                                            class="calc-input px-3 py-2 rounded-xl text-sm border border-zinc-700/80 bg-[#12161c] text-white focus:outline-none w-36">
+                                        <select id="input-currency" onchange="handleCurrencyChange()"
+                                            class="calc-input px-3 py-2 rounded-xl text-sm border focus:outline-none w-36 font-sans">
                                             <option value="USD" selected>USD 美元</option>
                                             <option value="CNY">CNY 人民币</option>
                                             <option value="EUR">EUR 欧元</option>
+                                            <option value="GBP">GBP 英镑</option>
+                                            <option value="HKD">HKD 港币</option>
+                                            <option value="JPY">JPY 日元</option>
                                         </select>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs text-zinc-400 mb-1.5">计费周期</label>
+                                    <label class="block text-xs text-zinc-500 mb-1.5">计费周期</label>
                                     <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5" id="cycle-selector">
                                         <button type="button" data-days="30"
-                                            class="cycle-btn active py-2 rounded-xl text-xs font-semibold border border-zinc-700/80 bg-[#12161c] text-zinc-300 transition-all">月付</button>
-                                        <button type="button" data-days="90"
-                                            class="cycle-btn py-2 rounded-xl text-xs font-semibold border border-zinc-700/80 bg-[#12161c] text-zinc-300 transition-all">季付</button>
-                                        <button type="button" data-days="180"
-                                            class="cycle-btn py-2 rounded-xl text-xs font-semibold border border-zinc-700/80 bg-[#12161c] text-zinc-300 transition-all">半年付</button>
+                                            class="cycle-btn py-2 rounded-xl text-xs font-semibold border transition-all">月付</button>
+                                        <button type="button" data-days="91"
+                                            class="cycle-btn active py-2 rounded-xl text-xs font-semibold border transition-all">季付</button>
+                                        <button type="button" data-days="182"
+                                            class="cycle-btn py-2 rounded-xl text-xs font-semibold border transition-all">半年付</button>
                                         <button type="button" data-days="365"
-                                            class="cycle-btn py-2 rounded-xl text-xs font-semibold border border-zinc-700/80 bg-[#12161c] text-zinc-300 transition-all">年付</button>
+                                            class="cycle-btn py-2 rounded-xl text-xs font-semibold border transition-all">年付</button>
                                         <button type="button" data-days="730"
-                                            class="cycle-btn py-2 rounded-xl text-xs font-semibold border border-zinc-700/80 bg-[#12161c] text-zinc-300 transition-all">两年付</button>
+                                            class="cycle-btn py-2 rounded-xl text-xs font-semibold border transition-all">两年付</button>
                                         <button type="button" data-days="1095"
-                                            class="cycle-btn py-2 rounded-xl text-xs font-semibold border border-zinc-700/80 bg-[#12161c] text-zinc-300 transition-all">三年付</button>
+                                            class="cycle-btn py-2 rounded-xl text-xs font-semibold border transition-all">三年付</button>
                                     </div>
                                 </div>
 
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label class="block text-xs text-zinc-400 mb-1.5">到期日期</label>
+                                        <label class="block text-xs text-zinc-500 mb-1.5">到期日期</label>
                                         <input type="date" id="input-end-date" onchange="calculateVPS()"
-                                            class="calc-input w-full px-3 py-2 rounded-xl text-xs border border-zinc-700/80 bg-[#12161c] text-zinc-200 focus:outline-none">
+                                            class="calc-input w-full px-3 py-2 rounded-xl text-xs border focus:outline-none font-mono">
                                     </div>
                                     <div>
-                                        <label class="block text-xs text-zinc-400 mb-1.5">交易日期</label>
+                                        <label class="block text-xs text-zinc-500 mb-1.5">交易日期</label>
                                         <input type="date" id="input-start-date" onchange="calculateVPS()"
-                                            class="calc-input w-full px-3 py-2 rounded-xl text-xs border border-zinc-700/80 bg-[#12161c] text-zinc-200 focus:outline-none">
+                                            class="calc-input w-full px-3 py-2 rounded-xl text-xs border focus:outline-none font-mono">
                                     </div>
                                 </div>
 
-                                <div class="pt-2 flex items-center gap-3 text-xs text-zinc-400">
+                                <div class="pt-2 flex items-center gap-3 text-xs text-zinc-500">
                                     <span>CNY 汇率</span>
-                                    <span id="calc-fx-display"
-                                        class="font-mono text-sm underline decoration-zinc-600 underline-offset-4"
-                                        style="color: var(--calc-accent, #f97316);">7.2000</span>
-                                    <button onclick="fetchLiveExchangeRate()"
-                                        class="hover:text-zinc-200 flex items-center gap-1">🔄 自动</button>
+                                    <input type="number" id="input-fx-rate" value="6.7102" step="0.0001"
+                                        oninput="calculateVPS()"
+                                        class="w-24 px-2 py-1 rounded-md border text-center font-mono font-bold focus:outline-none fx-input"
+                                        style="color: var(--calc-accent, #ea580c);">
+                                    <button type="button" onclick="fetchLiveExchangeRate()"
+                                        class="hover:text-zinc-800 dark:hover:text-zinc-200 flex items-center gap-1">🔄
+                                        自动</button>
                                 </div>
                             </div>
 
-                            <!-- 右半部：纯正深色结果计算区 (占 5 列，左侧带贯穿分割线) -->
+                            <!-- 右半部：结果计算区 -->
                             <div
-                                class="lg:col-span-5 flex flex-col justify-between lg:pl-6 lg:border-l border-zinc-800/80 space-y-6">
-                                <!-- 大字展示区 -->
+                                class="lg:col-span-5 flex flex-col justify-between lg:pl-6 lg:border-l border-zinc-200/50 dark:border-zinc-800/80 space-y-6">
                                 <div class="text-right">
                                     <span class="text-xs text-zinc-400 block mb-1">剩余价值 (CNY)</span>
                                     <div class="text-4xl sm:text-5xl font-extrabold font-mono tracking-tight"
-                                        id="result-cny" style="color: var(--calc-accent, #f97316);">
-                                        ¥ 23.49
+                                        id="result-cny" style="color: var(--calc-accent, #ea580c);">
+                                        ¥ 7.66
                                     </div>
-                                    <span class="text-xs text-zinc-500 font-mono mt-1 block"
-                                        id="result-origin-currency">≈ 3.50 USD</span>
+                                    <span class="text-xs text-zinc-400 font-mono mt-1 block"
+                                        id="result-origin-currency">≈ 1.14 USD</span>
                                 </div>
 
-                                <!-- 进度条 -->
                                 <div>
                                     <div class="flex justify-between text-xs text-zinc-400 mb-2">
-                                        <span>剩余天数 <strong id="res-remain-days" class="text-white text-sm">30</strong>
-                                            天</span>
-                                        <span id="res-percentage" class="font-mono">100%</span>
+                                        <span>剩余天数 <strong id="res-remain-days"
+                                                class="text-base font-bold font-mono">30</strong> 天</span>
+                                        <span id="res-percentage" class="font-mono font-bold">33%</span>
                                     </div>
-                                    <div class="w-full h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+                                    <div class="w-full h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
                                         <div id="res-progress-bar"
                                             class="h-full rounded-full transition-all duration-300"
-                                            style="width: 100%; background-color: var(--calc-accent, #f97316);"></div>
+                                            style="width: 33%; background-color: var(--calc-accent, #ea580c);"></div>
                                     </div>
                                 </div>
 
-                                <!-- 底部溢价与出价双框 -->
                                 <div class="grid grid-cols-2 gap-3 pt-2">
                                     <div>
                                         <label class="block text-xs text-zinc-400 mb-1">溢价 / 折价</label>
                                         <div class="relative">
-                                            <span class="absolute left-2.5 top-2 text-zinc-500 text-xs">¥</span>
+                                            <span class="absolute left-2.5 top-2 text-zinc-400 text-xs">¥</span>
                                             <input type="number" id="input-offset" value="0.00" step="0.5"
                                                 oninput="calculateVPS()"
-                                                class="calc-input w-full pl-6 pr-2 py-1.5 rounded-xl text-xs border border-zinc-700/80 bg-[#12161c] text-white focus:outline-none font-mono">
+                                                class="calc-input w-full pl-6 pr-2 py-1.5 rounded-xl text-xs border focus:outline-none font-mono">
                                         </div>
                                     </div>
                                     <div>
                                         <label class="block text-xs text-zinc-400 mb-1">出售价格</label>
-                                        <div class="flex items-center px-3 py-1.5 rounded-xl border border-zinc-700/80 bg-[#12161c] text-xs font-mono font-bold"
-                                            id="result-total-price" style="color: var(--calc-accent, #f97316);">
-                                            ¥ 23.49
+                                        <div class="flex items-center px-3 py-1.5 rounded-xl border text-xs font-mono font-bold h-[34px] out-price-box"
+                                            id="result-total-price" style="color: var(--calc-accent, #ea580c);">
+                                            ¥ 7.66
                                         </div>
                                     </div>
                                 </div>
@@ -606,7 +670,7 @@
                     </div>
                 </div>
 
-                <!-- 底部下载/复制按钮 -->
+                <!-- 底部按钮 -->
                 <div class="flex items-center gap-3 mt-5 px-2">
                     <button onclick="downloadCalcImage()"
                         class="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold text-white shadow-sm hover:opacity-90 active:scale-95 transition-all dynamic-calc-btn">
@@ -639,8 +703,21 @@
     <script>
 
         /* 在 <script> 标签下的第一行，把这两个变量提升到最顶端定义： */
-        var calcAccentColor = '#f97316';
-        var calcCycleDays = 30;
+        // 全局状态变量
+        var calcAccentColor = '#ea580c';
+        var calcCurrentTheme = 'light';
+
+        // 常用基础参考汇率
+        var LIVE_FX_TABLE = {
+            USD: 6.7102,
+            EUR: 7.8215,
+            CNY: 1.0000,
+            GBP: 9.1530,
+            HKD: 0.9120,
+            JPY: 0.0465
+        };
+        var calcCycleDays = 30;// 默认季付
+
         var popularPostsData = [];
         var FX_RATES = { USD: 7.20, EUR: 7.80, CNY: 1.0 };
         let R2_DOMAIN = "";
@@ -1399,121 +1476,161 @@
         function initCalcTool() {
             const today = new Date();
             const todayStr = today.toISOString().split('T')[0];
-            const startDateEl = document.getElementById('input-start-date');
-            const endDateEl = document.getElementById('input-end-date');
             const todayDisplay = document.getElementById('calc-today-date');
+            if (todayDisplay) todayDisplay.innerText = `${todayStr.replace(/-/g, '/')} 创建`;
 
-            if (startDateEl && !startDateEl.value) startDateEl.value = todayStr;
-            if (todayDisplay) todayDisplay.innerText = `${todayStr} 创建`;
+            const startInput = document.getElementById('input-start-date');
+            const endInput = document.getElementById('input-end-date');
 
-            const nextMonth = new Date(today);
-            nextMonth.setDate(today.getDate() + 30);
-            if (endDateEl && !endDateEl.value) endDateEl.value = nextMonth.toISOString().split('T')[0];
+            // 默认展示交易日为今天，到期日为一个月后（符合图一的 30 天状态）
+            if (startInput && !startInput.value) startInput.value = todayStr;
+            if (endInput && !endInput.value) {
+                const nextDate = new Date(today);
+                nextDate.setDate(today.getDate() + 30);
+                endInput.value = nextDate.toISOString().split('T')[0];
+            }
 
+            // 周期切换按钮绑定
             document.querySelectorAll('#cycle-selector .cycle-btn').forEach(btn => {
                 btn.onclick = () => {
-                    document.querySelectorAll('#cycle-selector .cycle-btn').forEach(b => b.classList.remove('active', 'border-amber-500'));
-                    btn.classList.add('active', 'border-amber-500');
+                    document.querySelectorAll('#cycle-selector .cycle-btn').forEach(b => {
+                        b.classList.remove('active');
+                        b.style.borderColor = '';
+                        b.style.color = '';
+                    });
+                    btn.classList.add('active');
                     calcCycleDays = parseInt(btn.dataset.days);
-
-                    const base = new Date(document.getElementById('input-start-date').value || new Date());
-                    base.setDate(base.getDate() + calcCycleDays);
-                    if (endDateEl) endDateEl.value = base.toISOString().split('T')[0];
+                    btn.style.borderColor = calcAccentColor;
+                    btn.style.color = calcAccentColor;
                     calculateVPS();
                 };
             });
 
-            changeCalcAccent('#f97316');
-            setCalcThemeMode('dark');
+            changeCalcAccent('#ea580c');
+            setCalcThemeMode('light'); // 默认展示浅色质感
             calculateVPS();
         }
 
-        // 2. 颜色与深浅主题切换
+        function handleCurrencyChange() {
+            const curr = document.getElementById('input-currency').value;
+            const fxInput = document.getElementById('input-fx-rate');
+            if (LIVE_FX_TABLE[curr] && fxInput) {
+                fxInput.value = LIVE_FX_TABLE[curr].toFixed(4);
+            }
+            calculateVPS();
+        }
+
+        // 自动获取公网真实汇率（以开源外汇 API 兜底）
+        async function fetchLiveExchangeRate() {
+            const curr = document.getElementById('input-currency').value;
+            const fxInput = document.getElementById('input-fx-rate');
+            if (curr === 'CNY') {
+                if (fxInput) fxInput.value = "1.0000";
+                calculateVPS();
+                return;
+            }
+            try {
+                const res = await fetch(`https://open.er-api.com/v6/latest/${curr}`);
+                const data = await res.json();
+                if (data && data.rates && data.rates.CNY) {
+                    const liveRate = data.rates.CNY.toFixed(4);
+                    LIVE_FX_TABLE[curr] = parseFloat(liveRate);
+                    if (fxInput) fxInput.value = liveRate;
+                    calculateVPS();
+                }
+            } catch (e) {
+                alert("获取实时汇率失败，已保留当前汇率数值");
+            }
+        }
+
+        // 核心 VPS 剩余价值计算引擎
+        function calculateVPS() {
+            const price = parseFloat(document.getElementById('input-price').value) || 0;
+            const curr = document.getElementById('input-currency').value;
+            const fxRate = parseFloat(document.getElementById('input-fx-rate').value) || 1;
+            const offset = parseFloat(document.getElementById('input-offset').value) || 0;
+
+            const startDateVal = document.getElementById('input-start-date').value;
+            const endDateVal = document.getElementById('input-end-date').value;
+
+            if (!startDateVal || !endDateVal) return;
+
+            const startDate = new Date(startDateVal);
+            const endDate = new Date(endDateVal);
+
+            // 1. 精确计算剩余天数（毫秒转自然天）
+            const diffMs = endDate.getTime() - startDate.getTime();
+            const remainingDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+
+            // 2. 周期总天数（若剩余天数异常大于周期，则自适应拓展为剩余天数）
+            const cycleTotalDays = Math.max(calcCycleDays, remainingDays);
+
+            // 3. 计算剩余天数占比
+            const percentage = cycleTotalDays > 0 ? Math.min(100, Math.round((remainingDays / cycleTotalDays) * 100)) : 0;
+
+            // 4. 剩余价值与折算总价
+            const totalPriceCNY = price * fxRate;
+            const dailyPriceCNY = cycleTotalDays > 0 ? (totalPriceCNY / cycleTotalDays) : 0;
+            const remainingValueCNY = dailyPriceCNY * remainingDays;
+            const remainingValueOriginCurr = fxRate > 0 ? (remainingValueCNY / fxRate) : 0;
+            const finalSalePriceCNY = remainingValueCNY + offset;
+
+            // 5. 页面数据联动填充
+            document.getElementById('cny-approx-display').innerText = `≈ ${totalPriceCNY.toFixed(2)} 元`;
+            document.getElementById('result-cny').innerText = `¥ ${remainingValueCNY.toFixed(2)}`;
+            document.getElementById('result-origin-currency').innerText = `≈ ${remainingValueOriginCurr.toFixed(2)} ${curr}`;
+            document.getElementById('res-remain-days').innerText = remainingDays;
+            document.getElementById('res-percentage').innerText = `${percentage}%`;
+            document.getElementById('res-progress-bar').style.width = `${percentage}%`;
+            document.getElementById('result-total-price').innerText = `¥ ${finalSalePriceCNY.toFixed(2)}`;
+        }
+
+        // 主题色与强调色切换
         function changeCalcAccent(hex) {
             calcAccentColor = hex;
             document.documentElement.style.setProperty('--calc-accent', hex);
 
-            // 动态同步按钮与高亮元素
             document.querySelectorAll('.dynamic-calc-btn').forEach(el => {
                 el.style.backgroundColor = hex;
             });
 
-            // 激活周期的边框高亮
-            document.querySelectorAll('#cycle-selector .cycle-btn.active').forEach(b => {
-                b.style.borderColor = hex;
-                b.style.color = hex;
-            });
+            const activeBtn = document.querySelector('#cycle-selector .cycle-btn.active');
+            if (activeBtn) {
+                activeBtn.style.borderColor = hex;
+                activeBtn.style.color = hex;
+            }
+
+            const modeBtn = calcCurrentTheme === 'dark' ? document.getElementById('btn-mode-dark') : document.getElementById('btn-mode-light');
+            if (modeBtn) modeBtn.style.backgroundColor = hex;
 
             calculateVPS();
         }
 
         function setCalcThemeMode(mode) {
+            calcCurrentTheme = mode;
             const wrapper = document.getElementById('vps-calc-wrapper');
-            const card = document.getElementById('vps-calc-card');
             const btnLight = document.getElementById('btn-mode-light');
             const btnDark = document.getElementById('btn-mode-dark');
-            if (!card || !wrapper) return;
+            if (!wrapper) return;
+
+            wrapper.setAttribute('data-calc-theme', mode);
 
             if (mode === 'dark') {
-                wrapper.className = "p-4 sm:p-5 rounded-[28px] bg-[#1e1916] transition-colors duration-300 shadow-2xl";
-                card.className = "rounded-2xl p-6 sm:p-8 bg-[#181d24] text-zinc-200 transition-colors duration-300 border border-zinc-800/80";
-
                 btnDark.className = "px-4 py-1.5 rounded-lg transition-all font-semibold text-white dynamic-calc-btn";
                 btnDark.style.backgroundColor = calcAccentColor;
                 btnLight.className = "px-4 py-1.5 rounded-lg transition-all font-semibold text-zinc-600 hover:text-zinc-900";
                 btnLight.style.backgroundColor = "transparent";
-
-                document.querySelectorAll('.calc-input').forEach(el => {
-                    el.className = el.className.replace(/bg-white text-zinc-800 border-zinc-200/g, 'bg-[#12161c] text-white border-zinc-700/80');
-                });
             } else {
-                wrapper.className = "p-4 sm:p-5 rounded-[28px] bg-[#f0ede6] transition-colors duration-300 shadow-xl";
-                card.className = "rounded-2xl p-6 sm:p-8 bg-white text-zinc-800 transition-colors duration-300 border border-zinc-200/80";
-
                 btnLight.className = "px-4 py-1.5 rounded-lg transition-all font-semibold text-white dynamic-calc-btn";
                 btnLight.style.backgroundColor = calcAccentColor;
                 btnDark.className = "px-4 py-1.5 rounded-lg transition-all font-semibold text-zinc-600 hover:text-zinc-900";
                 btnDark.style.backgroundColor = "transparent";
-
-                document.querySelectorAll('.calc-input').forEach(el => {
-                    el.className = el.className.replace(/bg-\[#12161c\] text-white border-zinc-700\/80/g, 'bg-white text-zinc-800 border-zinc-200');
-                });
             }
+
+            changeCalcAccent(calcAccentColor);
         }
 
-        // 3. 核心计算算法
-        function calculateVPS() {
-            const price = parseFloat(document.getElementById('input-price').value) || 0;
-            const currency = document.getElementById('input-currency').value;
-            const offset = parseFloat(document.getElementById('input-offset').value) || 0;
-            const startDate = new Date(document.getElementById('input-start-date').value);
-            const endDate = new Date(document.getElementById('input-end-date').value);
-
-            // 计算天数差
-            const diffTime = endDate - startDate;
-            const remainingDays = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-            const totalCycleDays = Math.max(calcCycleDays, remainingDays);
-
-            // 价值换算
-            const rate = FX_RATES[currency] || 1;
-            const priceInCNY = price * rate;
-            const dailyPriceInCNY = totalCycleDays > 0 ? (priceInCNY / totalCycleDays) : 0;
-            const remainingValueCNY = dailyPriceInCNY * remainingDays;
-            const finalPriceCNY = remainingValueCNY + offset;
-            const percentage = totalCycleDays > 0 ? Math.min(100, Math.round((remainingDays / totalCycleDays) * 100)) : 0;
-
-            // 渲染输出
-            document.getElementById('res-remain-days').innerText = remainingDays;
-            document.getElementById('res-percentage').innerText = `${percentage}%`;
-            document.getElementById('res-progress-bar').style.width = `${percentage}%`;
-
-            document.getElementById('result-cny').innerText = `¥ ${remainingValueCNY.toFixed(2)}`;
-            document.getElementById('result-origin-currency').innerText = `≈ ${(remainingValueCNY / rate).toFixed(2)} ${currency}`;
-            document.getElementById('result-total-price').innerText = `¥ ${finalPriceCNY.toFixed(2)}`;
-            document.getElementById('result-daily-cost').innerText = `¥ ${dailyPriceInCNY.toFixed(2)} / 天`;
-        }
-
-        // 4. 下载卡片图片
+        // 导出高清海报图片
         async function downloadCalcImage() {
             const card = document.getElementById('vps-calc-card');
             if (!card) return;
@@ -1524,7 +1641,7 @@
             link.click();
         }
 
-        // 5. 复制卡片图片到剪贴板
+        // 复制图片到剪贴板
         async function copyCalcImage() {
             const card = document.getElementById('vps-calc-card');
             const btnText = document.getElementById('copy-btn-text');
@@ -1543,7 +1660,7 @@
                     }
                 });
             } catch (err) {
-                alert("浏览器限制，请直接使用【下载图片】");
+                alert("浏览器限制，请使用【下载图片】保存");
             }
         }
     </script>
