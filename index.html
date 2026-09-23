@@ -201,18 +201,11 @@
             transition: color 0.3s ease;
         }
 
-        /* 计算器主题样式隔离 */
-        [data-calc-theme="light"] #vps-calc-wrapper {
-            background-color: #EFECE6 !important;
-        }
-
+        /* 浅色模式规范 */
         [data-calc-theme="light"] #vps-calc-card {
             background-color: #FFFFFF !important;
-            border-color: rgba(228, 228, 231, 0.8) !important;
-        }
-
-        [data-calc-theme="light"] .title-text {
             color: #18181b !important;
+            border-color: rgba(0, 0, 0, 0.06) !important;
         }
 
         [data-calc-theme="light"] .calc-input,
@@ -220,49 +213,46 @@
         [data-calc-theme="light"] .out-price-box {
             background-color: #FFFFFF !important;
             color: #18181b !important;
-            border-color: #E4E4E7 !important;
+            border-color: #e4e4e7 !important;
         }
 
         [data-calc-theme="light"] .cycle-btn {
             background-color: #FFFFFF !important;
-            color: #52525b !important;
-            border-color: #E4E4E7 !important;
+            color: #71717a !important;
+            border-color: #e4e4e7 !important;
         }
 
-        [data-calc-theme="light"] #res-remain-days {
-            color: #18181b !important;
+        [data-calc-theme="light"] .cycle-btn.active {
+            border-color: var(--calc-accent, #ea580c) !important;
+            color: var(--calc-accent, #ea580c) !important;
+            border-width: 1.5px !important;
         }
 
-        /* 深色模式 */
-        [data-calc-theme="dark"] #vps-calc-wrapper {
-            background-color: #1a1613 !important;
-        }
-
+        /* 深色模式规范 */
         [data-calc-theme="dark"] #vps-calc-card {
-            background-color: #181d24 !important;
+            background-color: #161b22 !important;
+            color: #f4f4f5 !important;
             border-color: #27272a !important;
-        }
-
-        [data-calc-theme="dark"] .title-text {
-            color: #FFFFFF !important;
         }
 
         [data-calc-theme="dark"] .calc-input,
         [data-calc-theme="dark"] .fx-input,
         [data-calc-theme="dark"] .out-price-box {
-            background-color: #12161c !important;
-            color: #FFFFFF !important;
-            border-color: #3f3f46 !important;
+            background-color: #0d1117 !important;
+            color: #f4f4f5 !important;
+            border-color: #30363d !important;
         }
 
         [data-calc-theme="dark"] .cycle-btn {
-            background-color: #12161c !important;
-            color: #a1a1aa !important;
-            border-color: #3f3f46 !important;
+            background-color: #0d1117 !important;
+            color: #8b949e !important;
+            border-color: #30363d !important;
         }
 
-        [data-calc-theme="dark"] #res-remain-days {
-            color: #FFFFFF !important;
+        [data-calc-theme="dark"] .cycle-btn.active {
+            border-color: var(--calc-accent, #ea580c) !important;
+            color: var(--calc-accent, #ea580c) !important;
+            border-width: 1.5px !important;
         }
     </style>
 </head>
@@ -501,34 +491,36 @@
         </div>
 
         <!-- 3. 新增：VPS 剩余价值计算器工具页视图 -->
-        <div id="calc-tool-view" class="hidden pt-6 pb-16">
-            <div class="max-w-4xl mx-auto mb-4 flex items-center justify-between px-2">
-                <a href="#/"
-                    class="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-[#DABE86] transition-colors">
-                    <span class="text-sm leading-none">←</span> 返回首页
-                </a>
-            </div>
+        <div id="calc-tool-view" class="hidden pt-6 pb-20">
+            <div class="max-w-4xl mx-auto px-4">
+                <!-- 顶部文字区（图三样式） -->
+                <div class="mb-6 space-y-2">
+                    <a href="#/"
+                        class="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-800 transition-colors">
+                        <span>←</span> 工具
+                    </a>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">VPS 剩余价值计算器</h1>
+                    <p class="text-xs sm:text-sm text-zinc-500">按剩余天数快速估算当前剩余价值，适合二手转让时快速估价。</p>
+                </div>
 
-            <div class="max-w-4xl mx-auto">
-                <!-- 顶部操作栏 -->
-                <div class="flex items-center justify-between mb-4 px-2">
+                <!-- 顶部操作栏：色卡 + 深浅切换 -->
+                <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-2.5">
-                        <button onclick="changeCalcAccent('#ea580c')"
-                            class="w-5 h-5 rounded-full bg-orange-600 hover:scale-110 transition-transform shadow-sm"></button>
-                        <button onclick="changeCalcAccent('#db2777')"
-                            class="w-5 h-5 rounded-full bg-pink-600 hover:scale-110 transition-transform shadow-sm"></button>
-                        <button onclick="changeCalcAccent('#7c3aed')"
-                            class="w-5 h-5 rounded-full bg-purple-600 hover:scale-110 transition-transform shadow-sm"></button>
-                        <button onclick="changeCalcAccent('#2563eb')"
-                            class="w-5 h-5 rounded-full bg-blue-600 hover:scale-110 transition-transform shadow-sm"></button>
-                        <button onclick="changeCalcAccent('#0891b2')"
-                            class="w-5 h-5 rounded-full bg-cyan-600 hover:scale-110 transition-transform shadow-sm"></button>
-                        <button onclick="changeCalcAccent('#059669')"
-                            class="w-5 h-5 rounded-full bg-emerald-600 hover:scale-110 transition-transform shadow-sm"></button>
+                        <button onclick="changeCalcTheme('#ea580c', '#faebe5', '#1e1613')"
+                            class="w-5 h-5 rounded-full bg-[#ea580c] ring-2 ring-offset-2 ring-transparent focus:ring-[#ea580c] transition-all"></button>
+                        <button onclick="changeCalcTheme('#db2777', '#fae8f0', '#1f1319')"
+                            class="w-5 h-5 rounded-full bg-[#db2777] ring-2 ring-offset-2 ring-transparent focus:ring-[#db2777] transition-all"></button>
+                        <button onclick="changeCalcTheme('#7c3aed', '#f1ebfa', '#17131f')"
+                            class="w-5 h-5 rounded-full bg-[#7c3aed] ring-2 ring-offset-2 ring-transparent focus:ring-[#7c3aed] transition-all"></button>
+                        <button onclick="changeCalcTheme('#2563eb', '#e9f0fc', '#121721')"
+                            class="w-5 h-5 rounded-full bg-[#2563eb] ring-2 ring-offset-2 ring-transparent focus:ring-[#2563eb] transition-all"></button>
+                        <button onclick="changeCalcTheme('#0891b2', '#e6f6f9', '#111b1e')"
+                            class="w-5 h-5 rounded-full bg-[#0891b2] ring-2 ring-offset-2 ring-transparent focus:ring-[#0891b2] transition-all"></button>
+                        <button onclick="changeCalcTheme('#059669', '#e7f7f0', '#101d17')"
+                            class="w-5 h-5 rounded-full bg-[#059669] ring-2 ring-offset-2 ring-transparent focus:ring-[#059669] transition-all"></button>
                     </div>
 
-                    <!-- 深浅色切换按钮 -->
-                    <div class="inline-flex rounded-xl p-1 bg-white/80 border border-zinc-200/80 shadow-sm text-xs">
+                    <div class="inline-flex rounded-xl p-1 bg-white border border-zinc-200 shadow-sm text-xs">
                         <button id="btn-mode-light" onclick="setCalcThemeMode('light')"
                             class="px-4 py-1.5 rounded-lg transition-all font-semibold">浅色</button>
                         <button id="btn-mode-dark" onclick="setCalcThemeMode('dark')"
@@ -536,25 +528,25 @@
                     </div>
                 </div>
 
-                <!-- 外部海报画框 -->
-                <div id="vps-calc-wrapper" class="p-4 sm:p-5 rounded-[28px] transition-colors duration-300 shadow-xl">
-                    <!-- 核心卡片 -->
-                    <div id="vps-calc-card" class="rounded-2xl p-6 sm:p-8 transition-colors duration-300 border">
+                <!-- 外部海报画框 (背景色随色卡动态变化) -->
+                <div id="vps-calc-wrapper" class="p-6 sm:p-10 rounded-[36px] transition-all duration-300 shadow-xl"
+                    style="background-color: #faebe5;">
+                    <!-- 核心卡片 (白色 / 深黑色主体) -->
+                    <div id="vps-calc-card"
+                        class="rounded-3xl p-6 sm:p-8 transition-colors duration-300 border border-black/5 bg-white text-zinc-800 shadow-sm">
                         <!-- 头部 -->
                         <div class="flex items-center justify-between pb-6">
-                            <h3 class="text-lg sm:text-xl font-bold tracking-tight title-text flex items-center gap-2">
-                                VPS 剩余价值计算器
-                            </h3>
+                            <h3 class="text-base sm:text-lg font-bold tracking-tight text-inherit">VPS 剩余价值计算器</h3>
                             <span id="calc-today-date" class="text-xs text-zinc-400 font-mono"></span>
                         </div>
 
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-                            <!-- 左半部 -->
+                            <!-- 左侧输入栏 -->
                             <div class="lg:col-span-7 space-y-4">
                                 <div>
-                                    <div class="flex justify-between text-xs text-zinc-500 mb-1.5">
+                                    <div class="flex justify-between text-xs text-zinc-400 mb-1.5">
                                         <span>续费价格</span>
-                                        <div class="flex gap-4">
+                                        <div class="flex gap-3">
                                             <span id="cny-approx-display">≈ 0.00 元</span>
                                             <span>货币</span>
                                         </div>
@@ -578,13 +570,14 @@
                                     </div>
                                 </div>
 
+                                <!-- 计费周期选项卡 -->
                                 <div>
-                                    <label class="block text-xs text-zinc-500 mb-1.5">计费周期</label>
+                                    <label class="block text-xs text-zinc-400 mb-1.5">计费周期</label>
                                     <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5" id="cycle-selector">
                                         <button type="button" data-days="30"
-                                            class="cycle-btn py-2 rounded-xl text-xs font-semibold border transition-all">月付</button>
+                                            class="cycle-btn active py-2 rounded-xl text-xs font-semibold border transition-all">月付</button>
                                         <button type="button" data-days="91"
-                                            class="cycle-btn active py-2 rounded-xl text-xs font-semibold border transition-all">季付</button>
+                                            class="cycle-btn py-2 rounded-xl text-xs font-semibold border transition-all">季付</button>
                                         <button type="button" data-days="182"
                                             class="cycle-btn py-2 rounded-xl text-xs font-semibold border transition-all">半年付</button>
                                         <button type="button" data-days="365"
@@ -598,52 +591,53 @@
 
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label class="block text-xs text-zinc-500 mb-1.5">到期日期</label>
+                                        <label class="block text-xs text-zinc-400 mb-1.5">到期日期</label>
                                         <input type="date" id="input-end-date" onchange="calculateVPS()"
                                             class="calc-input w-full px-3 py-2 rounded-xl text-xs border focus:outline-none font-mono">
                                     </div>
                                     <div>
-                                        <label class="block text-xs text-zinc-500 mb-1.5">交易日期</label>
+                                        <label class="block text-xs text-zinc-400 mb-1.5">交易日期</label>
                                         <input type="date" id="input-start-date" onchange="calculateVPS()"
                                             class="calc-input w-full px-3 py-2 rounded-xl text-xs border focus:outline-none font-mono">
                                     </div>
                                 </div>
 
-                                <div class="pt-2 flex items-center gap-3 text-xs text-zinc-500">
+                                <!-- 汇率控制 -->
+                                <div class="pt-2 flex items-center gap-3 text-xs text-zinc-400">
                                     <span>CNY 汇率</span>
                                     <input type="number" id="input-fx-rate" value="6.7102" step="0.0001"
                                         oninput="calculateVPS()"
-                                        class="w-24 px-2 py-1 rounded-md border text-center font-mono font-bold focus:outline-none fx-input"
-                                        style="color: var(--calc-accent, #ea580c);">
+                                        class="w-24 px-2 py-1.5 rounded-lg border text-center font-mono font-bold focus:outline-none fx-input">
                                     <button type="button" onclick="fetchLiveExchangeRate()"
-                                        class="hover:text-zinc-800 dark:hover:text-zinc-200 flex items-center gap-1">🔄
-                                        自动</button>
+                                        class="hover:text-zinc-700 flex items-center gap-1 font-semibold text-xs transition-colors">
+                                        <span class="text-sm">🔄</span> 自动
+                                    </button>
                                 </div>
                             </div>
 
-                            <!-- 右半部：结果计算区 -->
+                            <!-- 右侧计算结果 -->
                             <div
-                                class="lg:col-span-5 flex flex-col justify-between lg:pl-6 lg:border-l border-zinc-200/50 dark:border-zinc-800/80 space-y-6">
+                                class="lg:col-span-5 flex flex-col justify-between lg:pl-6 lg:border-l border-zinc-100 space-y-6">
                                 <div class="text-right">
                                     <span class="text-xs text-zinc-400 block mb-1">剩余价值 (CNY)</span>
-                                    <div class="text-4xl sm:text-5xl font-extrabold font-mono tracking-tight"
-                                        id="result-cny" style="color: var(--calc-accent, #ea580c);">
-                                        ¥ 7.66
+                                    <div class="text-4xl sm:text-5xl font-extrabold font-mono tracking-tight transition-colors duration-200"
+                                        id="result-cny">
+                                        ¥ 23.49
                                     </div>
                                     <span class="text-xs text-zinc-400 font-mono mt-1 block"
-                                        id="result-origin-currency">≈ 1.14 USD</span>
+                                        id="result-origin-currency">≈ 3.50 USD</span>
                                 </div>
 
                                 <div>
                                     <div class="flex justify-between text-xs text-zinc-400 mb-2">
                                         <span>剩余天数 <strong id="res-remain-days"
-                                                class="text-base font-bold font-mono">30</strong> 天</span>
-                                        <span id="res-percentage" class="font-mono font-bold">33%</span>
+                                                class="text-sm font-bold font-mono">30</strong> 天</span>
+                                        <span id="res-percentage" class="font-mono">100%</span>
                                     </div>
-                                    <div class="w-full h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
+                                    <div class="w-full h-1.5 rounded-full bg-zinc-100 overflow-hidden">
                                         <div id="res-progress-bar"
                                             class="h-full rounded-full transition-all duration-300"
-                                            style="width: 33%; background-color: var(--calc-accent, #ea580c);"></div>
+                                            style="width: 100%;"></div>
                                     </div>
                                 </div>
 
@@ -659,9 +653,9 @@
                                     </div>
                                     <div>
                                         <label class="block text-xs text-zinc-400 mb-1">出售价格</label>
-                                        <div class="flex items-center px-3 py-1.5 rounded-xl border text-xs font-mono font-bold h-[34px] out-price-box"
-                                            id="result-total-price" style="color: var(--calc-accent, #ea580c);">
-                                            ¥ 7.66
+                                        <div class="flex items-center px-3 py-1.5 rounded-xl border text-xs font-mono font-bold h-[34px] out-price-box transition-colors duration-200"
+                                            id="result-total-price">
+                                            ¥ 23.49
                                         </div>
                                     </div>
                                 </div>
@@ -670,14 +664,14 @@
                     </div>
                 </div>
 
-                <!-- 底部按钮 -->
-                <div class="flex items-center gap-3 mt-5 px-2">
+                <!-- 底部导出按钮 -->
+                <div class="flex items-center gap-3 mt-5 px-1">
                     <button onclick="downloadCalcImage()"
                         class="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold text-white shadow-sm hover:opacity-90 active:scale-95 transition-all dynamic-calc-btn">
                         <span>📥</span> 下载图片
                     </button>
                     <button onclick="copyCalcImage()"
-                        class="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold bg-white text-zinc-700 border border-zinc-200/80 shadow-sm hover:bg-zinc-50 active:scale-95 transition-all">
+                        class="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold bg-white text-zinc-700 border border-zinc-200 shadow-sm hover:bg-zinc-50 active:scale-95 transition-all">
                         <span>📋</span> <span id="copy-btn-text">复制图片</span>
                     </button>
                 </div>
@@ -705,9 +699,11 @@
         /* 在 <script> 标签下的第一行，把这两个变量提升到最顶端定义： */
         // 全局状态变量
         var calcAccentColor = '#ea580c';
+        var calcWrapperBgLight = '#faebe5';
+        var calcWrapperBgDark = '#1e1613';
         var calcCurrentTheme = 'light';
+        var calcCycleDays = 30; // 默认月付
 
-        // 常用基础参考汇率
         var LIVE_FX_TABLE = {
             USD: 6.7102,
             EUR: 7.8215,
@@ -716,7 +712,6 @@
             HKD: 0.9120,
             JPY: 0.0465
         };
-        var calcCycleDays = 30;// 默认季付
 
         var popularPostsData = [];
         var FX_RATES = { USD: 7.20, EUR: 7.80, CNY: 1.0 };
@@ -1482,7 +1477,6 @@
             const startInput = document.getElementById('input-start-date');
             const endInput = document.getElementById('input-end-date');
 
-            // 默认展示交易日为今天，到期日为一个月后（符合图一的 30 天状态）
             if (startInput && !startInput.value) startInput.value = todayStr;
             if (endInput && !endInput.value) {
                 const nextDate = new Date(today);
@@ -1490,25 +1484,93 @@
                 endInput.value = nextDate.toISOString().split('T')[0];
             }
 
-            // 周期切换按钮绑定
+            // 绑定周期选择按钮与边框高亮
             document.querySelectorAll('#cycle-selector .cycle-btn').forEach(btn => {
                 btn.onclick = () => {
-                    document.querySelectorAll('#cycle-selector .cycle-btn').forEach(b => {
-                        b.classList.remove('active');
-                        b.style.borderColor = '';
-                        b.style.color = '';
-                    });
+                    document.querySelectorAll('#cycle-selector .cycle-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     calcCycleDays = parseInt(btn.dataset.days);
-                    btn.style.borderColor = calcAccentColor;
-                    btn.style.color = calcAccentColor;
+
+                    // 自动联动调整到期日（满足从交易日往后推一个周期）
+                    const base = new Date(document.getElementById('input-start-date').value || new Date());
+                    base.setDate(base.getDate() + calcCycleDays);
+                    if (endInput) endInput.value = base.toISOString().split('T')[0];
+
+                    syncAccentStyle();
                     calculateVPS();
                 };
             });
 
-            changeCalcAccent('#ea580c');
-            setCalcThemeMode('light'); // 默认展示浅色质感
+            changeCalcTheme('#ea580c', '#faebe5', '#1e1613');
+            setCalcThemeMode('light');
             calculateVPS();
+        }
+
+        // 外框色、强调色双重联动
+        function changeCalcTheme(accentHex, wrapperLightHex, wrapperDarkHex) {
+            calcAccentColor = accentHex;
+            calcWrapperBgLight = wrapperLightHex;
+            calcWrapperBgDark = wrapperDarkHex;
+
+            document.documentElement.style.setProperty('--calc-accent', accentHex);
+
+            // 动态同步外层画框背景色
+            const wrapper = document.getElementById('vps-calc-wrapper');
+            if (wrapper) {
+                wrapper.style.backgroundColor = calcCurrentTheme === 'dark' ? calcWrapperBgDark : calcWrapperBgLight;
+            }
+
+            syncAccentStyle();
+            calculateVPS();
+        }
+
+        function syncAccentStyle() {
+            document.querySelectorAll('.dynamic-calc-btn').forEach(el => {
+                el.style.backgroundColor = calcAccentColor;
+            });
+
+            const resultCny = document.getElementById('result-cny');
+            if (resultCny) resultCny.style.color = calcAccentColor;
+
+            const progressBar = document.getElementById('res-progress-bar');
+            if (progressBar) progressBar.style.backgroundColor = calcAccentColor;
+
+            const outPrice = document.getElementById('result-total-price');
+            if (outPrice) outPrice.style.color = calcAccentColor;
+
+            const activeCycleBtn = document.querySelector('#cycle-selector .cycle-btn.active');
+            if (activeCycleBtn) {
+                activeCycleBtn.style.borderColor = calcAccentColor;
+                activeCycleBtn.style.color = calcAccentColor;
+            }
+
+            const modeBtn = calcCurrentTheme === 'dark' ? document.getElementById('btn-mode-dark') : document.getElementById('btn-mode-light');
+            if (modeBtn) modeBtn.style.backgroundColor = calcAccentColor;
+        }
+
+        function setCalcThemeMode(mode) {
+            calcCurrentTheme = mode;
+            const wrapper = document.getElementById('vps-calc-wrapper');
+            const btnLight = document.getElementById('btn-mode-light');
+            const btnDark = document.getElementById('btn-mode-dark');
+            if (!wrapper) return;
+
+            wrapper.setAttribute('data-calc-theme', mode);
+            wrapper.style.backgroundColor = mode === 'dark' ? calcWrapperBgDark : calcWrapperBgLight;
+
+            if (mode === 'dark') {
+                btnDark.className = "px-4 py-1.5 rounded-lg transition-all font-semibold text-white dynamic-calc-btn";
+                btnDark.style.backgroundColor = calcAccentColor;
+                btnLight.className = "px-4 py-1.5 rounded-lg transition-all font-semibold text-zinc-600 hover:text-zinc-900";
+                btnLight.style.backgroundColor = "transparent";
+            } else {
+                btnLight.className = "px-4 py-1.5 rounded-lg transition-all font-semibold text-white dynamic-calc-btn";
+                btnLight.style.backgroundColor = calcAccentColor;
+                btnDark.className = "px-4 py-1.5 rounded-lg transition-all font-semibold text-zinc-600 hover:text-zinc-900";
+                btnDark.style.backgroundColor = "transparent";
+            }
+
+            syncAccentStyle();
         }
 
         function handleCurrencyChange() {
@@ -1520,7 +1582,7 @@
             calculateVPS();
         }
 
-        // 自动获取公网真实汇率（以开源外汇 API 兜底）
+        // 自动联网抓取当前汇率
         async function fetchLiveExchangeRate() {
             const curr = document.getElementById('input-currency').value;
             const fxInput = document.getElementById('input-fx-rate');
@@ -1543,7 +1605,7 @@
             }
         }
 
-        // 核心 VPS 剩余价值计算引擎
+        // 核心计算
         function calculateVPS() {
             const price = parseFloat(document.getElementById('input-price').value) || 0;
             const curr = document.getElementById('input-currency').value;
@@ -1558,24 +1620,18 @@
             const startDate = new Date(startDateVal);
             const endDate = new Date(endDateVal);
 
-            // 1. 精确计算剩余天数（毫秒转自然天）
             const diffMs = endDate.getTime() - startDate.getTime();
             const remainingDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
-
-            // 2. 周期总天数（若剩余天数异常大于周期，则自适应拓展为剩余天数）
             const cycleTotalDays = Math.max(calcCycleDays, remainingDays);
 
-            // 3. 计算剩余天数占比
             const percentage = cycleTotalDays > 0 ? Math.min(100, Math.round((remainingDays / cycleTotalDays) * 100)) : 0;
 
-            // 4. 剩余价值与折算总价
             const totalPriceCNY = price * fxRate;
             const dailyPriceCNY = cycleTotalDays > 0 ? (totalPriceCNY / cycleTotalDays) : 0;
             const remainingValueCNY = dailyPriceCNY * remainingDays;
             const remainingValueOriginCurr = fxRate > 0 ? (remainingValueCNY / fxRate) : 0;
             const finalSalePriceCNY = remainingValueCNY + offset;
 
-            // 5. 页面数据联动填充
             document.getElementById('cny-approx-display').innerText = `≈ ${totalPriceCNY.toFixed(2)} 元`;
             document.getElementById('result-cny').innerText = `¥ ${remainingValueCNY.toFixed(2)}`;
             document.getElementById('result-origin-currency').innerText = `≈ ${remainingValueOriginCurr.toFixed(2)} ${curr}`;
@@ -1583,85 +1639,6 @@
             document.getElementById('res-percentage').innerText = `${percentage}%`;
             document.getElementById('res-progress-bar').style.width = `${percentage}%`;
             document.getElementById('result-total-price').innerText = `¥ ${finalSalePriceCNY.toFixed(2)}`;
-        }
-
-        // 主题色与强调色切换
-        function changeCalcAccent(hex) {
-            calcAccentColor = hex;
-            document.documentElement.style.setProperty('--calc-accent', hex);
-
-            document.querySelectorAll('.dynamic-calc-btn').forEach(el => {
-                el.style.backgroundColor = hex;
-            });
-
-            const activeBtn = document.querySelector('#cycle-selector .cycle-btn.active');
-            if (activeBtn) {
-                activeBtn.style.borderColor = hex;
-                activeBtn.style.color = hex;
-            }
-
-            const modeBtn = calcCurrentTheme === 'dark' ? document.getElementById('btn-mode-dark') : document.getElementById('btn-mode-light');
-            if (modeBtn) modeBtn.style.backgroundColor = hex;
-
-            calculateVPS();
-        }
-
-        function setCalcThemeMode(mode) {
-            calcCurrentTheme = mode;
-            const wrapper = document.getElementById('vps-calc-wrapper');
-            const btnLight = document.getElementById('btn-mode-light');
-            const btnDark = document.getElementById('btn-mode-dark');
-            if (!wrapper) return;
-
-            wrapper.setAttribute('data-calc-theme', mode);
-
-            if (mode === 'dark') {
-                btnDark.className = "px-4 py-1.5 rounded-lg transition-all font-semibold text-white dynamic-calc-btn";
-                btnDark.style.backgroundColor = calcAccentColor;
-                btnLight.className = "px-4 py-1.5 rounded-lg transition-all font-semibold text-zinc-600 hover:text-zinc-900";
-                btnLight.style.backgroundColor = "transparent";
-            } else {
-                btnLight.className = "px-4 py-1.5 rounded-lg transition-all font-semibold text-white dynamic-calc-btn";
-                btnLight.style.backgroundColor = calcAccentColor;
-                btnDark.className = "px-4 py-1.5 rounded-lg transition-all font-semibold text-zinc-600 hover:text-zinc-900";
-                btnDark.style.backgroundColor = "transparent";
-            }
-
-            changeCalcAccent(calcAccentColor);
-        }
-
-        // 导出高清海报图片
-        async function downloadCalcImage() {
-            const card = document.getElementById('vps-calc-card');
-            if (!card) return;
-            const canvas = await html2canvas(card, { scale: 2, useCORS: true, backgroundColor: null });
-            const link = document.createElement('a');
-            link.download = `VPS-剩余价值-${Date.now()}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        }
-
-        // 复制图片到剪贴板
-        async function copyCalcImage() {
-            const card = document.getElementById('vps-calc-card');
-            const btnText = document.getElementById('copy-btn-text');
-            if (!card) return;
-
-            try {
-                const canvas = await html2canvas(card, { scale: 2, useCORS: true, backgroundColor: null });
-                canvas.toBlob(async (blob) => {
-                    if (!blob) return;
-                    await navigator.clipboard.write([
-                        new ClipboardItem({ 'image/png': blob })
-                    ]);
-                    if (btnText) {
-                        btnText.innerText = "已复制到剪贴板！";
-                        setTimeout(() => btnText.innerText = "复制图片", 2000);
-                    }
-                });
-            } catch (err) {
-                alert("浏览器限制，请使用【下载图片】保存");
-            }
         }
     </script>
 </body>
