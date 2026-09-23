@@ -528,14 +528,14 @@
                     </div>
                 </div>
 
-                <!-- 外部海报画框 (背景色随色卡动态变化) -->
-                <div id="vps-calc-wrapper" class="p-6 sm:p-10 rounded-[36px] transition-all duration-300 shadow-xl"
+                <!-- 外部海报画框：间距和圆角各缩小 10% -->
+                <div id="vps-calc-wrapper" class="p-5 sm:p-7 rounded-[28px] transition-all duration-300 shadow-xl"
                     style="background-color: #faebe5;">
-                    <!-- 核心卡片 (白色 / 深黑色主体) -->
+                    <!-- 核心卡片：圆角缩小 10% 至 rounded-2xl -->
                     <div id="vps-calc-card"
-                        class="rounded-3xl p-6 sm:p-8 transition-colors duration-300 border border-black/5 bg-white text-zinc-800 shadow-sm">
+                        class="rounded-2xl p-5 sm:p-7 transition-colors duration-300 border border-black/5 bg-white text-zinc-800 shadow-sm">
                         <!-- 头部 -->
-                        <div class="flex items-center justify-between pb-6">
+                        <div class="flex items-center justify-between pb-5">
                             <h3 class="text-base sm:text-lg font-bold tracking-tight text-inherit">VPS 剩余价值计算器</h3>
                             <span id="calc-today-date" class="text-xs text-zinc-400 font-mono"></span>
                         </div>
@@ -1639,6 +1639,61 @@
             document.getElementById('res-percentage').innerText = `${percentage}%`;
             document.getElementById('res-progress-bar').style.width = `${percentage}%`;
             document.getElementById('result-total-price').innerText = `¥ ${finalSalePriceCNY.toFixed(2)}`;
+        }
+
+        // 下载海报图片功能
+        async function downloadCalcImage() {
+            const wrapper = document.getElementById('vps-calc-wrapper');
+            if (!wrapper) return;
+            try {
+                const canvas = await html2canvas(wrapper, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: null,
+                    logging: false
+                });
+                const link = document.createElement('a');
+                link.download = `VPS剩余价值-${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (e) {
+                console.error("生成图片失败:", e);
+                alert("图片生成失败，请确认浏览器权限。");
+            }
+        }
+
+        // 复制海报图片到剪贴板功能
+        async function copyCalcImage() {
+            const wrapper = document.getElementById('vps-calc-wrapper');
+            const btnText = document.getElementById('copy-btn-text');
+            if (!wrapper) return;
+
+            try {
+                const canvas = await html2canvas(wrapper, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: null,
+                    logging: false
+                });
+                canvas.toBlob(async (blob) => {
+                    if (!blob) return;
+                    try {
+                        await navigator.clipboard.write([
+                            new ClipboardItem({ 'image/png': blob })
+                        ]);
+                        if (btnText) {
+                            btnText.innerText = "已复制到剪贴板！";
+                            setTimeout(() => btnText.innerText = "复制图片", 2000);
+                        }
+                    } catch (err) {
+                        console.error("剪贴板写入失败:", err);
+                        alert("浏览器剪贴板权限受限，请直接点击【下载图片】保存。");
+                    }
+                });
+            } catch (e) {
+                console.error("截图生成失败:", e);
+                alert("复制图片失败，请使用【下载图片】。");
+            }
         }
     </script>
 </body>
