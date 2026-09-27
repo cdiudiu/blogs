@@ -745,9 +745,34 @@
             langPrefix: 'hljs language-'
         });
 
-        // 修改为：
+        // 监听浏览器前进、后退及哈希变化
+        window.addEventListener('popstate', handleRouting);
         window.addEventListener('hashchange', handleRouting);
 
+        // 全局拦截 post 文章链接点击，使用 pushState 实现单页平滑跳转
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a');
+            if (!link) return;
+
+            const href = link.getAttribute('href');
+            if (!href) return;
+
+            // 匹配文章跳转链接（如 ./post/xxx 或 /blog/post/xxx）
+            if (href.includes('/post/')) {
+                e.preventDefault();
+
+                // 提取纯净 postId
+                const parts = href.split('/post/');
+                const postId = parts[parts.length - 1].replace(/\/$/, '');
+
+                // 构建标准的子目录绝对地址并入栈
+                const targetUrl = `/blog/post/${postId}`;
+                history.pushState(null, '', targetUrl);
+
+                // 触发视图渲染
+                handleRouting();
+            }
+        });
         // 1. 优先执行路由切换：只要读取到是 /post/ 立即切到文章页，彻底消除首屏穿帮
         handleRouting();
 
@@ -778,9 +803,10 @@
                 return;
             }
 
-            if (pathname.startsWith('/post/')) {
-                const postId = pathname.replace('/post/', '').replace(/\/$/, '');
-                if (postId) { loadPost(postId); return; }
+            const postMatch = pathname.match(/\/(?:blog\/)?post\/([^/]+)/);
+            if (postMatch && postMatch[1]) {
+                loadPost(postMatch[1]);
+                return;
             }
 
             if (hash.startsWith('#/post/')) {
