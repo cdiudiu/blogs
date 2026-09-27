@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <base href="/">
+    <base href="/blog/">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VPS帮帮车博客 - 专注VPS选购指南与网络测速调优 | 成也</title>
@@ -13,18 +13,18 @@
     <meta name="keywords" content="VPS选购, VPS评测, DMIT, 搬瓦工, Linux脚本, 建站教程, 服务器运维">
     <meta name="author" content="vpsbbc.com">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <link rel="canonical" href="https://blog.vpsbbc.com/">
+    <link rel="canonical" href="https://vpsbbc.com/blog/">
     <!-- 网站 Favicon 图标 -->
-    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" sizes="48x48" href="/favicon.png">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="./sitemap.xml">
+    <link rel="icon" href="./favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="48x48" href="./favicon.png">
     <link rel="apple-touch-icon" href="/favicon.png">
     <!-- Open Graph (社交与搜索引擎卡片) -->
     <meta property="og:locale" content="zh_CN">
     <meta property="og:type" content="website">
     <meta property="og:title" content="vpsbbc.com - VPS帮帮车">
     <meta property="og:description" content="专注 VPS 选购指南、网络优化与服务器极客玩法。">
-    <meta property="og:url" content="https://blog.vpsbbc.com/">
+    <meta property="og:url" content="https://vpsbbc.com/blog/">
     <meta property="og:site_name" content="VPS帮帮车">
 
     <!-- Twitter Card -->
@@ -39,10 +39,10 @@
       "@type": "WebSite",
       "name": "VPS帮帮车 成也的博客",
       "alternateName": ["成也博客","vpsbbc.com", "vpsbbc"],
-      "url": "https://blog.vpsbbc.com/",
+      "url": "https://vpsbbc.com/blog/",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://blog.vpsbbc.com/#/?q={search_term_string}",
+        "target": "https://vpsbbc.com/blog/#/?q={search_term_string}",
         "query-input": "required name=search_term_string"
       }
     }
@@ -694,7 +694,7 @@
             class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-2">
                 <span class="w-2 h-2 bg-amber-500 rounded-full inline-block"></span>
-                <span>blog.vpsbbc.com • 技术分享</span>
+                <span>[vpsbbc.com/blog](https://vpsbbc.com/blog) • 技术分享</span>
             </div>
             <div class="text-[11px] text-zinc-400">
                 Powered by <a href="https://vpsbbc.com" target="_blank" rel="noopener"
@@ -773,7 +773,7 @@
 
             if (hash === '#/tools/vps-calc') {
                 if (calcView) calcView.classList.remove('hidden');
-                updateMeta(`VPS 剩余价值计算器 - ${siteBaseTitle}`, "在线 VPS 剩余天数与价值快速计算工具", `${window.location.origin}/#/tools/vps-calc`);
+                updateMeta(`VPS 剩余价值计算器 - ${siteBaseTitle}`, "在线 VPS 剩余天数与价值快速计算工具", `${window.location.origin}/blog/#/tools/vps-calc`);
                 initCalcTool(); // 初始化计算器
                 return;
             }
@@ -977,7 +977,7 @@
             const sInput = document.getElementById('search-input');
             if (sInput) sInput.value = "";
 
-            updateMeta(siteBaseTitle, "vpsbbc.com（VPS帮帮车）专注于 VPS 选购指南、服务器性能评测、科学上网及 Linux 常用脚本教程分享。", `${window.location.origin}/`);
+            updateMeta(siteBaseTitle, "vpsbbc.com（VPS帮帮车）专注于 VPS 选购指南、服务器性能评测、科学上网及 Linux 常用脚本教程分享。", `${window.location.origin}/blog/`);
 
             await fetchNavMeta();
 
@@ -995,7 +995,7 @@
             const sInput = document.getElementById('search-input');
             if (sInput) sInput.value = "";
 
-            updateMeta(`${seriesName} - ${siteBaseTitle}`, `浏览关于 ${seriesName} 的所有精选教程和服务器评测指南。`, `${window.location.origin}/#/series/${encodeURIComponent(seriesName)}`);
+            updateMeta(`${seriesName} - ${siteBaseTitle}`, `浏览关于 ${seriesName} 的所有精选教程和服务器评测指南。`, `${window.location.origin}/blog/#/series/${encodeURIComponent(seriesName)}`);
 
             await fetchNavMeta();
 
@@ -1279,12 +1279,12 @@
                 if (detectedTitleEl) {
                     const pageTitle = detectedTitleEl.innerText.trim();
                     document.getElementById('detail-post-title').innerText = pageTitle;
-                    updateMeta(`${pageTitle} - ${siteBaseTitle}`, pageTitle, `${window.location.origin}/post/${postId}`);
+                    updateMeta(`${pageTitle} - ${siteBaseTitle}`, pageTitle, `${window.location.origin}/blog/post/${postId}`);
                     // 使用 style.display 隐藏正文内重复的标题，不要用 .remove()，保证目录索引树完整不报错
                     detectedTitleEl.style.display = 'none';
                 } else {
                     document.getElementById('detail-post-title').innerText = postId;
-                    updateMeta(`${postId} - ${siteBaseTitle}`, postId, `${window.location.origin}/post/${postId}`);
+                    updateMeta(`${postId} - ${siteBaseTitle}`, postId, `${window.location.origin}/blog/post/${postId}`);
                 }
 
                 setTimeout(() => {
