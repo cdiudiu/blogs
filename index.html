@@ -16,9 +16,9 @@
     <link rel="canonical" href="https://vpsbbc.com/blog/">
     <!-- 网站 Favicon 图标 -->
     <link rel="sitemap" type="application/xml" title="Sitemap" href="./sitemap.xml">
-    <link rel="icon" href="./favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" sizes="48x48" href="./favicon.png">
-    <link rel="apple-touch-icon" href="/favicon.png">
+    <link rel="icon" href="../favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="48x48" href="../favicon.png">
+    <link rel="apple-touch-icon" href="./favicon.png">
     <!-- Open Graph (社交与搜索引擎卡片) -->
     <meta property="og:locale" content="zh_CN">
     <meta property="og:type" content="website">
@@ -362,7 +362,7 @@
                     <!-- 正中间：头像图标 (稍微缩小至 w-14 h-14，留白更精致) -->
                     <div
                         class="w-14 h-14 rounded-2xl bg-white border border-zinc-200/80 flex items-center justify-center shadow-sm mb-2.5 overflow-hidden shrink-0">
-                        <img id="sidebar-avatar-img" src="/favicon.png" alt="Avatar"
+                        <img id="sidebar-avatar-img" src="./favicon.png" alt="Avatar"
                             class="w-full h-full object-cover bg-white">
                     </div>
 
@@ -1283,9 +1283,9 @@
 
                     const customTitle = parts[1] || domain;
                     const customDesc = parts[2] || `点击访问 ${domain} 获取更多详情`;
-                    const customImg = parts[3] || `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+                    const customImg = parts[3] || `https://www.google.com/s2./favicons?domain=${domain}&sz=128`;
 
-                    return `<div class="my-5 not-prose"><a href="${url}" target="_blank" rel="noopener noreferrer" class="group flex items-center p-3.5 sm:p-4 bg-white hover:bg-zinc-50/80 border border-zinc-200/80 hover:border-zinc-300 rounded-2xl transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md"><div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-zinc-100 border border-zinc-200/60 overflow-hidden flex items-center justify-center shrink-0 mr-4"><img src="${customImg}" alt="${customTitle}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://www.google.com/s2/favicons?domain=${domain}&sz=128'"></div><div class="flex-grow min-w-0 pr-2"><div class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-0.5 truncate">${domain}</div><div class="text-sm sm:text-base font-bold text-zinc-900 group-hover:text-blue-600 transition-colors line-clamp-1">${customTitle}</div><div class="text-xs text-zinc-500 mt-1 line-clamp-2 leading-relaxed">${customDesc}</div></div><div class="hidden sm:flex items-center text-zinc-300 group-hover:text-zinc-500 text-sm pl-2 shrink-0 transition-all group-hover:translate-x-0.5">↗</div></a></div>`;
+                    return `<div class="my-5 not-prose"><a href="${url}" target="_blank" rel="noopener noreferrer" class="group flex items-center p-3.5 sm:p-4 bg-white hover:bg-zinc-50/80 border border-zinc-200/80 hover:border-zinc-300 rounded-2xl transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md"><div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-zinc-100 border border-zinc-200/60 overflow-hidden flex items-center justify-center shrink-0 mr-4"><img src="${customImg}" alt="${customTitle}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://www.google.com/s2./favicons?domain=${domain}&sz=128'"></div><div class="flex-grow min-w-0 pr-2"><div class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-0.5 truncate">${domain}</div><div class="text-sm sm:text-base font-bold text-zinc-900 group-hover:text-blue-600 transition-colors line-clamp-1">${customTitle}</div><div class="text-xs text-zinc-500 mt-1 line-clamp-2 leading-relaxed">${customDesc}</div></div><div class="hidden sm:flex items-center text-zinc-300 group-hover:text-zinc-500 text-sm pl-2 shrink-0 transition-all group-hover:translate-x-0.5">↗</div></a></div>`;
                 });
 
                 text = text.replace(/\[youtube:\s*([^\]]+)\s*\]/gi, (match, rawVal) => {
