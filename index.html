@@ -1272,7 +1272,7 @@
 
                 text = text.replace(/^(#{1,6})([^\s#\n])/gm, '$1 $2');
 
-                text = text.replace(/\[card:\s*([\s\S]*?)\s*\]/gi, (match, innerContent) => {
+                text = text.replace(/\[card:\s*([\s\S]*?)\](?!\()/gi, (match, innerContent) => {
                     const parts = innerContent.split('|').map(s => s.trim());
                     const urlMatch = parts[0].match(/https?:\/\/[^\s"'<>\)]+/i);
                     if (!urlMatch) return match;
