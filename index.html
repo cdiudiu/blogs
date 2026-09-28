@@ -1287,13 +1287,12 @@
                     const customTitle = parts[1] || domain;
                     const customDesc = parts[2] || `点击访问 ${domain} 获取更多详情`;
 
-                    // 提取纯净图片链接
+                    // 用正则从 parts[3] 中精确抓出真实的图片 http 链接，自动剔除换行和空格
                     let customImg = "";
                     if (parts[3]) {
                         const imgMatch = parts[3].match(/https?:\/\/[^\s"'<>\)]+/i);
                         if (imgMatch) customImg = imgMatch[0];
                     }
-                    // 兜底改成本地 favicon，坚决不要用国内打不开的 Google 接口
                     if (!customImg) {
                         customImg = "./favicon.png";
                     }
