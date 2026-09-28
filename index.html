@@ -1272,18 +1272,22 @@
 
                 text = text.replace(/^(#{1,6})([^\s#\n])/gm, '$1 $2');
 
-                text = text.replace(/\[card:\s*([\s\S]*?)\](?:\([\s\S]*?\))?/gi, (match, innerContent) => {
-                    // 1. 如果内部被 Markdown 污染混入了 [url](url)，先把所有嵌套的 Markdown 链接还原成纯文本
-                    let clean = innerContent.replace(/\[(.*?)\]\((.*?)\)/g, '$2');
+                text = text.replace(/\[card:([\s\S]*?)\](?:\([\s\S]*?\))?/gi, (match, innerContent) => {
+                    // 1. 将所有被编辑器转义混入的 Markdown 链接 [xxx](url) 或 <a> 标签全部清洗为纯文本
+                    let clean = innerContent
+                        .replace(/<[^>]+>/g, '') // 剥离 html 标签
+                        .replace(/\[([^\]]*)\]\(([^)]*)\)/g, '$2') // 剥离 markdown 链接，只留 url
+                        .replace(/[\r\n]+/g, ' ') // 消除回车换行
+                        .trim();
 
-                    // 2. 按竖线切割
+                    // 2. 按竖线分割
                     const parts = clean.split('|').map(s => s.trim());
                     if (parts.length === 0) return match;
 
-                    // 3. 从第一段里强行把纯净的目标 URL 扒出来（不管外面套了什么中括号、圆括号）
-                    const targetUrlMatch = parts[0].match(/https?:\/\/[^\s"'<>\)\]]+/i);
-                    if (!targetUrlMatch) return match;
-                    const url = targetUrlMatch[0];
+                    // 3. 提取目标跳转 URL（第一段）
+                    const urlMatch = parts[0].match(/https?:\/\/[^\s"'<>\)]+/i);
+                    if (!urlMatch) return match;
+                    const url = urlMatch[0];
 
                     let domain = "";
                     try { domain = new URL(url).hostname; } catch (e) { domain = url; }
@@ -1291,17 +1295,18 @@
                     const customTitle = parts[1] || domain;
                     const customDesc = parts[2] || `点击访问 ${domain} 获取更多详情`;
 
-                    // 4. 从最后一段里强行把纯净的图片 URL 扒出来
+                    // 4. 提取图片 URL（从第4段，或者整段文本里捞出图片地址）
                     let customImg = "";
                     if (parts.length >= 4) {
-                        const lastPart = parts[parts.length - 1];
-                        const imgMatch = lastPart.match(/https?:\/\/[^\s"'<>\)\]]+\.(?:png|jpg|jpeg|webp|gif|svg|ico)(?:\?[^\s"'<>\)\]]*)?/i);
-                        if (imgMatch) {
-                            customImg = imgMatch[0];
-                        }
+                        const imgMatch = parts[3].match(/https?:\/\/[^\s"'<>\)]+/i);
+                        if (imgMatch) customImg = imgMatch[0];
                     }
-
-                    // 如果真没配图，给一个稳定的占位图，不报破图
+                    // 如果没有第四段图片，尝试从整段卡片文本里找图片后缀
+                    if (!customImg) {
+                        const anyImgMatch = clean.match(/https?:\/\/[^\s"'<>\)]+\.(?:png|jpg|jpeg|webp|gif|svg|ico)(?:\?[^\s"'<>\)]*)?/i);
+                        if (anyImgMatch) customImg = anyImgMatch[0];
+                    }
+                    // 终极兜底
                     if (!customImg) {
                         customImg = "https://img.vpsbbc.com/vps-x.png";
                     }
