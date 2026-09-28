@@ -1272,14 +1272,18 @@
 
                 text = text.replace(/^(#{1,6})([^\s#\n])/gm, '$1 $2');
 
-                text = text.replace(/\[card:\s*([\s\S]*?)\](?!\()/gi, (match, innerContent) => {
-                    // 过滤掉多余换行符
-                    const cleanContent = innerContent.replace(/[\r\n]+/g, ' ').trim();
-                    const parts = cleanContent.split('|').map(s => s.trim());
+                text = text.replace(/\[card:\s*([\s\S]*?)\](?:\([\s\S]*?\))?/gi, (match, innerContent) => {
+                    // 1. 如果内部被 Markdown 污染混入了 [url](url)，先把所有嵌套的 Markdown 链接还原成纯文本
+                    let clean = innerContent.replace(/\[(.*?)\]\((.*?)\)/g, '$2');
 
-                    const urlMatch = parts[0].match(/https?:\/\/[^\s"'<>\)]+/i);
-                    if (!urlMatch) return match;
-                    const url = urlMatch[0];
+                    // 2. 按竖线切割
+                    const parts = clean.split('|').map(s => s.trim());
+                    if (parts.length === 0) return match;
+
+                    // 3. 从第一段里强行把纯净的目标 URL 扒出来（不管外面套了什么中括号、圆括号）
+                    const targetUrlMatch = parts[0].match(/https?:\/\/[^\s"'<>\)\]]+/i);
+                    if (!targetUrlMatch) return match;
+                    const url = targetUrlMatch[0];
 
                     let domain = "";
                     try { domain = new URL(url).hostname; } catch (e) { domain = url; }
@@ -1287,17 +1291,22 @@
                     const customTitle = parts[1] || domain;
                     const customDesc = parts[2] || `点击访问 ${domain} 获取更多详情`;
 
-                    // 用正则从 parts[3] 中精确抓出真实的图片 http 链接，自动剔除换行和空格
+                    // 4. 从最后一段里强行把纯净的图片 URL 扒出来
                     let customImg = "";
-                    if (parts[3]) {
-                        const imgMatch = parts[3].match(/https?:\/\/[^\s"'<>\)]+/i);
-                        if (imgMatch) customImg = imgMatch[0];
-                    }
-                    if (!customImg) {
-                        customImg = "./favicon.png";
+                    if (parts.length >= 4) {
+                        const lastPart = parts[parts.length - 1];
+                        const imgMatch = lastPart.match(/https?:\/\/[^\s"'<>\)\]]+\.(?:png|jpg|jpeg|webp|gif|svg|ico)(?:\?[^\s"'<>\)\]]*)?/i);
+                        if (imgMatch) {
+                            customImg = imgMatch[0];
+                        }
                     }
 
-                    return `<div class="my-5 not-prose"><a href="${url}" target="_blank" rel="noopener noreferrer" class="group flex items-center p-3.5 sm:p-4 bg-white hover:bg-zinc-50/80 border border-zinc-200/80 hover:border-zinc-300 rounded-2xl transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md"><div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-zinc-100 border border-zinc-200/60 overflow-hidden flex items-center justify-center shrink-0 mr-4"><img src="${customImg}" alt="${customTitle}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.onerror=null; this.src='./favicon.png'"></div><div class="flex-grow min-w-0 pr-2"><div class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-0.5 truncate">${domain}</div><div class="text-sm sm:text-base font-bold text-zinc-900 group-hover:text-blue-600 transition-colors line-clamp-1">${customTitle}</div><div class="text-xs text-zinc-500 mt-1 line-clamp-2 leading-relaxed">${customDesc}</div></div><div class="hidden sm:flex items-center text-zinc-300 group-hover:text-zinc-500 text-sm pl-2 shrink-0 transition-all group-hover:translate-x-0.5">↗</div></a></div>`;
+                    // 如果真没配图，给一个稳定的占位图，不报破图
+                    if (!customImg) {
+                        customImg = "https://img.vpsbbc.com/vps-x.png";
+                    }
+
+                    return `<div class="my-5 not-prose"><a href="${url}" target="_blank" rel="noopener noreferrer" class="group flex items-center p-3.5 sm:p-4 bg-white hover:bg-zinc-50/80 border border-zinc-200/80 hover:border-zinc-300 rounded-2xl transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md"><div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-zinc-100 border border-zinc-200/60 overflow-hidden flex items-center justify-center shrink-0 mr-4"><img src="${customImg}" alt="${customTitle}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"></div><div class="flex-grow min-w-0 pr-2"><div class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-0.5 truncate">${domain}</div><div class="text-sm sm:text-base font-bold text-zinc-900 group-hover:text-blue-600 transition-colors line-clamp-1">${customTitle}</div><div class="text-xs text-zinc-500 mt-1 line-clamp-2 leading-relaxed">${customDesc}</div></div><div class="hidden sm:flex items-center text-zinc-300 group-hover:text-zinc-500 text-sm pl-2 shrink-0 transition-all group-hover:translate-x-0.5">↗</div></a></div>`;
                 });
 
                 text = text.replace(/\[youtube:\s*([^\]]+)\s*\]/gi, (match, rawVal) => {
