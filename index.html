@@ -1272,7 +1272,7 @@
 
                 text = text.replace(/^(#{1,6})([^\s#\n])/gm, '$1 $2');
 
-                text = text.replace(/\[card:\s*([\s\S]*?)\s*\]/gi, (match, innerContent) => {
+                text = text.replace(/\[card:\s*([\s\S]*?)\](?!\()/gi, (match, innerContent) => {
                     // 过滤掉多余换行符
                     const cleanContent = innerContent.replace(/[\r\n]+/g, ' ').trim();
                     const parts = cleanContent.split('|').map(s => s.trim());
