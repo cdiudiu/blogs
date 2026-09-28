@@ -1272,8 +1272,11 @@
 
                 text = text.replace(/^(#{1,6})([^\s#\n])/gm, '$1 $2');
 
-                text = text.replace(/\[card:\s*([\s\S]*?)\](?!\()/gi, (match, innerContent) => {
-                    const parts = innerContent.split('|').map(s => s.trim());
+                text = text.replace(/\[card:\s*([\s\S]*?)\s*\]/gi, (match, innerContent) => {
+                    // 过滤掉多余换行符
+                    const cleanContent = innerContent.replace(/[\r\n]+/g, ' ').trim();
+                    const parts = cleanContent.split('|').map(s => s.trim());
+
                     const urlMatch = parts[0].match(/https?:\/\/[^\s"'<>\)]+/i);
                     if (!urlMatch) return match;
                     const url = urlMatch[0];
@@ -1283,9 +1286,19 @@
 
                     const customTitle = parts[1] || domain;
                     const customDesc = parts[2] || `点击访问 ${domain} 获取更多详情`;
-                    const customImg = parts[3] || `https://www.google.com/s2./favicons?domain=${domain}&sz=128`;
 
-                    return `<div class="my-5 not-prose"><a href="${url}" target="_blank" rel="noopener noreferrer" class="group flex items-center p-3.5 sm:p-4 bg-white hover:bg-zinc-50/80 border border-zinc-200/80 hover:border-zinc-300 rounded-2xl transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md"><div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-zinc-100 border border-zinc-200/60 overflow-hidden flex items-center justify-center shrink-0 mr-4"><img src="${customImg}" alt="${customTitle}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://www.google.com/s2./favicons?domain=${domain}&sz=128'"></div><div class="flex-grow min-w-0 pr-2"><div class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-0.5 truncate">${domain}</div><div class="text-sm sm:text-base font-bold text-zinc-900 group-hover:text-blue-600 transition-colors line-clamp-1">${customTitle}</div><div class="text-xs text-zinc-500 mt-1 line-clamp-2 leading-relaxed">${customDesc}</div></div><div class="hidden sm:flex items-center text-zinc-300 group-hover:text-zinc-500 text-sm pl-2 shrink-0 transition-all group-hover:translate-x-0.5">↗</div></a></div>`;
+                    // 提取纯净图片链接
+                    let customImg = "";
+                    if (parts[3]) {
+                        const imgMatch = parts[3].match(/https?:\/\/[^\s"'<>\)]+/i);
+                        if (imgMatch) customImg = imgMatch[0];
+                    }
+                    // 兜底改成本地 favicon，坚决不要用国内打不开的 Google 接口
+                    if (!customImg) {
+                        customImg = "./favicon.png";
+                    }
+
+                    return `<div class="my-5 not-prose"><a href="${url}" target="_blank" rel="noopener noreferrer" class="group flex items-center p-3.5 sm:p-4 bg-white hover:bg-zinc-50/80 border border-zinc-200/80 hover:border-zinc-300 rounded-2xl transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md"><div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-zinc-100 border border-zinc-200/60 overflow-hidden flex items-center justify-center shrink-0 mr-4"><img src="${customImg}" alt="${customTitle}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.onerror=null; this.src='./favicon.png'"></div><div class="flex-grow min-w-0 pr-2"><div class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-0.5 truncate">${domain}</div><div class="text-sm sm:text-base font-bold text-zinc-900 group-hover:text-blue-600 transition-colors line-clamp-1">${customTitle}</div><div class="text-xs text-zinc-500 mt-1 line-clamp-2 leading-relaxed">${customDesc}</div></div><div class="hidden sm:flex items-center text-zinc-300 group-hover:text-zinc-500 text-sm pl-2 shrink-0 transition-all group-hover:translate-x-0.5">↗</div></a></div>`;
                 });
 
                 text = text.replace(/\[youtube:\s*([^\]]+)\s*\]/gi, (match, rawVal) => {
