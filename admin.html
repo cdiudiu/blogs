@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <base href="/blog/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>vpsbbc.com - 后台控制面板</title>
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
@@ -996,7 +997,7 @@
                 switchTab('panel-editor');
 
                 const password = getActivePassword();
-                const res = await fetch(`/api/post-content?id=${encodeURIComponent(post.id)}&_t=` + Date.now(), {
+                const res = await fetch(`./api/post-content?id=${encodeURIComponent(post.id)}&_t=` + Date.now(), {
                     headers: { 'Authorization': password }
                 });
                 if (!res.ok) throw new Error(await res.text());
