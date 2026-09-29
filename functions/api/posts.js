@@ -23,6 +23,24 @@ export async function onRequest(context) {
 
   // 1. GET 请求
   if (request.method === "GET") {
+
+    // 在 posts.js 的 GET 分支内开头加上：
+    const singleId = url.searchParams.get("id");
+    if (singleId) {
+      const post = await env.DB.prepare(
+        "SELECT id, title, summary, date, updated_at, views, category, series, cover, author, status FROM posts WHERE id = ?"
+      ).bind(singleId).first();
+
+      if (!post || (post.status !== 'publish' && !isAdmin)) {
+        return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
+      }
+
+      return new Response(JSON.stringify(post), {
+        headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=60" }
+      });
+    }
+
+
     try {
       const q = url.searchParams.get("q");
       const category = url.searchParams.get("category");
@@ -39,29 +57,30 @@ export async function onRequest(context) {
       if (isSitemap) {
         const baseUrl = url.origin;
         const { results } = await env.DB.prepare(
-          "SELECT id, date FROM posts WHERE status = 'publish' ORDER BY date DESC"
+          "SELECT id, date, updated_at FROM posts WHERE status = 'publish' ORDER BY COALESCE(updated_at, date) DESC"
         ).all();
 
         let xmlItems = `
-  <url>
-    <loc>${escapeXml(baseUrl)}/</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>`;
+          <url>
+            <loc>${escapeXml(baseUrl)}/</loc>
+            <changefreq>daily</changefreq>
+            <priority>1.0</priority>
+          </url>`;
 
         if (results && results.length > 0) {
           results.forEach(post => {
             const postUrl = `${baseUrl}/post/${post.id}`;
-            const lastMod = post.date || new Date().toISOString().split('T')[0];
+            const lastMod = post.updated_at || post.date || new Date().toISOString().split('T')[0];
             xmlItems += `
-  <url>
-    <loc>${escapeXml(postUrl)}</loc>
-    <lastmod>${lastMod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>`;
+          <url>
+            <loc>${escapeXml(postUrl)}</loc>
+            <lastmod>${lastMod}</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.8</priority>
+          </url>`;
           });
         }
+        // ... 其余逻辑不变
 
         const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -140,8 +159,7 @@ ${xmlItems}
       const total = countResult ? countResult.count : 0;
 
       // 核心排序：优先按照权重自大到小排列 (weight DESC)，其次按照日期倒序 (date DESC)
-      let query = `SELECT id, title, summary, date, views, category, series, cover, layout_mode, status, weight FROM posts ${whereClause} ORDER BY weight DESC, date DESC LIMIT ? OFFSET ?`;
-      const { results } = await env.DB.prepare(query).bind(...params, limit, offset).all();
+      let query = `SELECT id, title, summary, date, updated_at, views, category, series, cover, layout_mode, status, weight FROM posts ${whereClause} ORDER BY weight DESC, COALESCE(updated_at, date) DESC LIMIT ? OFFSET ?`; const { results } = await env.DB.prepare(query).bind(...params, limit, offset).all();
 
       return new Response(JSON.stringify({ results, total, page, limit }), {
         headers: { "Content-Type": "application/json" }
@@ -160,20 +178,32 @@ ${xmlItems}
     }
 
     try {
-      const { id, title, summary, content, date, category, cover, series, layout_mode, status, weight } = await request.json();
+      const body = await request.json();
+      const { id, title, summary, content, date, updated_at, category, cover, series, layout_mode, status, weight } = body;
+      const nowTime = new Date().toISOString().split('T')[0];
+      const finalUpdatedAt = updated_at || nowTime;
 
       await env.MY_BUCKET.put(`posts/${id}.md`, content, {
         httpMetadata: { contentType: "text/markdown; charset=utf-8" }
       });
 
-      // 保存至 D1 数据库
+      // 保存至 D1 数据库 (写入与更新 updated_at)
       await env.DB.prepare(`
-        INSERT INTO posts (id, title, summary, date, category, cover, series, layout_mode, status, weight, views) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
-        ON CONFLICT(id) DO UPDATE SET title = ?, summary = ?, category = ?, cover = ?, series = ?, layout_mode = ?, status = ?, weight = ?
-      `).bind(
-        id, title, summary, date, category || '未分类', cover || '', series || '默认系列', layout_mode || 'standard', status || 'publish', parseInt(weight) || 0,
-        title, summary, category || '未分类', cover || '', series || '默认系列', layout_mode || 'standard', status || 'publish', parseInt(weight) || 0
+      INSERT INTO posts (id, title, summary, date, updated_at, category, cover, series, layout_mode, status, weight, views) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+      ON CONFLICT(id) DO UPDATE SET 
+        title = ?, 
+        summary = ?, 
+        updated_at = ?,
+        category = ?, 
+        cover = ?, 
+        series = ?, 
+        layout_mode = ?, 
+        status = ?, 
+        weight = ?
+    `).bind(
+        id, title, summary, date, finalUpdatedAt, category || '未分类', cover || '', series || '默认系列', layout_mode || 'standard', status || 'publish', parseInt(weight) || 0,
+        title, summary, finalUpdatedAt, category || '未分类', cover || '', series || '默认系列', layout_mode || 'standard', status || 'publish', parseInt(weight) || 0
       ).run();
 
       return new Response(JSON.stringify({ success: true }), { headers: { "Content-Type": "application/json" } });

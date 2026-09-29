@@ -20,7 +20,7 @@ export async function onRequest(context) {
   try {
     // 1. 查询 D1 数据库获取文章元数据
     const post = await env.DB.prepare(
-      "SELECT title, summary, cover, date, category, series FROM posts WHERE id = ?"
+      "SELECT title, summary, cover, date, updated_at, category, series FROM posts WHERE id = ?"
     ).bind(postId).first();
 
     if (!post) {
@@ -46,6 +46,7 @@ export async function onRequest(context) {
     const title = escapeHtml(post.title || '文章详情');
     const summary = escapeHtml(post.summary || '');
     const datePublished = post.date || new Date().toISOString().split('T')[0];
+    const dateModified = post.updated_at || datePublished;
     const category = escapeHtml(post.category || '未分类');
 
     let cover = (post.cover || '').trim();
@@ -73,7 +74,7 @@ export async function onRequest(context) {
       "description": post.summary || '',
       "url": request.url,
       "datePublished": datePublished,
-      "dateModified": datePublished,
+      "dateModified": dateModified,
       "articleSection": post.category || '未分类',
       "author": {
         "@type": "Person",
@@ -130,6 +131,8 @@ export async function onRequest(context) {
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="canonical" href="${currentUrl}">
+    <meta property="article:published_time" content="${datePublished}">
+    <meta property="article:modified_time" content="${dateModified}">
     <meta property="og:type" content="article">
     <meta property="og:title" content="${title}">
     <meta property="og:description" content="${summary}">

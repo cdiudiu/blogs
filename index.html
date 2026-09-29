@@ -1569,12 +1569,45 @@
                 const firstImgEl = postContent.querySelector('img');
                 const postShareImg = firstImgEl ? firstImgEl.src : "https://img.vpsbbc.com/vps-x.png";
 
-                const currentPostMeta = (window.popularPostsData || []).find(p => p.id === postId);
-                const authorText = (currentPostMeta && currentPostMeta.author) ? currentPostMeta.author : "成也";
-                const createDate = (currentPostMeta && (currentPostMeta.created_at || currentPostMeta.date)) ? (currentPostMeta.created_at || currentPostMeta.date) : new Date().toISOString();
-                const updateDate = (currentPostMeta && currentPostMeta.updated_at) ? currentPostMeta.updated_at : createDate;
+                // 1. 尝试从本地已有数据读取，若无则实时请求文章元数据
+                let currentPostMeta = (window.popularPostsData || []).find(p => p.id === postId);
+                if (!currentPostMeta) {
+                    try {
+                        const metaRes = await fetch(`/blog/api/posts?id=${encodeURIComponent(postId)}&_t=` + Date.now());
+                        if (metaRes.ok) {
+                            currentPostMeta = await metaRes.json();
+                        }
+                    } catch (e) {
+                        console.warn("获取文章元数据失败:", e);
+                    }
+                }
 
-                // 2. 调用全新的 updateMeta，将 pageType 设为 'article'，生成唯一 Canonical
+                // 2. 提取作者、创建时间与更新时间
+                const authorText = (currentPostMeta && currentPostMeta.author) ? currentPostMeta.author : "成也";
+                const createDate = (currentPostMeta && (currentPostMeta.created_at || currentPostMeta.date)) ? (currentPostMeta.created_at || currentPostMeta.date) : '';
+                const updateDate = (currentPostMeta && currentPostMeta.updated_at) ? currentPostMeta.updated_at : '';
+
+                // 3. 将时间渲染到文章顶部标题下方的 DOM 元素中
+                const authorEl = document.getElementById('author-text');
+                const dateEl = document.getElementById('post-date');
+                const updateDateEl = document.getElementById('post-update-date');
+                const catEl = document.getElementById('post-category');
+
+                if (authorEl) authorEl.innerText = authorText;
+                if (dateEl) dateEl.innerText = createDate ? `📅 发布: ${createDate}` : '';
+                if (catEl) catEl.innerText = (currentPostMeta && currentPostMeta.category) ? currentPostMeta.category : '未分类';
+
+                // 若存在更新时间，且与创建时间不同，则高亮展示更新时间
+                if (updateDateEl) {
+                    if (updateDate && updateDate !== createDate) {
+                        updateDateEl.innerText = `🔄 更新: ${updateDate}`;
+                        updateDateEl.style.display = 'inline';
+                    } else {
+                        updateDateEl.style.display = 'none';
+                    }
+                }
+
+                // 4. 调用 updateMeta 更新页面 SEO 标签
                 const canonicalPostUrl = `${window.location.origin}/blog/post/${encodeURIComponent(postId)}`;
                 updateMeta(
                     pageTitle,
@@ -1584,7 +1617,7 @@
                     'article'
                 );
 
-                // 动态构建包含 BreadcrumbList 的复合结构化数据
+                // 5. 动态构建包含 BreadcrumbList 和更新时间(dateModified)的 BlogPosting 结构化数据
                 let postJsonLd = document.getElementById('post-json-ld');
                 if (!postJsonLd) {
                     postJsonLd = document.createElement('script');
@@ -1630,8 +1663,8 @@
                             "headline": pageTitle,
                             "description": plainTextDesc || pageTitle,
                             "image": [postShareImg],
-                            "datePublished": createDate,
-                            "dateModified": updateDate,
+                            "datePublished": createDate || new Date().toISOString().split('T')[0],
+                            "dateModified": updateDate || createDate || new Date().toISOString().split('T')[0],
                             "author": {
                                 "@type": "Person",
                                 "name": authorText,
@@ -1648,7 +1681,6 @@
                         }
                     ]
                 });
-
                 if (detectedTitleEl) {
                     detectedTitleEl.style.display = 'none';
                 }
