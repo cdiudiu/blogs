@@ -789,8 +789,60 @@
             });
         }
 
+        // 纯前端图片无损压缩（转为 WebP，最大宽度 1280px，质量 0.82）
+        async function compressImage(file, maxWidth = 1280, quality = 0.82) {
+            // 如果是 gif 动图或 svg 矢量图，不压缩直接返回
+            if (file.type === 'image/gif' || file.type === 'image/svg+xml') {
+                return file;
+            }
+
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
+
+                        // 超过最大宽度则按等比例缩小
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // 输出为轻量的 webp 格式
+                        canvas.toBlob((blob) => {
+                            if (!blob) {
+                                resolve(file); // 兜底
+                                return;
+                            }
+                            // 重塑为压缩后的 File 对象
+                            const newFileName = file.name.replace(/\.[^/.]+$/, "") + ".webp";
+                            const compressedFile = new File([blob], newFileName, {
+                                type: 'image/webp',
+                                lastModified: Date.now()
+                            });
+                            resolve(compressedFile);
+                        }, 'image/webp', quality);
+                    };
+                    img.onerror = () => resolve(file);
+                };
+                reader.onerror = () => resolve(file);
+            });
+        }
+
         async function uploadImageViaVditor(file) {
             const password = getActivePassword();
+            // 先通过本地 Canvas 压缩图片，极大减少体积并加快前后台载入速度
+            const processedFile = await compressImage(file);
             const formData = new FormData();
             formData.append('image', file);
 

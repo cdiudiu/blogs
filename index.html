@@ -1104,7 +1104,10 @@
 
             document.getElementById('home-view').classList.remove('hidden');
             document.getElementById('post-view').classList.add('hidden');
-
+            // 确保轮播图仅在首次没有数据时加载一次，避免卡死或重复刷新闪屏
+            if (popularPostsData.length === 0) {
+                fetchPopularPosts();
+            }
             // 2. 仅刷新文章列表，不再重复请求轮播图
             fetchPostsAndRender(1);
         }
@@ -1290,14 +1293,23 @@
         async function fetchPopularPosts() {
             try {
                 const response = await fetch(`./api/posts?popular=${globalPopularLimit}&_t=${Date.now()}`);
-                const posts = await response.json();
+                const data = await response.json();
+                const posts = Array.isArray(data) ? data : (data.results || []);
 
-                if (Array.isArray(posts) && posts.length > 0) {
+                if (posts.length > 0) {
                     popularPostsData = posts.slice(0, 5);
                     renderCarousel(popularPostsData);
+                } else {
+                    // 如果热门没有单独配置，拿最新的普通文章做轮播
+                    const fallbackRes = await fetch(`./api/posts?limit=5&_t=${Date.now()}`);
+                    const fallbackData = await fallbackRes.json();
+                    popularPostsData = (fallbackData.results || fallbackData || []).slice(0, 5);
+                    if (popularPostsData.length > 0) renderCarousel(popularPostsData);
                 }
             } catch (e) {
                 console.error("加载热门轮播数据失败:", e);
+                const slidesContainer = document.getElementById('carousel-slides');
+                if (slidesContainer) slidesContainer.innerHTML = '<div class="w-full h-full flex items-center justify-center text-zinc-500 text-xs">暂无推荐文章</div>';
             }
         }
 
