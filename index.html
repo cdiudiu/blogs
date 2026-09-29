@@ -1026,6 +1026,20 @@
             }
         }
 
+        function updateSeriesNavActiveState(targetSeries) {
+            const navLinks = document.querySelectorAll('#series-navbar-container a');
+            navLinks.forEach(link => {
+                const href = decodeURIComponent(link.getAttribute('href') || '');
+                const isSelected = (!targetSeries && href === '#/') || (targetSeries && href.includes(`/series/${targetSeries}`));
+
+                if (isSelected) {
+                    link.className = "px-3 py-1.5 rounded-md text-sm transition-all bg-[#DABE86] text-white font-bold shadow-sm";
+                } else {
+                    link.className = "px-3 py-1.5 rounded-md text-sm transition-all text-[#677390] bg-[#8EA5C0]/15 hover:bg-[#8EA5C0]/25 hover:text-[#485268]";
+                }
+            });
+        }
+
         function updateMeta(title, description, canonicalUrl, imageUrl) {
             document.title = title;
 
@@ -1095,21 +1109,30 @@
             const sInput = document.getElementById('search-input');
             if (sInput) sInput.value = "";
 
-            updateMeta(`${seriesName} - ${siteBaseTitle}`, `浏览关于 ${seriesName} 的所有精选教程和服务器评测指南。`, `${window.location.origin}/blog/#/series/${encodeURIComponent(seriesName)}`);
+            updateMeta(
+                `${seriesName} 系列教程 - ${siteBaseTitle}`,
+                `浏览关于 ${seriesName} 的所有精选教程、网络调优和海外服务器实操评测。`,
+                `${window.location.origin}/blog/#/series/${encodeURIComponent(seriesName)}`,
+                "https://img.vpsbbc.com/vps-x.png"
+            );
 
-            await fetchNavMeta();
+            // 仅更新系列按钮高亮状态，不重构 DOM
+            updateSeriesNavActiveState(seriesName);
 
             document.getElementById('home-view').classList.remove('hidden');
             document.getElementById('post-view').classList.add('hidden');
-            fetchPostsAndRender(1),
-                fetchPopularPosts()
+
+            // 仅刷新文章列表，不再傻傻地重新加载轮播图
+            fetchPostsAndRender(1);
         }
 
         async function fetchPostsAndRender(page = 1) {
             currentPageNum = page;
             const container = document.getElementById('posts-list-container');
             if (!container) return;
-            container.innerHTML = '<p class="text-zinc-400 text-sm">正在加载中...</p>';
+
+            // 平滑体验：不暴力清空容器，仅降低透明度，杜绝闪白
+            container.classList.add('opacity-50', 'transition-opacity', 'duration-200');
 
             try {
                 let url = `./api/posts?page=${page}&limit=12&_t=${Date.now()}`;
@@ -1199,8 +1222,11 @@
                 });
 
                 renderPagination(total, limit, page);
+                // 恢复正常不透明度
+                container.classList.remove('opacity-50');
 
             } catch (err) {
+                container.classList.remove('opacity-50');
                 container.innerHTML = `<div class="col-span-full text-red-500 text-sm text-center">获取文章数据失败，请确认配置。</div>`;
             }
         }
