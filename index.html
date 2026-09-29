@@ -3,36 +3,40 @@
 
 <head>
     <meta charset="UTF-8">
-    <base href="/blog/">
+    <!-- 彻底移除 <base href="/blog/">，避免干扰客户端路由与爬虫抓取解析 -->
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VPS帮帮车博客 - 专注VPS选购指南与网络测速调优 | 成也</title>
+    <title id="dynamic-title">VPS帮帮车博客 - 专注VPS选购指南与网络测速调优 | 成也</title>
+
     <!-- Google 核心 SEO Meta 标签 -->
-    <meta name="description" content="成也的数字花园：汇集搬瓦工、DMIT等高性价比 VPS 真实测评、三网延迟优化脚本及建站实操指南。手把手教你选对海外服务器，告别断流与盲目上车。">
-    <meta name="keywords" content="VPS选购, VPS评测, DMIT, 搬瓦工, Linux脚本, 建站教程, 服务器运维">
-    <meta name="author" content="vpsbbc.com">
+    <meta name="description" id="meta-description"
+        content="成也的数字花园：汇集搬瓦工、DMIT等高性价比 VPS 真实测评、三网延迟优化脚本及建站实操指南。手把手教你选对海外服务器，告别断流与盲目上车。">
+    <!-- 移除废弃无用的 meta keywords，精简 HTML 头部 -->
+    <meta name="author" content="成也">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 
-    <link rel="canonical" href="https://vpsbbc.com/blog/">
-    <!-- 网站 Favicon 图标 -->
-    <link rel="sitemap" type="application/xml" title="Sitemap" href="./sitemap.xml">
-    <link rel="icon" type="image/png" sizes="48x48" href="./favicon.png">
-    <link rel="apple-touch-icon" href="./favicon.png">
+    <!-- Canonical 标签：初始不预置死静态首页，避免覆盖文章真实规范 URL -->
+    <link rel="canonical" id="canonical-url" href="https://vpsbbc.com/blog/">
+
+    <!-- 网站 Favicon 图标与 Sitemap（采用绝对路径） -->
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/blog/sitemap.xml">
+    <link rel="icon" type="image/png" sizes="48x48" href="/blog/favicon.png">
+    <link rel="apple-touch-icon" href="/blog/favicon.png">
 
     <!-- Open Graph (社交与搜索引擎卡片) -->
     <meta property="og:locale" content="zh_CN">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="VPS帮帮车博客 - 专注VPS选购指南与网络测速调优">
-    <meta property="og:description" content="汇集搬瓦工、DMIT等高性价比 VPS 真实测评、三网延迟优化脚本及建站实操指南。">
-    <meta property="og:url" content="https://vpsbbc.com/blog/">
+    <meta property="og:type" id="og-type" content="website">
+    <meta property="og:title" id="og-title" content="VPS帮帮车博客 - 专注VPS选购指南与网络测速调优">
+    <meta property="og:description" id="og-desc" content="汇集搬瓦工、DMIT等高性价比 VPS 真实测评、三网延迟优化脚本及建站实操指南。">
+    <meta property="og:url" id="og-url" content="https://vpsbbc.com/blog/">
     <meta property="og:site_name" content="VPS帮帮车">
-    <meta property="og:image" content="https://img.vpsbbc.com/vps-x.png">
+    <meta property="og:image" id="og-image" content="https://img.vpsbbc.com/vps-x.png">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="VPS帮帮车Blog - VPS选购指南与、VPS测评网络测速调优">
-    <meta name="twitter:description" content="汇集搬瓦工、DMIT等高性价比 VPS 真实测评、三网延迟优化脚本及建站实操指南。">
-    <meta name="twitter:image" content="https://img.vpsbbc.com/vps-x.png">
+    <meta name="twitter:title" id="tw-title" content="VPS帮帮车Blog - 专注VPS选购指南与网络测速调优">
+    <meta name="twitter:description" id="tw-desc" content="汇集搬瓦工、DMIT等高性价比 VPS 真实测评、三网延迟优化脚本及建站实操指南。">
+    <meta name="twitter:image" id="tw-image" content="https://img.vpsbbc.com/vps-x.png">
 
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <!-- Google 结构化数据 (JSON-LD) -->
@@ -935,7 +939,7 @@
 
         async function loadSiteConfig() {
             try {
-                const res = await fetch('./api/config?_t=' + Date.now());
+                const res = await fetch('/blog/api/config?_t=' + Date.now());
                 if (!res.ok) throw new Error();
                 const data = await res.json();
 
@@ -1012,7 +1016,7 @@
 
         async function fetchNavMeta() {
             try {
-                const res = await fetch('./api/posts?get_nav_meta=true&_t=' + Date.now());
+                const res = await fetch('/blog/api/posts?get_nav_meta=true&_t=' + Date.now());
                 dbNavMeta = await res.json();
 
                 const finalSeriesList = Array.from(new Set([...activeSeriesList, ...Object.keys(dbNavMeta)]));
@@ -1050,36 +1054,80 @@
             });
         }
 
-        function updateMeta(title, description, canonicalUrl, imageUrl) {
-            document.title = title;
+        /**
+         * 严格符合 Google SEO 规范的元数据更新引擎
+         * @param {string} title 网页标题
+         * @param {string} description 描述内容 (120-160 字最佳)
+         * @param {string} canonicalUrl 当前页面权威唯一 URL
+         * @param {string} imageUrl 分享卡片封面配图
+         * @param {'website'|'article'} pageType 页面语义类型
+         */
+        function updateMeta(title, description, canonicalUrl, imageUrl, pageType = 'website') {
+            const defaultSiteTitle = siteBaseTitle || "vpsbbc.com - VPS帮帮车";
+            const fullTitle = title.includes(defaultSiteTitle) ? title : `${title} -${defaultSiteTitle}`;
 
-            // 1. Meta Description
+            // 1. 清洗与优化描述内容：剔除 Markdown 标记、HTML 特殊字符与多余空格换行
+            const cleanDesc = (description || '')
+                .replace(/[#*`_~>\[\]\(\)\\]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .slice(0, 155);
+
+            const targetUrl = canonicalUrl || window.location.href.split('?')[0].split('#')[0];
+            const targetImage = imageUrl || "https://img.vpsbbc.com/vps-x.png";
+
+            // 2. 更新 Document Title
+            document.title = fullTitle;
+
+            // 3. 更新 Meta Description
             let descTag = document.querySelector('meta[name="description"]');
-            if (descTag) descTag.setAttribute('content', description || '');
-
-            // 2. Canonical
-            let canonTag = document.querySelector('link[rel="canonical"]');
-            if (canonTag) canonTag.setAttribute('href', canonicalUrl || window.location.href);
-
-            // 3. 同步更新 Open Graph
-            const ogTitle = document.querySelector('meta[property="og:title"]');
-            if (ogTitle) ogTitle.setAttribute('content', title);
-            const ogDesc = document.querySelector('meta[property="og:description"]');
-            if (ogDesc) ogDesc.setAttribute('content', description || '');
-            const ogUrl = document.querySelector('meta[property="og:url"]');
-            if (ogUrl) ogUrl.setAttribute('content', canonicalUrl || window.location.href);
-            if (imageUrl) {
-                const ogImg = document.querySelector('meta[property="og:image"]');
-                if (ogImg) ogImg.setAttribute('content', imageUrl);
-                const twImg = document.querySelector('meta[name="twitter:image"]');
-                if (twImg) twImg.setAttribute('content', imageUrl);
+            if (!descTag) {
+                descTag = document.createElement('meta');
+                descTag.name = "description";
+                document.head.appendChild(descTag);
             }
+            descTag.setAttribute('content', cleanDesc);
 
-            // 4. 同步更新 Twitter Card
-            const twTitle = document.querySelector('meta[name="twitter:title"]');
-            if (twTitle) twTitle.setAttribute('content', title);
-            const twDesc = document.querySelector('meta[name="twitter:description"]');
-            if (twDesc) twDesc.setAttribute('content', description || '');
+            // 4. 更新 Canonical URL（消除爬虫吞噬关键点）
+            let canonTag = document.querySelector('link[rel="canonical"]');
+            if (!canonTag) {
+                canonTag = document.createElement('link');
+                canonTag.rel = "canonical";
+                document.head.appendChild(canonTag);
+            }
+            canonTag.setAttribute('href', targetUrl);
+
+            // 5. 更新 Open Graph 协议标签
+            const setMeta = (property, value) => {
+                let el = document.querySelector(`meta[property="${property}"]`);
+                if (!el) {
+                    el = document.createElement('meta');
+                    el.setAttribute('property', property);
+                    document.head.appendChild(el);
+                }
+                el.setAttribute('content', value);
+            };
+
+            setMeta('og:title', fullTitle);
+            setMeta('og:description', cleanDesc);
+            setMeta('og:url', targetUrl);
+            setMeta('og:type', pageType);
+            setMeta('og:image', targetImage);
+
+            // 6. 更新 Twitter Card 协议标签
+            const setTwMeta = (name, value) => {
+                let el = document.querySelector(`meta[name="${name}"]`);
+                if (!el) {
+                    el = document.createElement('meta');
+                    el.setAttribute('name', name);
+                    document.head.appendChild(el);
+                }
+                el.setAttribute('content', value);
+            };
+
+            setTwMeta('twitter:title', fullTitle);
+            setTwMeta('twitter:description', cleanDesc);
+            setTwMeta('twitter:image', targetImage);
         }
 
         async function handleSearch(e) {
@@ -1151,7 +1199,7 @@
             container.classList.add('opacity-50', 'transition-opacity', 'duration-200');
 
             try {
-                let url = `./api/posts?page=${page}&limit=12&_t=${Date.now()}`;
+                let url = `/blog/api/posts?page=${page}&limit=12&_t=${Date.now()}`;
                 if (currentFilterCategory) url += `&category=${encodeURIComponent(currentFilterCategory)}`;
                 if (currentFilterSeries) url += `&series=${encodeURIComponent(currentFilterSeries)}`;
                 if (currentSearchQuery) url += `&q=${encodeURIComponent(currentSearchQuery)}`;
@@ -1298,7 +1346,7 @@
         /* 整体精简替换为：仅服务顶部轮播图，干净无废话 */
         async function fetchPopularPosts() {
             try {
-                const response = await fetch(`./api/posts?popular=${globalPopularLimit}&_t=${Date.now()}`);
+                const response = await fetch(`/blog/api/posts?popular=${globalPopularLimit}&_t=${Date.now()}`);
                 const data = await response.json();
                 const posts = Array.isArray(data) ? data : (data.results || []);
 
@@ -1307,7 +1355,7 @@
                     renderCarousel(popularPostsData);
                 } else {
                     // 如果热门没有单独配置，拿最新的普通文章做轮播
-                    const fallbackRes = await fetch(`./api/posts?limit=5&_t=${Date.now()}`);
+                    const fallbackRes = await fetch(`/blog/api/posts?limit=5&_t=${Date.now()}`);
                     const fallbackData = await fallbackRes.json();
                     popularPostsData = (fallbackData.results || fallbackData || []).slice(0, 5);
                     if (popularPostsData.length > 0) renderCarousel(popularPostsData);
@@ -1401,7 +1449,7 @@
             postContent.innerHTML = '<p class="text-zinc-400 text-sm">正在加载...</p>';
 
             try {
-                const response = await fetch(`./api/post-content?id=${encodeURIComponent(postId)}&_t=` + Date.now());
+                const response = await fetch(`/blog/api/post-content?id=${encodeURIComponent(postId)}&_t=` + Date.now());
 
                 if (!response.ok) throw new Error("无法连接存储桶");
                 let text = await response.text();
@@ -1467,55 +1515,37 @@
                 postContent.innerHTML = marked.parse(text);
 
                 // 提取正文里的第一个大标题作为顶部标题
+                // 1. 规范页面主标题与提取前 150 字干净纯文本
                 const detectedTitleEl = postContent.querySelector('h1, h2, h3');
                 const pageTitle = detectedTitleEl ? detectedTitleEl.innerText.trim() : postId;
                 document.getElementById('detail-post-title').innerText = pageTitle;
 
-                // 自动截取正文前 130 字纯文本作为文章独立 Description，避免标题重复
-                const plainTextDesc = postContent.innerText.replace(/\s+/g, ' ').slice(0, 130).trim();
+                // 纯文本描述提取（移除换行与空字符）
+                const plainTextDesc = postContent.innerText
+                    .replace(/[\r\n\t]+/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .slice(0, 150)
+                    .trim();
 
-                // 自动提取文章内的第一张图片作为此文章的专属分享大图
                 const firstImgEl = postContent.querySelector('img');
                 const postShareImg = firstImgEl ? firstImgEl.src : "https://img.vpsbbc.com/vps-x.png";
 
-                // 匹配当前文章的元数据（从之前缓存的列表或动态比对）
                 const currentPostMeta = (window.popularPostsData || []).find(p => p.id === postId);
-
                 const authorText = (currentPostMeta && currentPostMeta.author) ? currentPostMeta.author : "成也";
-                const createDate = (currentPostMeta && (currentPostMeta.created_at || currentPostMeta.date)) ? (currentPostMeta.created_at || currentPostMeta.date) : "";
-                const updateDate = (currentPostMeta && currentPostMeta.updated_at) ? currentPostMeta.updated_at : "";
+                const createDate = (currentPostMeta && (currentPostMeta.created_at || currentPostMeta.date)) ? (currentPostMeta.created_at || currentPostMeta.date) : new Date().toISOString();
+                const updateDate = (currentPostMeta && currentPostMeta.updated_at) ? currentPostMeta.updated_at : createDate;
 
-                const authorEl = document.getElementById('author-text');
-                if (authorEl) authorEl.innerText = authorText;
-
-                const dateEl = document.getElementById('post-date');
-                if (dateEl) dateEl.innerText = `发布于: ${createDate}`;
-
-                const updateDateEl = document.getElementById('post-update-date');
-                if (updateDateEl) {
-                    if (updateDate && updateDate !== createDate) {
-                        updateDateEl.innerText = `(已更新于: ${updateDate})`;
-                        updateDateEl.style.display = 'inline';
-                    } else {
-                        updateDateEl.style.display = 'none';
-                    }
-                }
-
-
+                // 2. 调用全新的 updateMeta，将 pageType 设为 'article'，生成唯一 Canonical
+                const canonicalPostUrl = `${window.location.origin}/blog/post/${encodeURIComponent(postId)}`;
                 updateMeta(
-                    `${pageTitle} - ${siteBaseTitle}`,
-                    plainTextDesc || `${pageTitle}，来自 VPS帮帮车的技术教程与测评分享。`,
-                    `${window.location.origin}/blog/post/${postId}`,
-                    postShareImg
+                    pageTitle,
+                    plainTextDesc || `${pageTitle} - VPS帮帮车关于海外服务器与网络测速的深度评测。`,
+                    canonicalPostUrl,
+                    postShareImg,
+                    'article'
                 );
 
-                // 同步更新面包屑导航分类
-                const categoryEl = document.getElementById('breadcrumb-category');
-                if (categoryEl && document.getElementById('post-category')) {
-                    categoryEl.innerText = document.getElementById('post-category').innerText || "精选教程";
-                }
-
-                // 动态注入/更新当前文章的专属 BlogPosting 结构化数据 (JSON-LD)
+                // 3. 更新/注入符合 Google Rich Results 标准的 BlogPosting 结构化数据
                 let postJsonLd = document.getElementById('post-json-ld');
                 if (!postJsonLd) {
                     postJsonLd = document.createElement('script');
@@ -1523,28 +1553,31 @@
                     postJsonLd.type = 'application/ld+json';
                     document.head.appendChild(postJsonLd);
                 }
+
                 postJsonLd.textContent = JSON.stringify({
                     "@context": "https://schema.org",
                     "@type": "BlogPosting",
+                    "mainEntityOfPage": {
+                        "@type": "WebPage",
+                        "@id": canonicalPostUrl
+                    },
                     "headline": pageTitle,
                     "description": plainTextDesc || pageTitle,
-                    "image": postShareImg,
+                    "image": [postShareImg],
+                    "datePublished": createDate,
+                    "dateModified": updateDate,
                     "author": {
                         "@type": "Person",
-                        "name": "成也",
-                        "url": "https://vpsbbc.com/blog/"
+                        "name": authorText,
+                        "url": `${window.location.origin}/blog/`
                     },
                     "publisher": {
                         "@type": "Organization",
                         "name": "VPS帮帮车",
                         "logo": {
                             "@type": "ImageObject",
-                            "url": "https://vpsbbc.com/blog/favicon.png"
+                            "url": `${window.location.origin}/blog/favicon.png`
                         }
-                    },
-                    "mainEntityOfPage": {
-                        "@type": "WebPage",
-                        "@id": `${window.location.origin}/blog/post/${postId}`
                     }
                 });
 
@@ -1556,7 +1589,7 @@
                     generateTableOfContents();
                 }, 50);
 
-                fetch(`./api/views?id=${postId}`, { method: 'POST' })
+                fetch(`/blog/api/views?id=${postId}`, { method: 'POST' })
                     .then(r => r.json())
                     .then(data => {
                         document.getElementById('post-views-count').innerText = `阅读量: ${data.views}`;
