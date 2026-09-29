@@ -341,7 +341,7 @@
 
                     <section aria-label="文章列表">
                         <div id="posts-list-container" class="flex flex-col space-y-4">
-                            <!-- 静态预留内容：Google 爬虫在未执行 JS 时也能抓取到核心内链与关键字 -->
+                            <!-- 静态核心精选：首屏直接交付 URL 与丰富语义，供爬虫无阻碍抓取 -->
                             <article class="card-texture rounded-2xl p-5 flex flex-col sm:flex-row gap-4 items-center">
                                 <div
                                     class="w-full sm:w-64 h-36 rounded-xl bg-zinc-100 flex items-center justify-center font-bold text-zinc-400">
@@ -349,7 +349,18 @@
                                 <div class="flex-grow space-y-2">
                                     <h2 class="text-base font-bold text-zinc-800"><a href="./post/firstVps">初识
                                             VPS：从零看懂配置，带你避坑上车</a></h2>
-                                    <p class="text-xs text-zinc-500">新手入门必读：核心参数详解，包括 CPU、内存、带宽及网络线路选购避坑指南。</p>
+                                    <p class="text-xs text-zinc-500">新手入门必读：核心硬件参数详解，包括 CPU、内存、带宽及电信 CN2 GIA/AS9929
+                                        线路选购避坑指南。</p>
+                                </div>
+                            </article>
+                            <article class="card-texture rounded-2xl p-5 flex flex-col sm:flex-row gap-4 items-center">
+                                <div
+                                    class="w-full sm:w-64 h-36 rounded-xl bg-zinc-100 flex items-center justify-center font-bold text-zinc-400">
+                                    服务器运维</div>
+                                <div class="flex-grow space-y-2">
+                                    <h2 class="text-base font-bold text-zinc-800"><a
+                                            href="./post/linux-system-guide">Linux 操作系统选择：Ubuntu 与 Debian 深度对比</a></h2>
+                                    <p class="text-xs text-zinc-500">面向建站与科学上网的 Linux 发行版性能与稳定性评测，详解各主流系统的资源开销。</p>
                                 </div>
                             </article>
                         </div>
@@ -722,6 +733,18 @@
                     class="hover:underline text-amber-500">vpsbbc.com</a>
             </div>
         </div>
+        <!-- 搜索引擎静态全量内链保底索引（JS 正常运行时对用户透明无影响） -->
+        <noscript>
+            <div class="max-w-7xl mx-auto px-4 py-6 text-xs text-zinc-500 border-t border-zinc-200">
+                <h3 class="font-bold text-zinc-700 mb-2">站点精选导航与历史教程归档：</h3>
+                <ul class="flex flex-wrap gap-4">
+                    <li><a href="./post/firstVps" class="underline">初识 VPS：从零看懂配置，带你避坑上车</a></li>
+                    <li><a href="./post/linux-system-guide" class="underline">Linux 操作系统选择指南</a></li>
+                    <li><a href="./#/?vps=DMIT" class="underline">DMIT 优质线路库存监控</a></li>
+                    <li><a href="./#/tools/vps-calc" class="underline">VPS 剩余价值计算器</a></li>
+                </ul>
+            </div>
+        </noscript>
     </footer>
 
     <script>
