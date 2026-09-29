@@ -277,9 +277,21 @@
 
                     <!-- 左侧顶部：系列导航 + 搜索框同行展示 -->
                     <header class="space-y-4">
+                        <!-- 核心 SEO H1 标头：建立网站主权语义主题（可结合站点定位优雅排版） -->
+                        <div class="flex items-center justify-between pb-1 border-b border-[#8EA5C0]/20">
+                            <h1
+                                class="text-lg sm:text-xl font-extrabold tracking-tight text-zinc-900 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block animate-pulse"></span>
+                                <span>VPS帮帮车</span>
+                                <span class="text-xs sm:text-sm font-medium text-zinc-500 hidden sm:inline">-
+                                    海外服务器选购评测与网络调优指南</span>
+                            </h1>
+                        </div>
+
                         <!-- 顶部热门文章轮播图 -->
                         <div
                             class="relative w-full h-48 sm:h-52 md:h-56 rounded-2xl overflow-hidden shadow-sm border border-zinc-100 bg-zinc-900 group">
+                            <!-- 保持轮播图内部容器不变 -->
                             <!-- 轮播幻灯片容器 -->
                             <div id="carousel-slides"
                                 class="flex w-full h-full transition-transform duration-500 ease-out">
@@ -333,13 +345,15 @@
                                 <div id="series-navbar-container" class="flex flex-wrap gap-1.5 text-xs font-semibold">
                                 </div>
                             </nav>
-                            <div class="relative shrink-0 w-full md:w-64">
-                                <input type="text" id="search-input" onkeydown="handleSearch(event)"
+                            <!-- 将原裸露的 input 替换为原生表单，天然兼容无 JS 爬虫抓取 -->
+                            <form action="/blog/" method="GET" onsubmit="event.preventDefault(); triggerSearch();"
+                                class="relative shrink-0 w-full md:w-64" role="search">
+                                <input type="search" name="q" id="search-input"
                                     class="w-full border border-[#8EA5C0]/40 rounded-xl pl-3 pr-8 py-1.5 text-xs focus:ring-2 focus:ring-[#DABE86]/30 focus:border-[#DABE86] focus:outline-none transition-all bg-[#F5F6F5]/80 placeholder-[#8EA5C0]"
-                                    placeholder="输入关键词搜索..." aria-label="搜索关键字">
-                                <button onclick="triggerSearch()"
+                                    placeholder="输入关键词搜索..." aria-label="搜索关键字" autocomplete="off">
+                                <button type="submit" aria-label="执行搜索"
                                     class="absolute right-2.5 top-1.5 text-[#8EA5C0] hover:text-[#677390] text-xs">🔍</button>
-                            </div>
+                            </form>
                         </div>
                     </header>
 
@@ -1136,10 +1150,17 @@
             }
         }
 
-        async function triggerSearch() {
-            currentSearchQuery = document.getElementById('search-input').value.trim();
+        function triggerSearch() {
+            const input = document.getElementById('search-input');
+            const query = input ? input.value.trim() : "";
+            currentSearchQuery = query;
             currentPageNum = 1;
-            await fetchPostsAndRender(1);
+
+            // 同步把搜索词推入历史记录 URL 中，便于用户分享与 Google 渲染识别
+            const targetUrl = query ? `/blog/?q=${encodeURIComponent(query)}` : '/blog/';
+            history.pushState(null, '', targetUrl);
+
+            fetchPostsAndRender(1);
         }
 
         async function showHomeView() {
@@ -1545,7 +1566,7 @@
                     'article'
                 );
 
-                // 3. 更新/注入符合 Google Rich Results 标准的 BlogPosting 结构化数据
+                // 动态构建包含 BreadcrumbList 的复合结构化数据
                 let postJsonLd = document.getElementById('post-json-ld');
                 if (!postJsonLd) {
                     postJsonLd = document.createElement('script');
@@ -1554,31 +1575,60 @@
                     document.head.appendChild(postJsonLd);
                 }
 
+                const postSeriesName = (currentPostMeta && currentPostMeta.series) ? currentPostMeta.series : "VPS系列";
+
                 postJsonLd.textContent = JSON.stringify({
                     "@context": "https://schema.org",
-                    "@type": "BlogPosting",
-                    "mainEntityOfPage": {
-                        "@type": "WebPage",
-                        "@id": canonicalPostUrl
-                    },
-                    "headline": pageTitle,
-                    "description": plainTextDesc || pageTitle,
-                    "image": [postShareImg],
-                    "datePublished": createDate,
-                    "dateModified": updateDate,
-                    "author": {
-                        "@type": "Person",
-                        "name": authorText,
-                        "url": `${window.location.origin}/blog/`
-                    },
-                    "publisher": {
-                        "@type": "Organization",
-                        "name": "VPS帮帮车",
-                        "logo": {
-                            "@type": "ImageObject",
-                            "url": `${window.location.origin}/blog/favicon.png`
+                    "@graph": [
+                        {
+                            "@type": "BreadcrumbList",
+                            "itemListElement": [
+                                {
+                                    "@type": "ListItem",
+                                    "position": 1,
+                                    "name": "首页",
+                                    "item": `${window.location.origin}/blog/`
+                                },
+                                {
+                                    "@type": "ListItem",
+                                    "position": 2,
+                                    "name": postSeriesName,
+                                    "item": `${window.location.origin}/blog/series/${encodeURIComponent(postSeriesName)}`
+                                },
+                                {
+                                    "@type": "ListItem",
+                                    "position": 3,
+                                    "name": pageTitle,
+                                    "item": canonicalPostUrl
+                                }
+                            ]
+                        },
+                        {
+                            "@type": "BlogPosting",
+                            "mainEntityOfPage": {
+                                "@type": "WebPage",
+                                "@id": canonicalPostUrl
+                            },
+                            "headline": pageTitle,
+                            "description": plainTextDesc || pageTitle,
+                            "image": [postShareImg],
+                            "datePublished": createDate,
+                            "dateModified": updateDate,
+                            "author": {
+                                "@type": "Person",
+                                "name": authorText,
+                                "url": `${window.location.origin}/blog/`
+                            },
+                            "publisher": {
+                                "@type": "Organization",
+                                "name": "VPS帮帮车",
+                                "logo": {
+                                    "@type": "ImageObject",
+                                    "url": `${window.location.origin}/blog/favicon.png`
+                                }
+                            }
                         }
-                    }
+                    ]
                 });
 
                 if (detectedTitleEl) {
