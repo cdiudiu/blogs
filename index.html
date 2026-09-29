@@ -38,7 +38,6 @@
     <meta name="twitter:description" id="tw-desc" content="汇集搬瓦工、DMIT等高性价比 VPS 真实测评、三网延迟优化脚本及建站实操指南。">
     <meta name="twitter:image" id="tw-image" content="https://img.vpsbbc.com/vps-x.png">
 
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <!-- Google 结构化数据 (JSON-LD) -->
     <script type="application/ld+json">
     {
@@ -82,7 +81,8 @@
     <style>
         html {
             scroll-behavior: smooth;
-            zoom: 0.9;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
         }
 
         /* 替换原先的 body 背景色 */
@@ -846,11 +846,16 @@
         // 1. 优先执行路由切换：只要读取到是 /post/ 立即切到文章页，彻底消除首屏穿帮
         handleRouting();
 
-        // 2. 配置与元数据在后台并行异步加载，不卡死界面显示
         window.addEventListener('load', () => {
             loadSiteConfig();
             fetchNavMeta();
-            fetchVisitorIpInfo();
+
+            // 将非核心网络信息检测放进 requestIdleCallback，彻底保障首屏交互顺畅
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(() => fetchVisitorIpInfo());
+            } else {
+                setTimeout(fetchVisitorIpInfo, 1000);
+            }
         });
 
 
@@ -904,7 +909,7 @@
             const asnEl = document.getElementById('visitor-asn');
             const browserEl = document.getElementById('visitor-browser');
 
-            // 1. 本地快速提取浏览器类型（完全不走网络）
+            // 1. 本地快速提取浏览器类型（完全不发网络请求）
             if (browserEl) {
                 const ua = navigator.userAgent;
                 let browserName = "现代浏览器";
@@ -915,7 +920,16 @@
                 browserEl.innerText = browserName;
             }
 
-            // 2. 检查本地会话缓存：如果已经查过，直接填入并退出，不发网络请求
+            // 2. 如果检测到是 Googlebot 等搜索引擎爬虫，直接退出，绝不发起第三方外链请求
+            const isBot = /bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent);
+            if (isBot) {
+                if (locEl) locEl.innerText = '云端节点';
+                if (ipEl) ipEl.innerText = '已隐藏';
+                if (asnEl) asnEl.innerText = 'Search Bot';
+                return;
+            }
+
+            // 3. 命中缓存直接填入
             const cachedData = sessionStorage.getItem('visitor_net_info');
             if (cachedData) {
                 try {
@@ -923,15 +937,19 @@
                     if (ipEl) ipEl.innerText = data.ip || '-';
                     if (locEl) locEl.innerText = data.location || '未知地区';
                     if (asnEl) asnEl.innerText = data.asn || '-';
-                    return; // 直接拦截，彻底阻断请求
+                    return;
                 } catch (e) {
                     sessionStorage.removeItem('visitor_net_info');
                 }
             }
 
-            // 3. 首次访问未命中缓存，才发起 1 次远程查询
+            // 4. 使用 AbortController 严格限制 2.5 秒超时，避免阻塞浏览器空闲主线程
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2500);
+
             try {
-                const res = await fetch('https://ipapi.co/json/');
+                const res = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+                clearTimeout(timeoutId);
                 if (!res.ok) throw new Error();
                 const data = await res.json();
 
@@ -943,11 +961,11 @@
                 if (locEl) locEl.innerText = location;
                 if (asnEl) asnEl.innerText = asn;
 
-                // 存入 sessionStorage（关闭网页前持续有效）
                 sessionStorage.setItem('visitor_net_info', JSON.stringify({ ip, location, asn }));
             } catch (e) {
-                if (ipEl) ipEl.innerText = '获取失败';
-                if (locEl) locEl.innerText = '网络异常';
+                if (ipEl) ipEl.innerText = '保密节点';
+                if (locEl) locEl.innerText = '未知地区';
+                if (asnEl) asnEl.innerText = '互联网骨干网';
             }
         }
 
@@ -1861,6 +1879,21 @@
             calculateVPS();
         }
 
+        function loadScriptAsync(src) {
+            return new Promise((resolve, reject) => {
+                if (document.querySelector(`script[src="${src}"]`)) {
+                    resolve();
+                    return;
+                }
+                const script = document.createElement('script');
+                script.src = src;
+                script.async = true;
+                script.onload = () => resolve();
+                script.onerror = () => reject(new Error(`Failed to load ${src}`));
+                document.body.appendChild(script);
+            });
+        }
+
         // 外框色、强调色双重联动
         function changeCalcTheme(accentHex, wrapperLightHex, wrapperDarkHex) {
             calcAccentColor = accentHex;
@@ -1996,11 +2029,16 @@
             document.getElementById('result-total-price').innerText = `¥ ${finalSalePriceCNY.toFixed(2)}`;
         }
 
-        // 下载海报图片功能
+        // 下载海报图片功能（按需拉取 html2canvas 资源）
         async function downloadCalcImage() {
             const wrapper = document.getElementById('vps-calc-wrapper');
             if (!wrapper) return;
+
             try {
+                if (typeof html2canvas === 'undefined') {
+                    await loadScriptAsync('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+                }
+
                 const canvas = await html2canvas(wrapper, {
                     scale: 2,
                     useCORS: true,
@@ -2013,17 +2051,21 @@
                 link.click();
             } catch (e) {
                 console.error("生成图片失败:", e);
-                alert("图片生成失败，请确认浏览器权限。");
+                alert("图片生成组件加载或运行失败，请稍后重试。");
             }
         }
 
-        // 复制海报图片到剪贴板功能
+        // 复制海报图片功能同样改造
         async function copyCalcImage() {
             const wrapper = document.getElementById('vps-calc-wrapper');
             const btnText = document.getElementById('copy-btn-text');
             if (!wrapper) return;
 
             try {
+                if (typeof html2canvas === 'undefined') {
+                    await loadScriptAsync('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+                }
+
                 const canvas = await html2canvas(wrapper, {
                     scale: 2,
                     useCORS: true,
