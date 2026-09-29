@@ -28,7 +28,7 @@ export async function onRequest(context) {
     const singleId = url.searchParams.get("id");
     if (singleId) {
       const post = await env.DB.prepare(
-        "SELECT id, title, summary, date, updated_at, views, category, series, cover, author, status FROM posts WHERE id = ?"
+        "SELECT id, title, summary, date, updated_at, category, series, views, cover, author, status FROM posts WHERE id = ?"
       ).bind(singleId).first();
 
       if (!post || (post.status !== 'publish' && !isAdmin)) {
@@ -116,8 +116,8 @@ ${xmlItems}
       if (popularLimit) {
         const limit = parseInt(popularLimit) || 5;
         const query = isAdmin
-          ? "SELECT id, title, date, views, cover FROM posts ORDER BY views DESC LIMIT ?"
-          : "SELECT id, title, date, views, cover FROM posts WHERE status = 'publish' ORDER BY views DESC LIMIT ?";
+          ? "SELECT id, title, summary, date, updated_at, category, series, views, cover FROM posts ORDER BY views DESC LIMIT ?"
+          : "SELECT id, title, summary, date, updated_at, category, series, views, cover FROM posts WHERE status = 'publish' ORDER BY views DESC LIMIT ?";
 
         const { results } = await env.DB.prepare(query).bind(limit).all();
         return new Response(JSON.stringify(results), { headers: { "Content-Type": "application/json" } });
