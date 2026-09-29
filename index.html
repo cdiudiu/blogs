@@ -1091,15 +1091,22 @@
             const sInput = document.getElementById('search-input');
             if (sInput) sInput.value = "";
 
-            updateMeta(siteBaseTitle, "vpsbbc.com（VPS帮帮车）专注于 VPS 选购指南、服务器性能评测、科学上网及 Linux 常用脚本教程分享。", `${window.location.origin}/blog/`);
+            updateMeta(
+                siteBaseTitle,
+                "成也的数字花园（VPS帮帮车）：汇集搬瓦工、DMIT等高性价比海外 VPS 真实测评、三网延迟优化脚本及建站实操指南。",
+                `${window.location.origin}/blog/`
+            );
 
-            await fetchNavMeta();
+            // 1. 仅切换“全部”按钮的高亮，绝对不重构导航栏 DOM
+            if (typeof updateSeriesNavActiveState === 'function') {
+                updateSeriesNavActiveState("");
+            }
 
             document.getElementById('home-view').classList.remove('hidden');
             document.getElementById('post-view').classList.add('hidden');
 
-            fetchPostsAndRender(1),
-                fetchPopularPosts()
+            // 2. 仅刷新文章列表，不再重复请求轮播图
+            fetchPostsAndRender(1);
         }
 
         async function showSeriesView(seriesName) {
