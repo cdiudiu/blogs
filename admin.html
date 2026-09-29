@@ -212,14 +212,22 @@
                                         ID (不可修改)</label>
                                     <input type="text" id="admin-id"
                                         class="w-full border border-zinc-200 rounded-lg px-3.5 py-2 text-[16px] md:text-sm focus:ring-2 focus:ring-indigo-500/10 focus:outline-none transition-all"
-                                        placeholder="例如: advanced-markdown">
+                                        placeholder="例如: firstVps">
                                 </div>
-                                <div class="sm:col-span-3">
+                                <div class="sm:col-span-2">
                                     <label
                                         class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">文章标题</label>
                                     <input type="text" id="admin-title"
                                         class="w-full border border-zinc-200 rounded-lg px-3.5 py-2 text-[16px] md:text-sm focus:ring-2 focus:ring-indigo-500/10 focus:outline-none transition-all"
                                         placeholder="请输入文章主标题">
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">作者
+                                        / 创建人</label>
+                                    <input type="text" id="admin-author"
+                                        class="w-full border border-zinc-200 rounded-lg px-3.5 py-2 text-[16px] md:text-sm focus:ring-2 focus:ring-indigo-500/10 focus:outline-none transition-all"
+                                        placeholder="例如: 成也" value="成也">
                                 </div>
                             </div>
 
@@ -883,6 +891,11 @@
             if (adminId) { adminId.disabled = false; adminId.value = ''; }
             const adminTitle = document.getElementById('admin-title');
             if (adminTitle) adminTitle.value = '';
+
+            const adminAuthor = document.getElementById('admin-author');
+            if (adminAuthor) adminAuthor.value = '成也';
+            window.currentPostCreatedAt = null; // 重置创建时间暂存
+
             const adminSummary = document.getElementById('admin-summary');
             if (adminSummary) adminSummary.value = '';
             const adminCover = document.getElementById('admin-cover');
@@ -934,13 +947,21 @@
                     btn.disabled = true;
                 }
 
+                const author = safeGetValue('admin-author').trim() || '成也';
+                const nowTime = new Date().toISOString().split('T')[0];
+                const createdAt = isEditing && window.currentPostCreatedAt ? window.currentPostCreatedAt : nowTime;
+                const updatedAt = nowTime;
+
                 const res = await fetch('./api/posts', {
                     method: 'POST',
                     headers: { 'Authorization': password, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         id, title, summary, content, category, cover, series, status, weight,
-                        layout_mode: globalLayoutMode,
-                        date: new Date().toISOString().split('T')[0]
+                        author,
+                        date: createdAt, // 兼容历史字段，代表创建时间
+                        created_at: createdAt,
+                        updated_at: updatedAt,
+                        layout_mode: globalLayoutMode
                     })
                 });
 
@@ -980,6 +1001,11 @@
 
                 const adminTitle = document.getElementById('admin-title');
                 if (adminTitle) adminTitle.value = post.title || '';
+
+                const adminAuthor = document.getElementById('admin-author');
+                if (adminAuthor) adminAuthor.value = post.author || '成也';
+                window.currentPostCreatedAt = post.date || post.created_at || ''; // 锁定原始创建时间
+
                 const adminSummary = document.getElementById('admin-summary');
                 if (adminSummary) adminSummary.value = post.summary || '';
                 const adminCover = document.getElementById('admin-cover');

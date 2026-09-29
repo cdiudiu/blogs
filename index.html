@@ -491,9 +491,15 @@
                             <h1 id="detail-post-title"
                                 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight mb-3">
                             </h1>
-                            <div class="text-xs text-zinc-400 flex flex-wrap items-center gap-4">
-                                <span id="post-date"></span>
+                            <div class="text-xs text-zinc-400 flex flex-wrap items-center gap-3 sm:gap-4">
+                                <span id="post-author" class="font-semibold text-zinc-600 flex items-center gap-1">✍️
+                                    <span id="author-text">成也</span></span>
+                                <span class="text-zinc-200">•</span>
+                                <span id="post-date" title="创建时间"></span>
+                                <span id="post-update-date" class="text-amber-600 font-medium"></span>
+                                <span class="text-zinc-200">•</span>
                                 <span id="post-category" class="font-bold text-amber-500"></span>
+                                <span class="text-zinc-200">•</span>
                                 <span id="post-views-count">阅读量: -</span>
                             </div>
                         </header>
@@ -1127,6 +1133,16 @@
                 }
 
                 posts.forEach((post, index) => {
+
+                    // 提前计算好作者、创建时间与更新时间
+                    const postAuthor = post.author || '成也';
+                    const postCreateDate = post.created_at || post.date || '';
+                    const postUpdateDate = post.updated_at || '';
+
+                    // 如果有更新时间且与创建时间不同，则生成更新时间小徽标
+                    const updateBadgeHtml = (postUpdateDate && postUpdateDate !== postCreateDate)
+                        ? `<span class="text-zinc-300">|</span><time class="text-amber-600 font-medium" title="最后更新时间">🔄 更新: ${postUpdateDate}</time>`
+                        : '';
                     // 补充 loading="lazy" 与 decoding="async" 优化 Google Core Web Vitals
                     const coverHtml = post.cover
                         ? `<img src="${post.cover}" 
@@ -1166,9 +1182,12 @@
                                 </div>
 
                                 <!-- 底部 Meta 信息条 -->
-                                <div class="pt-2 flex items-center justify-between text-[11px] text-zinc-400 border-t border-zinc-50">
-                                    <div class="flex items-center gap-3">
-                                        <time datetime="${post.date}">📅 ${post.date}</time>
+                                <div class="pt-2 flex flex-wrap items-center justify-between text-[11px] text-zinc-400 border-t border-zinc-50 gap-2">
+                                    <div class="flex items-center gap-2.5 flex-wrap">
+                                        <span>✍️ ${postAuthor}</span>
+                                        <span class="text-zinc-300">|</span>
+                                        <time title="创建时间">📅 ${postCreateDate}</time>
+                                        ${updateBadgeHtml}
                                         <span class="text-zinc-300">|</span>
                                         <span>📂 ${post.series || '默认系列'}</span>
                                     </div>
@@ -1407,6 +1426,30 @@
                 // 自动提取文章内的第一张图片作为此文章的专属分享大图
                 const firstImgEl = postContent.querySelector('img');
                 const postShareImg = firstImgEl ? firstImgEl.src : "https://img.vpsbbc.com/vps-x.png";
+
+                // 匹配当前文章的元数据（从之前缓存的列表或动态比对）
+                const currentPostMeta = (window.popularPostsData || []).find(p => p.id === postId);
+
+                const authorText = (currentPostMeta && currentPostMeta.author) ? currentPostMeta.author : "成也";
+                const createDate = (currentPostMeta && (currentPostMeta.created_at || currentPostMeta.date)) ? (currentPostMeta.created_at || currentPostMeta.date) : "";
+                const updateDate = (currentPostMeta && currentPostMeta.updated_at) ? currentPostMeta.updated_at : "";
+
+                const authorEl = document.getElementById('author-text');
+                if (authorEl) authorEl.innerText = authorText;
+
+                const dateEl = document.getElementById('post-date');
+                if (dateEl) dateEl.innerText = `发布于: ${createDate}`;
+
+                const updateDateEl = document.getElementById('post-update-date');
+                if (updateDateEl) {
+                    if (updateDate && updateDate !== createDate) {
+                        updateDateEl.innerText = `(已更新于: ${updateDate})`;
+                        updateDateEl.style.display = 'inline';
+                    } else {
+                        updateDateEl.style.display = 'none';
+                    }
+                }
+
 
                 updateMeta(
                     `${pageTitle} - ${siteBaseTitle}`,
