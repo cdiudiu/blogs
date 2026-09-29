@@ -764,74 +764,25 @@
         function initVditor() {
             if (vditorInstance) return;
             vditorInstance = new Vditor('vditor-container', {
-                height: 620,
-                // 1. 改为 'ir' (即时渲染模式)，这是 Typora 体验方案：保留纯净 Markdown 语法，同时敲完即渲染
-                mode: 'ir',
-                placeholder: "输入 '/' 快速唤起命令菜单；输入 '## ' 快速创建标题；支持拖拽或直接 Ctrl+V 粘贴截图自动压缩上传至 R2！",
+                height: 500,
+                mode: 'wysiwyg',
+                placeholder: "撰写教程...支持拖拽粘贴截图自动无感上传至 R2 并排版呈现！",
                 cache: { enable: false },
-                counter: { enable: true, type: 'markdown' }, // 显示文章字数统计
-                outline: { enable: true, position: 'right' }, // 开启右侧实时目录大纲，排版长文一览无余
-                preview: {
-                    delay: 200,
-                    hljs: { lineNumber: true, style: 'github-dark' }, // 代码块带行号与高亮
-                    markdown: {
-                        toc: true,
-                        mark: true,
-                        autoSpace: true // 中英文自动混排加空格
-                    }
-                },
                 toolbarConfig: { pin: true },
                 toolbar: [
                     "emoji", "headings", "bold", "italic", "strike", "link", "|",
                     "list", "ordered-list", "check", "outdent", "indent", "|",
-                    "quote", "line", "code", "inline-code", "|",
+                    "quote", "line", "code", "inline-code", "insert-after", "insert-before", "|",
                     "table", "|",
                     "undo", "redo", "|",
-                    "outline", "preview", "fullscreen", // 保留大纲切换、预览、全屏
-                    "|",
-                    {
-                        name: "insert-card",
-                        tip: "插入自定义外链卡片",
-                        icon: "💳",
-                        click() {
-                            vditorInstance.insertValue('\n[card: https://vpsbbc.com | 标题说明 | 详细描述文案 | https://img.vpsbbc.com/vps-x.png]\n');
-                        }
-                    },
-                    {
-                        name: "insert-youtube",
-                        tip: "插入 YouTube 视频",
-                        icon: "▶️",
-                        click() {
-                            vditorInstance.insertValue('\n[youtube: 视频ID或链接]\n');
-                        }
-                    }
+                    "edit-mode", "html", "preview", "both", "fullscreen"
                 ],
-                // 2. 快捷命令与补全提示（按 @ 唤起常用标签，按 / 快速插入）
-                hint: {
-                    delay: 100,
-                    extend: [
-                        {
-                            key: '/card',
-                            hint: () => [
-                                { value: '[card: https://目标链接 | 标题 | 描述 | https://图片地址]', html: '💳 插入外链卡片语法' }
-                            ]
-                        },
-                        {
-                            key: '/code',
-                            hint: () => [
-                                { value: '```bash\n# 在此输入Linux常用脚本命令\n```', html: '💻 插入 Bash 命令代码块' }
-                            ]
-                        }
-                    ]
-                },
                 upload: {
                     accept: 'image/*',
                     handler: async (files) => {
                         const file = files[0];
                         const url = await uploadImageViaVditor(file);
-                        if (url) {
-                            vditorInstance.insertValue(`\n![图片描述](${url})\n`);
-                        }
+                        if (url) { vditorInstance.insertValue(`![图片描述](${url})`); }
                         return null;
                     }
                 }
