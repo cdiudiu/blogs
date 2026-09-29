@@ -34,7 +34,7 @@
     <meta name="twitter:description" content="汇集搬瓦工、DMIT等高性价比 VPS 真实测评、三网延迟优化脚本及建站实操指南。">
     <meta name="twitter:image" content="https://img.vpsbbc.com/vps-x.png">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <!-- Google 结构化数据 (JSON-LD) -->
     <script type="application/ld+json">
     {
@@ -340,11 +340,19 @@
                     </header>
 
                     <section aria-label="文章列表">
-                        <!-- 为首页赋予最高语义权重的 H1 核心标题 -->
-                        <h1 class="text-lg font-extrabold text-[#485268] tracking-tight mb-4 flex items-center gap-2">
-                            <span>🚀</span> VPS 选购指南与最新测评
-                        </h1>
-                        <div id="posts-list-container" class="flex flex-col space-y-4"></div>
+                        <div id="posts-list-container" class="flex flex-col space-y-4">
+                            <!-- 静态预留内容：Google 爬虫在未执行 JS 时也能抓取到核心内链与关键字 -->
+                            <article class="card-texture rounded-2xl p-5 flex flex-col sm:flex-row gap-4 items-center">
+                                <div
+                                    class="w-full sm:w-64 h-36 rounded-xl bg-zinc-100 flex items-center justify-center font-bold text-zinc-400">
+                                    VPS 测评</div>
+                                <div class="flex-grow space-y-2">
+                                    <h2 class="text-base font-bold text-zinc-800"><a href="./post/firstVps">初识
+                                            VPS：从零看懂配置，带你避坑上车</a></h2>
+                                    <p class="text-xs text-zinc-500">新手入门必读：核心参数详解，包括 CPU、内存、带宽及网络线路选购避坑指南。</p>
+                                </div>
+                            </article>
+                        </div>
                     </section>
                 </div>
 
@@ -460,11 +468,17 @@
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
                     <!-- 左侧：正文卡片保持 col-span-3 -->
                     <main class="lg:col-span-3 bg-white p-6 sm:p-8 rounded-2xl border border-zinc-100 shadow-sm">
+                        <!-- 语义化面包屑导航 -->
+                        <nav aria-label="面包屑导航" class="flex items-center gap-1.5 text-xs text-zinc-400 mb-4">
+                            <a href="#/" class="hover:text-zinc-700 transition-colors">博客首页</a>
+                            <span>/</span>
+                            <span id="breadcrumb-category" class="hover:text-zinc-700 transition-colors">VPS 系列</span>
+                            <span>/</span>
+                            <span class="text-zinc-500 font-medium truncate max-w-[200px]">正文</span>
+                        </nav>
                         <header class="border-b border-zinc-100 pb-5 mb-6">
-                            <!-- 刚才缺失的 detail-post-title，加上后脚本绝不再报错 -->
                             <h1 id="detail-post-title"
                                 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight mb-3">
-                                VPS 精选教程与性能评测
                             </h1>
                             <div class="text-xs text-zinc-400 flex flex-wrap items-center gap-4">
                                 <span id="post-date"></span>
@@ -1093,6 +1107,8 @@
                     // 补充 loading="lazy" 与 decoding="async" 优化 Google Core Web Vitals
                     const coverHtml = post.cover
                         ? `<img src="${post.cover}" 
+                                width="256"
+                                height="144"
                                 loading="lazy" 
                                 decoding="async" 
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-t-2xl" 
@@ -1375,6 +1391,45 @@
                     `${window.location.origin}/blog/post/${postId}`,
                     postShareImg
                 );
+
+                // 同步更新面包屑导航分类
+                const categoryEl = document.getElementById('breadcrumb-category');
+                if (categoryEl && document.getElementById('post-category')) {
+                    categoryEl.innerText = document.getElementById('post-category').innerText || "精选教程";
+                }
+
+                // 动态注入/更新当前文章的专属 BlogPosting 结构化数据 (JSON-LD)
+                let postJsonLd = document.getElementById('post-json-ld');
+                if (!postJsonLd) {
+                    postJsonLd = document.createElement('script');
+                    postJsonLd.id = 'post-json-ld';
+                    postJsonLd.type = 'application/ld+json';
+                    document.head.appendChild(postJsonLd);
+                }
+                postJsonLd.textContent = JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@type": "BlogPosting",
+                    "headline": pageTitle,
+                    "description": plainTextDesc || pageTitle,
+                    "image": postShareImg,
+                    "author": {
+                        "@type": "Person",
+                        "name": "成也",
+                        "url": "https://vpsbbc.com/blog/"
+                    },
+                    "publisher": {
+                        "@type": "Organization",
+                        "name": "VPS帮帮车",
+                        "logo": {
+                            "@type": "ImageObject",
+                            "url": "https://vpsbbc.com/blog/favicon.png"
+                        }
+                    },
+                    "mainEntityOfPage": {
+                        "@type": "WebPage",
+                        "@id": `${window.location.origin}/blog/post/${postId}`
+                    }
+                });
 
                 if (detectedTitleEl) {
                     detectedTitleEl.style.display = 'none';
