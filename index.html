@@ -45,7 +45,7 @@
       "url": "https://vpsbbc.com/blog/",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://vpsbbc.com/blog/#/?q={search_term_string}",
+        "target": "https://vpsbbc.com/blog/?q={search_term_string}",
         "query-input": "required name=search_term_string"
       }
     }
@@ -454,7 +454,7 @@
             <header
                 class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-zinc-200/70 shadow-sm transform-gpu">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-                    <a href="#/"
+                    <a href="/blog/"
                         class="inline-flex items-center gap-2 text-sm sm:text-base font-bold text-zinc-800 hover:text-amber-600 transition-colors py-1">
                         <span class="text-base sm:text-lg leading-none">←</span> 返回首页
                     </a>
@@ -481,7 +481,7 @@
                     <main class="lg:col-span-3 bg-white p-6 sm:p-8 rounded-2xl border border-zinc-100 shadow-sm">
                         <!-- 语义化面包屑导航 -->
                         <nav aria-label="面包屑导航" class="flex items-center gap-1.5 text-xs text-zinc-400 mb-4">
-                            <a href="#/" class="hover:text-zinc-700 transition-colors">博客首页</a>
+                            <a href="/blog/" class="hover:text-zinc-700 transition-colors">博客首页</a>
                             <span>/</span>
                             <span id="breadcrumb-category" class="hover:text-zinc-700 transition-colors">VPS 系列</span>
                             <span>/</span>
@@ -532,7 +532,7 @@
             <div class="max-w-4xl mx-auto px-4">
                 <!-- 顶部文字区（图三样式） -->
                 <div class="mb-6 space-y-2">
-                    <a href="#/"
+                    <a href="/blog/"
                         class="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-800 transition-colors">
                         <span>←</span> 工具
                     </a>
@@ -746,8 +746,8 @@
                 <ul class="flex flex-wrap gap-4">
                     <li><a href="./post/firstVps" class="underline">初识 VPS：从零看懂配置，带你避坑上车</a></li>
                     <li><a href="./post/linux-system-guide" class="underline">Linux 操作系统选择指南</a></li>
-                    <li><a href="./#/?vps=DMIT" class="underline">DMIT 优质线路库存监控</a></li>
-                    <li><a href="./#/tools/vps-calc" class="underline">VPS 剩余价值计算器</a></li>
+                    <li><a href="/blog/?vps=DMIT" class="underline">DMIT 优质线路库存监控</a></li>
+                    <li><a href="/blog/tools/vps-calc" class="underline">VPS 剩余价值计算器</a></li>
                 </ul>
             </div>
         </noscript>
@@ -797,7 +797,6 @@
 
         // 监听浏览器前进、后退及哈希变化
         window.addEventListener('popstate', handleRouting);
-        window.addEventListener('hashchange', handleRouting);
 
         // 全局拦截 post 文章链接点击，使用 pushState 实现单页平滑跳转
         document.addEventListener('click', (e) => {
@@ -807,20 +806,23 @@
             const href = link.getAttribute('href');
             if (!href) return;
 
-            // 匹配文章跳转链接（如 ./post/xxx 或 /blog/post/xxx）
-            if (href.includes('/post/')) {
+            // 忽略外链、新窗口打开、JS空链接或下载附件
+            if (href.startsWith('http') && !href.startsWith(window.location.origin)) return;
+            if (link.target === '_blank' || href.startsWith('javascript:') || href.startsWith('mailto:')) return;
+
+            // 拦截匹配当前站点的内部路由（/blog/post/, /blog/series/, /blog/tools/ 等）
+            if (href.startsWith('/blog') || href.startsWith('./post/') || href.startsWith('./series/')) {
                 e.preventDefault();
 
-                // 提取纯净 postId
-                const parts = href.split('/post/');
-                const postId = parts[parts.length - 1].replace(/\/$/, '');
+                let targetUrl = href;
+                if (href.startsWith('./')) {
+                    targetUrl = '/blog/' + href.replace(/^\.\//, '');
+                }
 
-                // 构建标准的子目录绝对地址并入栈
-                const targetUrl = `/blog/post/${postId}`;
-                history.pushState(null, '', targetUrl);
-
-                // 触发视图渲染
-                handleRouting();
+                if (window.location.pathname !== targetUrl) {
+                    history.pushState(null, '', targetUrl);
+                    handleRouting();
+                }
             }
         });
         // 1. 优先执行路由切换：只要读取到是 /post/ 立即切到文章页，彻底消除首屏穿帮
@@ -835,8 +837,8 @@
 
 
         function handleRouting() {
-            const hash = window.location.hash;
-            const pathname = window.location.pathname;
+            const pathname = window.location.pathname.replace(/\/$/, '') || '/blog';
+            const searchParams = new URLSearchParams(window.location.search);
 
             // 隐藏所有视图
             const homeView = document.getElementById('home-view');
@@ -846,28 +848,36 @@
             if (postView) postView.classList.add('hidden');
             if (calcView) calcView.classList.add('hidden');
 
-            if (hash === '#/tools/vps-calc') {
+            // 路由 1：VPS 剩余价值计算器页面
+            if (pathname.endsWith('/tools/vps-calc')) {
                 if (calcView) calcView.classList.remove('hidden');
-                updateMeta(`VPS 剩余价值计算器 - ${siteBaseTitle}`, "在线 VPS 剩余天数与价值快速计算工具", `${window.location.origin}/blog/#/tools/vps-calc`);
-                initCalcTool(); // 初始化计算器
+                updateMeta(
+                    `VPS 剩余价值计算器 - ${siteBaseTitle}`,
+                    "在线 VPS 剩余天数与价值快速计算工具，支持月付、季付、年付精准折算。",
+                    `${window.location.origin}/blog/tools/vps-calc`
+                );
+                initCalcTool();
                 return;
             }
 
+            // 路由 2：文章详情页 (/blog/post/xxx 或 /post/xxx)
             const postMatch = pathname.match(/\/(?:blog\/)?post\/([^/]+)/);
             if (postMatch && postMatch[1]) {
                 loadPost(postMatch[1]);
                 return;
             }
 
-            if (hash.startsWith('#/post/')) {
-                const postId = hash.replace('#/post/', '');
-                loadPost(postId);
-            } else if (hash.startsWith('#/series/')) {
-                const seriesName = decodeURIComponent(hash.replace('#/series/', ''));
+            // 路由 3：系列聚合页 (/blog/series/xxx 或 /series/xxx)
+            const seriesMatch = pathname.match(/\/(?:blog\/)?series\/([^/]+)/);
+            if (seriesMatch && seriesMatch[1]) {
+                const seriesName = decodeURIComponent(seriesMatch[1]);
                 showSeriesView(seriesName);
-            } else {
-                showHomeView();
+                return;
             }
+
+            // 路由 4：默认首页（支持 ?q= 搜索参数）
+            const query = searchParams.get('q');
+            showHomeView(query || "");
         }
 
         async function fetchVisitorIpInfo() {
@@ -1012,13 +1022,13 @@
 
                 const isAllSelected = !currentFilterSeries;
                 navContainer.innerHTML += `
-                        <a href="#/" class="px-3 py-1.5 rounded-md text-sm transition-all ${isAllSelected ? 'bg-[#DABE86] text-white font-bold shadow-sm' : 'text-[#677390] bg-[#8EA5C0]/15 hover:bg-[#8EA5C0]/25 hover:text-[#485268]'}">全部</a>
+                        <a href="/blog/" class="px-3 py-1.5 rounded-md text-sm transition-all ${isAllSelected ? 'bg-[#DABE86] text-white font-bold shadow-sm' : 'text-[#677390] bg-[#8EA5C0]/15 hover:bg-[#8EA5C0]/25 hover:text-[#485268]'}">全部</a>
                     `;
 
                 finalSeriesList.forEach(series => {
                     const isSelected = currentFilterSeries === series;
                     navContainer.innerHTML += `
-                        <a href="#/series/${encodeURIComponent(series)}" class="px-3 py-1.5 rounded-md text-sm transition-all ${isSelected ? 'bg-[#DABE86] text-white font-bold shadow-sm' : 'text-[#677390] bg-[#8EA5C0]/15 hover:bg-[#8EA5C0]/25 hover:text-[#485268]'}">${series}</a>
+                        <a href="/blog/series/${encodeURIComponent(series)}" class="px-3 py-1.5 rounded-md text-sm transition-all ${isSelected ? 'bg-[#DABE86] text-white font-bold shadow-sm' : 'text-[#677390] bg-[#8EA5C0]/15 hover:bg-[#8EA5C0]/25 hover:text-[#485268]'}">${series}</a>
                     `;
                 });
             } catch (e) {
@@ -1030,7 +1040,7 @@
             const navLinks = document.querySelectorAll('#series-navbar-container a');
             navLinks.forEach(link => {
                 const href = decodeURIComponent(link.getAttribute('href') || '');
-                const isSelected = (!targetSeries && href === '#/') || (targetSeries && href.includes(`/series/${targetSeries}`));
+                const isSelected = (!targetSeries && href === '/blog/') || (targetSeries && href.includes(`/series/${targetSeries}`));
 
                 if (isSelected) {
                     link.className = "px-3 py-1.5 rounded-md text-sm transition-all bg-[#DABE86] text-white font-bold shadow-sm";
@@ -1122,17 +1132,13 @@
             updateMeta(
                 `${seriesName} 系列教程 - ${siteBaseTitle}`,
                 `浏览关于 ${seriesName} 的所有精选教程、网络调优和海外服务器实操评测。`,
-                `${window.location.origin}/blog/#/series/${encodeURIComponent(seriesName)}`,
+                `${window.location.origin}/blog/series/${encodeURIComponent(seriesName)}`,
                 "https://img.vpsbbc.com/vps-x.png"
             );
 
-            // 仅更新系列按钮高亮状态，不重构 DOM
             updateSeriesNavActiveState(seriesName);
-
             document.getElementById('home-view').classList.remove('hidden');
             document.getElementById('post-view').classList.add('hidden');
-
-            // 仅刷新文章列表，不再傻傻地重新加载轮播图
             fetchPostsAndRender(1);
         }
 
